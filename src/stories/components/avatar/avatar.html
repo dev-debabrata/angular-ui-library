@@ -1,0 +1,15 @@
+<span
+  class="avatar"
+  [class]="'avatar--' + size()"
+  [style.background]="src() ? null : gradient()"
+  [attr.title]="name()"
+>
+  @if (src()) {
+    <img [src]="src()" [alt]="name()" />
+  } @else {
+    {{ initials() }}
+  }
+  @if (status()) {
+    <span class="status" [class]="'status--' + status()" [attr.aria-label]="status()"></span>
+  }
+</span>

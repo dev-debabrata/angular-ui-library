@@ -1,0 +1,70 @@
+<section class="checklist" [attr.aria-label]="title()">
+  <button
+    type="button"
+    class="checklist__head"
+    [attr.aria-expanded]="!collapsed()"
+    (click)="collapsed.set(!collapsed())"
+  >
+    <svg class="checklist__ring" viewBox="0 0 44 44" aria-hidden="true">
+      <circle class="checklist__track" cx="22" cy="22" r="18" />
+      <circle
+        class="checklist__progress"
+        cx="22"
+        cy="22"
+        r="18"
+        [attr.stroke-dasharray]="ring"
+        [attr.stroke-dashoffset]="offset()"
+      />
+      <text x="22" y="22">{{ done() }}/{{ tasks().length }}</text>
+    </svg>
+    <span class="checklist__heading">
+      <b>{{ title() }}</b>
+      <small>{{
+        allDone() ? "You're all set!" : done() + ' of ' + tasks().length + ' complete'
+      }}</small>
+    </span>
+    <nex-icon class="checklist__chevron" name="chevron-down" [size]="18" />
+  </button>
+
+  @if (!collapsed()) {
+    @if (allDone()) {
+      <div class="checklist__done">
+        <span class="checklist__party nex-anim-tada">🎉</span>
+        <p>Great job! You've finished getting started.</p>
+      </div>
+    }
+    <ul class="checklist__tasks">
+      @for (task of tasks(); track task.id) {
+        <li class="checklist__task" [class.checklist__task--done]="task.done">
+          <button
+            type="button"
+            class="checklist__check"
+            role="checkbox"
+            [attr.aria-checked]="!!task.done"
+            [attr.aria-label]="task.label"
+            (click)="toggle(task)"
+          >
+            @if (task.done) {
+              <nex-icon name="check" [size]="14" />
+            }
+          </button>
+          <span class="checklist__text">
+            <span class="checklist__label">{{ task.label }}</span>
+            @if (task.description) {
+              <small>{{ task.description }}</small>
+            }
+          </span>
+          @if (showMeLabel() && !task.done) {
+            <button
+              type="button"
+              class="ui-btn ui-btn--text ui-btn--sm"
+              (click)="showMe.emit(task)"
+            >
+              {{ showMeLabel() }}
+            </button>
+          }
+        </li>
+      }
+    </ul>
+  }
+</section>

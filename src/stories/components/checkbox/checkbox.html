@@ -1,0 +1,9 @@
+<label class="checkbox" [class.checkbox--disabled]="disabled()">
+  <input
+    type="checkbox"
+    [checked]="checked()"
+    [disabled]="disabled()"
+    (change)="checked.set($any($event.target).checked)"
+  />
+  <span>{{ label() }}</span>
+</label>

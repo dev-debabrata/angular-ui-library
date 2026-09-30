@@ -1,0 +1,12 @@
+<button
+  type="button"
+  class="storybook-button"
+  [class]="[
+    'storybook-button--' + size(),
+    primary() ? 'storybook-button--primary' : 'storybook-button--secondary',
+  ]"
+  [style.background]="backgroundColor()"
+  (click)="onClick.emit($event)"
+>
+  {{ label() }}
+</button>

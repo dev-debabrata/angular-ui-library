@@ -1,0 +1,45 @@
+/* Not encapsulated (see icon-gallery.component.ts), so everything is nested under .icon-gallery.
+   Shared page layout comes from src/stories/gallery-page.css */
+.icon-gallery {
+  .control [type='color'] {
+    width: 40px;
+    height: 28px;
+    cursor: pointer;
+  }
+
+  .count {
+    min-height: 20px;
+    margin: 16px 4px 8px;
+    color: var(--ui-text-muted);
+    font-size: 13px;
+  }
+
+  .grid {
+    grid-template-columns: repeat(auto-fill, minmax(max(96px, calc(var(--size) + 56px)), 1fr));
+    gap: 10px;
+  }
+
+  .card {
+    justify-content: center;
+    gap: 10px;
+    aspect-ratio: 1;
+    padding: 10px 6px;
+    border-radius: var(--ui-radius);
+  }
+
+  .name {
+    overflow: hidden;
+    max-width: 100%;
+    color: var(--ui-text-muted);
+    font-size: 11px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .preview {
+    width: 120px;
+    height: 120px;
+    background: repeating-conic-gradient(var(--ui-surface-sunken) 0 25%, var(--ui-surface) 0 50%) 0
+      0 / 16px 16px;
+  }
+}

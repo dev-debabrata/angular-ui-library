@@ -1,0 +1,68 @@
+<!-- "Back to top" button on every Storybook page (docs pages scroll inside this preview frame).
+     Same look as <nex-scroll-top>, written in plain JS so it doesn't depend on any story. -->
+<style>
+  #nexui-docs-top {
+    position: fixed;
+    right: 24px;
+    bottom: 24px;
+    z-index: 1000;
+    display: grid;
+    place-items: center;
+    width: 48px;
+    height: 48px;
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    background: var(--ui-gradient, linear-gradient(135deg, #6366f1, #a855f7));
+    box-shadow: 0 10px 25px rgba(15, 23, 42, 0.18);
+    color: #fff;
+    cursor: pointer;
+    opacity: 0;
+    pointer-events: none;
+    scale: 0.6;
+    transition:
+      opacity 0.25s ease,
+      scale 0.3s cubic-bezier(0.34, 1.56, 0.64, 1),
+      box-shadow 0.16s ease;
+  }
+  #nexui-docs-top.is-visible {
+    opacity: 1;
+    pointer-events: auto;
+    scale: 1;
+  }
+  #nexui-docs-top:hover {
+    box-shadow:
+      0 0 0 6px rgba(99, 102, 241, 0.25),
+      0 10px 25px rgba(15, 23, 42, 0.18);
+  }
+  #nexui-docs-top:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.4);
+  }
+</style>
+<script>
+  window.addEventListener('DOMContentLoaded', () => {
+    const button = document.createElement('button');
+    button.id = 'nexui-docs-top';
+    button.type = 'button';
+    button.setAttribute('aria-label', 'Back to top');
+    button.tabIndex = -1;
+    button.innerHTML =
+      '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" ' +
+      'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m18 15-6-6-6 6"/></svg>';
+    button.addEventListener('click', () => {
+      const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+      scrollTo({ top: 0, behavior: reduced ? 'auto' : 'smooth' });
+    });
+    document.body.append(button);
+
+    // Show after scrolling 400px
+    const update = () => {
+      const visible = scrollY > 400;
+      button.classList.toggle('is-visible', visible);
+      button.tabIndex = visible ? 0 : -1;
+    };
+    addEventListener('scroll', update, { passive: true });
+    update();
+  });
+</script>

@@ -1,0 +1,125 @@
+<input
+  #fileInput
+  type="file"
+  class="ui-visually-hidden"
+  tabindex="-1"
+  aria-hidden="true"
+  [accept]="accept()"
+  [multiple]="multiple() && mode() === 'advanced'"
+  [disabled]="disabled()"
+  (change)="onInputChange($event)"
+/>
+
+@if (mode() === 'basic') {
+  <div class="basic">
+    <button
+      type="button"
+      class="ui-btn ui-btn--primary"
+      [disabled]="disabled() || uploading()"
+      (click)="fileInput.click()"
+    >
+      <nex-icon
+        [name]="uploading() ? 'refresh-cw' : 'upload'"
+        [size]="16"
+        [class.spin]="uploading()"
+      />
+      <span class="ellipsis">{{ basicLabel() }}</span>
+    </button>
+    @if (pending().length && !auto()) {
+      <button type="button" class="ui-btn" [disabled]="disabled()" (click)="uploadPending()">
+        {{ uploadLabel() }}
+      </button>
+    }
+    @if (items()[0]?.status === 'completed') {
+      <nex-icon class="done" name="circle-check" [size]="18" label="Uploaded" />
+    }
+  </div>
+} @else {
+  <div class="uploader" [class.uploader--disabled]="disabled()">
+    <div class="toolbar">
+      <button
+        type="button"
+        class="ui-btn ui-btn--primary"
+        [disabled]="disabled()"
+        (click)="fileInput.click()"
+      >
+        <nex-icon name="plus" [size]="16" /> {{ chooseLabel() }}
+      </button>
+      @if (!auto()) {
+        <button
+          type="button"
+          class="ui-btn"
+          [disabled]="disabled() || !pending().length || uploading()"
+          (click)="uploadPending()"
+        >
+          <nex-icon name="upload" [size]="16" /> {{ uploadLabel() }}
+        </button>
+      }
+      <button
+        type="button"
+        class="ui-btn"
+        [disabled]="disabled() || !items().length"
+        (click)="cancel()"
+      >
+        <nex-icon name="x" [size]="16" /> {{ cancelLabel() }}
+      </button>
+    </div>
+
+    @if (uploading()) {
+      <nex-progress-bar class="progress" [value]="progress()" />
+    }
+
+    @if (messages().length) {
+      <ul class="messages" role="alert">
+        @for (message of messages(); track $index) {
+          <li><nex-icon name="circle-alert" [size]="14" /> {{ message }}</li>
+        }
+      </ul>
+    }
+
+    <div
+      class="dropzone"
+      [class.dropzone--active]="dragging()"
+      (dragenter)="onDragEnter($event)"
+      (dragover)="$event.preventDefault()"
+      (dragleave)="onDragLeave()"
+      (drop)="onDrop($event)"
+    >
+      @if (items().length) {
+        <ul class="files">
+          @for (item of items(); track item.id) {
+            <li class="file">
+              <span class="thumb">
+                @if (item.url) {
+                  <img [src]="item.url" alt="" />
+                } @else {
+                  <nex-icon name="file-text" [size]="22" />
+                }
+              </span>
+              <span class="meta">
+                <b class="ellipsis" [title]="item.file.name">{{ item.file.name }}</b>
+                <small>{{ formatSize(item.file.size) }}</small>
+              </span>
+              <nex-badge [label]="item.status" [variant]="statusTones[item.status]" [pill]="true" />
+              <button
+                type="button"
+                class="ui-close"
+                [disabled]="item.status === 'uploading'"
+                [attr.aria-label]="'Remove ' + item.file.name"
+                (click)="removeItem(item)"
+              >
+                <nex-icon name="x" [size]="16" />
+              </button>
+            </li>
+          }
+        </ul>
+      } @else {
+        <button type="button" class="empty" [disabled]="disabled()" (click)="fileInput.click()">
+          <span class="empty-icon"><nex-icon name="cloud-upload" [size]="28" /></span>
+          <b>Drag and drop files here</b>
+          <small>or click to browse</small>
+        </button>
+      }
+    </div>
+  </div>
+}

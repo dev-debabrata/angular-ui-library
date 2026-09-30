@@ -1,0 +1,39 @@
+<ol class="timeline" [class]="['timeline--' + layout(), 'timeline--' + align()]">
+  @for (event of value(); track $index) {
+    <li
+      class="timeline-event"
+      [class.timeline-event--flip]="align() === 'alternate' && $odd"
+      [style.animation-delay.ms]="$index * 80"
+    >
+      <div class="timeline-opposite"></div>
+
+      <div class="timeline-separator">
+        <span
+          class="timeline-marker"
+          [class]="event.tone ? 'tone-' + event.tone : ''"
+          [class.timeline-marker--tone]="event.tone"
+          [class.timeline-marker--dot]="!event.icon"
+        >
+          @if (event.icon) {
+            <nex-icon [name]="event.icon" [size]="16" />
+          }
+        </span>
+        @if (!$last) {
+          <span class="timeline-connector"></span>
+        }
+      </div>
+
+      <div class="timeline-content">
+        @if (contentTemplate(); as tpl) {
+          <ng-container [ngTemplateOutlet]="tpl" [ngTemplateOutletContext]="{ $implicit: event }" />
+        } @else {
+          <div class="timeline-status">{{ event.status }}</div>
+          <time class="timeline-date">{{ event.date }}</time>
+          @if (event.description) {
+            <p class="timeline-description">{{ event.description }}</p>
+          }
+        }
+      </div>
+    </li>
+  }
+</ol>

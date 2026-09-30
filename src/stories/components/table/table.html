@@ -1,0 +1,43 @@
+@if (filterable()) {
+  <div class="table-filter">
+    <nex-search-input [placeholder]="filterPlaceholder()" (search)="filterText.set($event)" />
+  </div>
+}
+<div class="table-wrapper">
+  <table class="table" [class.table--striped]="striped()" [class.table--bordered]="bordered()">
+    <thead>
+      <tr>
+        @for (column of columns(); track column.key) {
+          <th
+            [class.sortable]="column.sortable"
+            [class.sorted]="sortKey() === column.key"
+            [attr.aria-sort]="ariaSort(column.key)"
+            (click)="column.sortable && sortBy(column.key)"
+          >
+            {{ column.label }}
+            @if (column.sortable) {
+              <span class="sort-icon">
+                {{ sortKey() !== column.key ? '↕' : sortDirection() === 'asc' ? '↑' : '↓' }}
+              </span>
+            }
+          </th>
+        }
+      </tr>
+    </thead>
+    <tbody>
+      @for (row of sortedData(); track $index) {
+        <tr (click)="rowClick.emit(row)">
+          @for (column of columns(); track column.key) {
+            <td>{{ row[column.key] }}</td>
+          }
+        </tr>
+      } @empty {
+        <tr>
+          <td class="empty" [attr.colspan]="columns().length">
+            {{ filterText() && data().length ? noResultsMessage() : emptyMessage() }}
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>

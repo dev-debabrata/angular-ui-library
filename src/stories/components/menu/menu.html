@@ -1,0 +1,20 @@
+@if (!popup() || visible()) {
+  <div
+    class="menu mi-panel"
+    role="menu"
+    [class.mi-float]="popup()"
+    [style.top.px]="position()?.top"
+    [style.left.px]="position()?.left"
+  >
+    @for (item of model(); track $index) {
+      @if (item.items && !item.separator) {
+        <div class="menu-group" role="presentation">{{ item.label }}</div>
+        @for (child of item.items; track $index) {
+          <nex-menu-item [item]="child" (click)="select($event, child)" />
+        }
+      } @else {
+        <nex-menu-item [item]="item" (click)="select($event, item)" />
+      }
+    }
+  </div>
+}

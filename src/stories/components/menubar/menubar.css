@@ -1,0 +1,130 @@
+/* The host is a size container so the bar collapses based on its own width, not the viewport */
+:host {
+  display: block;
+  container-type: inline-size;
+}
+
+.menubar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 16px;
+  padding: 8px 12px;
+  border: 1px solid var(--ui-border);
+  border-radius: var(--ui-radius-lg);
+  background: var(--ui-surface);
+  box-shadow: var(--ui-shadow);
+  font-family: var(--ui-font);
+  font-size: 14px;
+}
+
+.menubar-start,
+.menubar-end {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  &:empty {
+    display: none;
+  }
+}
+
+.menubar-end {
+  margin-left: auto;
+}
+
+.menubar-list {
+  --mi-gap: 8px;
+  margin: 0;
+  padding: 0;
+  font-weight: 500;
+  white-space: nowrap;
+  list-style: none;
+
+  & li {
+    position: relative;
+  }
+}
+
+/* Top-level chevrons point up while their dropdown is open */
+.menubar-root {
+  --mi-turn: 180deg;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Dropdown below a top-level item (.mi-float), flyouts (.mi-flyout) to the right of nested items */
+.mi-panel {
+  --mi-turn: 0deg;
+  min-width: 210px;
+  padding: 6px;
+}
+
+.mi-float {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+}
+
+.menubar-toggle {
+  display: none;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  margin-left: auto;
+  padding: 0;
+  border: none;
+  border-radius: var(--ui-radius-sm);
+  background: none;
+  color: var(--ui-text);
+  cursor: pointer;
+  transition: background var(--ui-ease);
+
+  &:hover {
+    background: var(--ui-primary-soft);
+    color: var(--ui-primary);
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: var(--ui-ring);
+  }
+}
+
+/* Narrow: hamburger toggle, items stack vertically and submenus expand inline */
+@container (max-width: 720px) {
+  .menubar-toggle {
+    display: grid;
+  }
+
+  .menubar-end {
+    order: 1;
+    width: 100%;
+    margin-left: 0;
+  }
+
+  .menubar-root {
+    display: none;
+    order: 2;
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+  }
+
+  .menubar-root--open {
+    display: flex;
+    animation: mi-down 0.16s ease-out;
+  }
+
+  /* Nested chevrons point down when their submenu is expanded */
+  .mi-panel {
+    --mi-turn: 90deg;
+    position: static;
+    min-width: 0;
+    padding: 2px 0 2px 16px;
+    border: none;
+    box-shadow: none;
+    animation: none;
+  }
+}

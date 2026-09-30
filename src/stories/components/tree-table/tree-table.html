@@ -1,0 +1,63 @@
+<div class="tree-table-wrapper">
+  <table class="tree-table" role="treegrid">
+    <thead>
+      <tr>
+        @for (column of columns(); track column.field) {
+          <th>{{ column.header }}</th>
+        }
+      </tr>
+    </thead>
+    <tbody>
+      @for (row of rows(); track row.node.key) {
+        @let node = row.node;
+        @let parent = !!node.children?.length;
+        @let open = isExpanded(node);
+        <tr
+          [class.row--selectable]="selectionMode() === 'single' && node.selectable !== false"
+          [class.row--selected]="isSelected(node)"
+          [attr.aria-level]="row.level + 1"
+          [attr.aria-expanded]="parent ? open : null"
+          [attr.aria-selected]="selectionMode() ? isSelected(node) : null"
+          [attr.tabindex]="selectionMode() ? 0 : null"
+          (click)="select(node)"
+          (keydown.enter)="select(node)"
+          (keydown.space)="select(node); $event.preventDefault()"
+        >
+          @for (column of columns(); track column.field) {
+            @let text = cell(node, column.field);
+            <td>
+              @if ($first) {
+                <span class="first-cell" [style.padding-left.px]="row.level * 24">
+                  @if (parent) {
+                    <button
+                      type="button"
+                      class="toggler"
+                      [class.toggler--open]="open"
+                      [attr.aria-label]="(open ? 'Collapse ' : 'Expand ') + text"
+                      (click)="toggle(node); $event.stopPropagation()"
+                      (keydown)="$event.stopPropagation()"
+                    >
+                      <nex-icon name="chevron-right" [size]="16" />
+                    </button>
+                  } @else {
+                    <span class="toggler toggler--spacer"></span>
+                  }
+                  @if (node.icon || (parent ? (open ? 'folder-open' : 'folder') : null); as icon) {
+                    <nex-icon class="node-icon" [name]="icon" [size]="18" />
+                  }
+                  {{ text }}
+                </span>
+              } @else {
+                {{ text }}
+              }
+            </td>
+          }
+        </tr>
+      } @empty {
+        <tr>
+          <td class="empty" [attr.colspan]="columns().length">{{ emptyMessage() }}</td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>

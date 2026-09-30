@@ -1,0 +1,27 @@
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px;
+  border: 1px solid var(--tone-border);
+  border-radius: var(--ui-radius-sm);
+  background: var(--tone-bg);
+  color: var(--tone-fg);
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 18px;
+  text-transform: capitalize;
+}
+
+.badge::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--tone-solid);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--tone-solid) 20%, transparent);
+}
+
+.badge--pill {
+  border-radius: 999px;
+}

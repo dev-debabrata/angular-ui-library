@@ -1,0 +1,72 @@
+.stepper {
+  display: flex;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 13px;
+}
+
+.step {
+  position: relative;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  color: var(--ui-text-subtle);
+  font-weight: 500;
+}
+
+/* Connector line to the next step */
+.step:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  top: 17px;
+  left: calc(50% + 24px);
+  right: calc(-50% + 24px);
+  height: 3px;
+  border-radius: 999px;
+  background: var(--ui-border);
+}
+
+.step--done:not(:last-child)::after {
+  background: var(--ui-gradient);
+}
+
+.step-circle {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border: 2px solid var(--ui-border);
+  border-radius: 50%;
+  background: var(--ui-surface);
+  font-size: 14px;
+  font-weight: 700;
+  transition: all 0.3s ease;
+}
+
+.step--active,
+.step--done {
+  color: var(--ui-text);
+}
+
+.step--active .step-circle {
+  border-color: var(--ui-primary);
+  color: var(--ui-primary);
+  box-shadow: var(--ui-ring);
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.step--done .step-circle {
+  border-color: transparent;
+  background: var(--ui-gradient);
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.35);
+}
+
+@keyframes pulse {
+  50% {
+    box-shadow: 0 0 0 7px rgba(99, 102, 241, 0.12);
+  }
+}

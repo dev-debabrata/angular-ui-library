@@ -1,0 +1,90 @@
+@if (open() && current(); as step) {
+  @let box = hole();
+  @let beacon = mode() === 'beacon';
+
+  @if (!beacon) {
+    <!-- Blocks clicks on the page while the tour runs (beacon mode leaves the page usable) -->
+    <div class="onboarding__backdrop" (click)="$event.stopPropagation()"></div>
+    <div
+      class="onboarding__spotlight"
+      [class.onboarding__spotlight--none]="!box"
+      [style.top.px]="box?.top"
+      [style.left.px]="box?.left"
+      [style.width.px]="box?.width"
+      [style.height.px]="box?.height"
+    ></div>
+  } @else if (box) {
+    <!-- Pulsing hotspot on the element's top-right corner -->
+    <span
+      class="onboarding__beacon nex-anim-ripple"
+      aria-hidden="true"
+      [style.top.px]="box.top"
+      [style.left.px]="box.left + box.width"
+    ></span>
+  }
+
+  <div
+    #tooltip
+    class="onboarding__tooltip"
+    [class]="'onboarding__tooltip--' + theme()"
+    [class.onboarding__tooltip--above]="tip().above"
+    [class.onboarding__tooltip--center]="!box"
+    [class.onboarding__tooltip--welcome]="mode() === 'welcome'"
+    [style.top.px]="box ? tip().top : null"
+    [style.left.px]="box ? tip().left : null"
+    role="dialog"
+    [attr.aria-modal]="!beacon"
+    [attr.aria-label]="step.title || 'Step ' + (this.step() + 1)"
+  >
+    @if (mode() === 'welcome' && (step.image || step.icon)) {
+      <div class="onboarding__media">
+        @if (step.image) {
+          <img [src]="step.image" alt="" />
+        } @else {
+          <span class="onboarding__media-icon"><nex-icon [name]="step.icon!" [size]="36" /></span>
+        }
+      </div>
+    }
+    <div class="onboarding__head">
+      <span class="onboarding__count">{{ this.step() + 1 }} of {{ steps().length }}</span>
+      <button type="button" class="ui-close" aria-label="Close tour" (click)="stop()">×</button>
+    </div>
+    @if (step.title) {
+      <h3 class="onboarding__title">{{ step.title }}</h3>
+    }
+    <p class="onboarding__text" aria-live="polite">{{ step.text }}</p>
+
+    <div class="onboarding__dots" aria-hidden="true">
+      @for (s of steps(); track $index) {
+        <i [class.onboarding__dot--on]="$index === this.step()"></i>
+      }
+    </div>
+
+    <div class="onboarding__actions">
+      @if (showSkip() && !last()) {
+        <button
+          type="button"
+          class="ui-btn ui-btn--text ui-btn--sm onboarding__skip"
+          (click)="stop()"
+        >
+          {{ skipLabel() }}
+        </button>
+      }
+      @if (this.step() > 0) {
+        <button type="button" class="ui-btn ui-btn--sm onboarding__back" (click)="back()">
+          {{ backLabel() }}
+        </button>
+      }
+      <button
+        type="button"
+        class="ui-btn ui-btn--primary ui-btn--sm onboarding__next"
+        (click)="next()"
+      >
+        {{ last() ? doneLabel() : nextLabel() }}
+        @if (!last()) {
+          <nex-icon name="arrow-right" [size]="14" />
+        }
+      </button>
+    </div>
+  </div>
+}

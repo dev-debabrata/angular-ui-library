@@ -1,0 +1,45 @@
+:host {
+  display: inline-block;
+  font-family: var(--ui-font);
+  color: var(--ui-text);
+}
+
+.display {
+  display: inline-block;
+  padding: 6px 10px;
+  border-radius: var(--ui-radius-sm);
+  cursor: pointer;
+  text-decoration: underline dashed transparent;
+  text-underline-offset: 4px;
+  transition:
+    background var(--ui-ease),
+    color var(--ui-ease),
+    text-decoration-color var(--ui-ease),
+    box-shadow var(--ui-ease);
+}
+
+.display:hover:not(.display--disabled) {
+  background: var(--ui-primary-soft);
+  color: var(--ui-primary);
+  text-decoration-color: currentColor;
+}
+
+.display:focus-visible,
+.display--disabled {
+  color: var(--ui-text-subtle);
+  cursor: not-allowed;
+}
+
+.content {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  animation: fade-in var(--ui-ease);
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(-2px);
+  }
+}

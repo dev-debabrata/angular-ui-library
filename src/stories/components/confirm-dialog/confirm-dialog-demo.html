@@ -1,0 +1,11 @@
+@for (action of actions(); track action.label) {
+  <storybook-button
+    [label]="action.label"
+    [primary]="action.primary ?? false"
+    size="small"
+    (onClick)="open(action, $event)"
+  />
+}
+@if (status()) {
+  <p role="status">{{ status() }}</p>
+}

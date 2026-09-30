@@ -1,0 +1,85 @@
+:host {
+  display: block;
+}
+
+.carousel {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  border-radius: var(--ui-radius);
+}
+
+.carousel:focus-visible {
+  outline: none;
+  box-shadow: var(--ui-ring);
+}
+
+.carousel__body {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.carousel__nav {
+  flex: none;
+  border-radius: 50%;
+}
+
+.carousel__viewport {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  touch-action: pan-y;
+}
+
+.carousel__track {
+  display: flex;
+  gap: var(--gap);
+  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.carousel__item {
+  flex: 0 0 calc((100% - (var(--visible) - 1) * var(--gap)) / var(--visible));
+  min-width: 0;
+}
+
+.carousel__dots {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+}
+
+.carousel__dot {
+  width: 8px;
+  height: 8px;
+  padding: 0;
+  border: none;
+  border-radius: 999px;
+  background: var(--ui-border-strong);
+  cursor: pointer;
+  transition:
+    width var(--ui-ease),
+    background var(--ui-ease);
+}
+
+.carousel__dot:hover {
+  background: var(--ui-text-subtle);
+}
+
+.carousel__dot:focus-visible {
+  outline: none;
+  box-shadow: var(--ui-ring);
+}
+
+/* The active dot stretches into a gradient pill */
+.carousel__dot--active,
+.carousel__dot--active:hover {
+  width: 24px;
+  background: var(--ui-gradient);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .carousel__track {
+    transition: none;
+  }
+}

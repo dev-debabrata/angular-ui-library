@@ -1,0 +1,35 @@
+<nex-dialog
+  width="420px"
+  [visible]="!!confirmation()"
+  [header]="confirmation()?.header ?? 'Confirmation'"
+  [dismissableMask]="true"
+  (visibleChange)="$event || reject()"
+>
+  @if (confirmation(); as c) {
+    <div class="confirm-body">
+      <nex-icon
+        class="confirm-icon"
+        [class.confirm-icon--danger]="c.acceptTone === 'danger'"
+        [name]="c.icon ?? 'info'"
+        [size]="28"
+      />
+      <p class="confirm-message">{{ c.message }}</p>
+    </div>
+  }
+  @if (confirmation(); as c) {
+    <div dialogFooter>
+      <button type="button" class="ui-btn ui-btn--text" (click)="reject()">
+        {{ c.rejectLabel ?? 'No' }}
+      </button>
+      <button
+        #acceptButton
+        type="button"
+        class="ui-btn ui-btn--text"
+        [class.ui-btn--danger]="c.acceptTone === 'danger'"
+        (click)="accept()"
+      >
+        {{ c.acceptLabel ?? 'Yes' }}
+      </button>
+    </div>
+  }
+</nex-dialog>

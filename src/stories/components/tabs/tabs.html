@@ -1,0 +1,21 @@
+<div class="tabs">
+  <div class="tab-list" role="tablist">
+    @for (tab of tabs(); track tab.id) {
+      <button
+        type="button"
+        role="tab"
+        class="tab"
+        [class.tab--active]="tab.id === activeTab()"
+        [attr.aria-selected]="tab.id === activeTab()"
+        (click)="activeTab.set(tab.id)"
+      >
+        {{ tab.label }}
+      </button>
+    }
+  </div>
+  @for (tab of tabs(); track tab.id) {
+    @if (tab.id === activeTab()) {
+      <div class="tab-panel" role="tabpanel">{{ tab.content }}</div>
+    }
+  }
+</div>

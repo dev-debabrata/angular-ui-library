@@ -1,0 +1,47 @@
+<nav class="menubar">
+  <div class="menubar-start"><ng-content select="[menubarStart]" /></div>
+  <button
+    type="button"
+    class="menubar-toggle"
+    aria-label="Toggle menu"
+    [attr.aria-expanded]="mobileOpen()"
+    (click)="mobileOpen.set(!mobileOpen())"
+  >
+    <nex-icon name="menu" [size]="20" />
+  </button>
+  <ng-container
+    [ngTemplateOutlet]="list"
+    [ngTemplateOutletContext]="{ $implicit: model(), depth: 0 }"
+  />
+  <div class="menubar-end"><ng-content select="[menubarEnd]" /></div>
+</nav>
+
+<!-- Recursive list: depth 0 is the bar, depth 1 the dropdowns, deeper levels are flyouts -->
+<ng-template #list let-items let-depth="depth">
+  <ul
+    class="menubar-list"
+    [attr.role]="depth ? 'menu' : 'menubar'"
+    [class.menubar-root]="!depth"
+    [class.menubar-root--open]="!depth && mobileOpen()"
+    [class.mi-panel]="depth"
+    [class.mi-float]="depth === 1"
+    [class.mi-flyout]="depth > 1"
+  >
+    @for (item of items; track $index) {
+      <li role="none" (mouseenter)="hover(item, depth)">
+        <nex-menu-item
+          [item]="item"
+          [chevron]="depth ? 'chevron-right' : 'chevron-down'"
+          [open]="path.isOpen(item, depth)"
+          (click)="select($event, item, depth)"
+        />
+        @if (path.isOpen(item, depth)) {
+          <ng-container
+            [ngTemplateOutlet]="list"
+            [ngTemplateOutletContext]="{ $implicit: item.items, depth: depth + 1 }"
+          />
+        }
+      </li>
+    }
+  </ul>
+</ng-template>

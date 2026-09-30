@@ -1,0 +1,58 @@
+.storybook-page {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 48px 20px;
+  font-size: 14px;
+  line-height: 24px;
+}
+
+.storybook-page h2 {
+  margin: 0 0 4px;
+  background: var(--ui-gradient);
+  background-clip: text;
+  color: transparent;
+  font-size: 34px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+
+.storybook-page p,
+.storybook-page li {
+  color: var(--ui-text-muted);
+}
+
+.storybook-page p,
+.storybook-page ul {
+  margin: 1em 0;
+}
+
+.storybook-page ul {
+  padding-left: 30px;
+}
+
+.storybook-page li {
+  margin-bottom: 8px;
+}
+
+.storybook-page a {
+  color: inherit;
+}
+
+.tip-wrapper {
+  margin: 40px 0;
+  font-size: 13px;
+  line-height: 20px;
+}
+
+.tip {
+  display: inline-block;
+  margin-right: 10px;
+  padding: 4px 12px;
+  border-radius: 1em;
+  background: var(--ui-primary-soft);
+  color: var(--ui-primary);
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 12px;
+}

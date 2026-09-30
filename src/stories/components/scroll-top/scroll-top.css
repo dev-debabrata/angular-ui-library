@@ -1,0 +1,97 @@
+/* Page mode: fixed to the viewport corner */
+:host {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  z-index: 900;
+}
+
+:host(.scroll-top--left) {
+  right: auto;
+  left: 24px;
+}
+
+/* Inside a scrolling element: sticks to its bottom edge without taking up space */
+:host(.scroll-top--contained) {
+  position: sticky;
+  bottom: 0;
+  display: flex;
+  justify-content: flex-end;
+  height: 0;
+  pointer-events: none;
+}
+
+:host(.scroll-top--contained.scroll-top--left) {
+  justify-content: flex-start;
+}
+
+:host(.scroll-top--contained) .scroll-top {
+  position: relative;
+  top: -68px;
+  margin: 0 16px;
+}
+
+.scroll-top {
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: var(--ui-gradient);
+  box-shadow: var(--ui-shadow-lg);
+  color: #fff;
+  cursor: pointer;
+  opacity: 0;
+  pointer-events: none;
+  scale: 0.6;
+  transition:
+    opacity 0.25s var(--ui-ease),
+    scale 0.3s cubic-bezier(0.34, 1.56, 0.64, 1),
+    box-shadow var(--ui-ease);
+}
+
+.scroll-top--visible {
+  opacity: 1;
+  pointer-events: auto;
+  scale: 1;
+}
+
+.scroll-top:hover {
+  box-shadow:
+    0 0 0 6px var(--ui-primary-ring),
+    var(--ui-shadow-lg);
+}
+
+.scroll-top:focus-visible {
+  outline: none;
+  box-shadow: var(--ui-ring);
+}
+
+/* Progress ring just outside the button, starting at 12 o'clock */
+.scroll-top__ring {
+  position: absolute;
+  width: 66px;
+  height: 66px;
+  rotate: -90deg;
+  pointer-events: none;
+}
+
+.scroll-top__ring circle {
+  fill: none;
+  stroke: var(--ui-accent);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 0.1s linear;
+}
+
+.scroll-top__ring .scroll-top__track {
+  stroke: var(--ui-border);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scroll-top {
+    transition: opacity 0.2s;
+  }
+}

@@ -1,0 +1,15 @@
+<ng-content />
+@if (visible()) {
+  <span
+    class="overlay-badge"
+    [class]="['tone-' + severity(), 'overlay-badge--' + position(), 'overlay-badge--' + size()]"
+    [class.overlay-badge--dot]="dot()"
+    [attr.aria-label]="ariaLabel() || null"
+    [attr.aria-hidden]="ariaLabel() ? null : 'true'"
+    [attr.role]="ariaLabel() ? 'status' : null"
+  >
+    @if (!dot()) {
+      {{ text() }}
+    }
+  </span>
+}

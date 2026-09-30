@@ -1,0 +1,71 @@
+@let layout = showButtons() ? buttonLayout() : 'none';
+@let stacked = layout === 'stacked';
+@let outer = layout === 'horizontal' ? -1 : layout === 'vertical' ? 1 : 0;
+@let cls = layout === 'horizontal' ? 'ui-btn ui-btn--icon' : 'ui-btn ui-btn--sm';
+
+<!-- dir 1 = increment, -1 = decrement. Pointer presses repeat; keyboard clicks (detail 0) step once -->
+<ng-template #btn let-dir let-cls="cls">
+  <button
+    type="button"
+    [class]="cls"
+    [attr.aria-label]="dir > 0 ? 'Increment' : 'Decrement'"
+    [disabled]="!can(dir)"
+    (pointerdown)="startRepeat($event, dir)"
+    (pointerup)="stopRepeat()"
+    (pointerleave)="stopRepeat()"
+    (pointercancel)="stopRepeat()"
+    (click)="$event.detail === 0 && spin(dir)"
+  >
+    <nex-icon
+      [name]="dir > 0 ? (stacked ? 'chevron-up' : 'plus') : stacked ? 'chevron-down' : 'minus'"
+      [size]="stacked ? 14 : 16"
+    />
+  </button>
+</ng-template>
+
+<div class="ui-field">
+  @if (label()) {
+    <label class="ui-label" [for]="id">{{ label() }}</label>
+  }
+  <div class="input-number" [class]="'input-number--' + layout">
+    @if (outer) {
+      <ng-container *ngTemplateOutlet="btn; context: { $implicit: outer, cls }" />
+    }
+    <input
+      class="ui-control input-number__input"
+      type="text"
+      inputmode="decimal"
+      role="spinbutton"
+      autocomplete="off"
+      [id]="id"
+      [value]="display()"
+      [placeholder]="placeholder()"
+      [disabled]="disabled()"
+      [readOnly]="readonly()"
+      [attr.aria-valuenow]="value()"
+      [attr.aria-valuemin]="min()"
+      [attr.aria-valuemax]="max()"
+      [attr.aria-invalid]="invalid()"
+      [attr.aria-describedby]="hint() ? id + '-hint' : null"
+      (focus)="onFocus()"
+      (blur)="onBlur()"
+      (keydown)="onKeydown($event)"
+      (input)="onInput($event)"
+      (paste)="onPaste($event)"
+    />
+    @if (outer) {
+      <ng-container *ngTemplateOutlet="btn; context: { $implicit: -outer, cls }" />
+    } @else if (stacked) {
+      <span class="input-number__spinner">
+        @for (dir of [1, -1]; track dir) {
+          <ng-container
+            *ngTemplateOutlet="btn; context: { $implicit: dir, cls: 'input-number__spin' }"
+          />
+        }
+      </span>
+    }
+  </div>
+  @if (hint()) {
+    <span [class]="invalid() ? 'ui-error' : 'ui-hint'" [id]="id + '-hint'">{{ hint() }}</span>
+  }
+</div>

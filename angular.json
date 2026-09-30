@@ -1,0 +1,143 @@
+{
+  "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
+  "version": 1,
+  "cli": {
+    "packageManager": "npm",
+    "analytics": false
+  },
+  "newProjectRoot": "projects",
+  "projects": {
+    "angular-ui-library": {
+      "projectType": "application",
+      "schematics": {},
+      "root": "",
+      "sourceRoot": "src",
+      "prefix": "nex",
+      "architect": {
+        "build": {
+          "builder": "@angular/build:application",
+          "options": {
+            "browser": "src/main.ts",
+            "tsConfig": "tsconfig.app.json",
+            "assets": [
+              {
+                "glob": "**/*",
+                "input": "public"
+              },
+              {
+                "glob": "**/*.svg",
+                "input": "src/stories/icons",
+                "output": "icons"
+              },
+              {
+                "glob": "**/*.json",
+                "input": "src/stories/lottie",
+                "output": "lottie"
+              }
+            ],
+            "styles": [
+              "src/styles.css"
+            ],
+            "server": "src/main.server.ts",
+            "outputMode": "server",
+            "security": {
+              "allowedHosts": [
+                "localhost",
+                "127.0.0.1"
+              ]
+            },
+            "ssr": {
+              "entry": "src/server.ts"
+            }
+          },
+          "configurations": {
+            "production": {
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "500kB",
+                  "maximumError": "1MB"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "4kB",
+                  "maximumError": "8kB"
+                }
+              ],
+              "outputHashing": "all"
+            },
+            "development": {
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "serve": {
+          "builder": "@angular/build:dev-server",
+          "configurations": {
+            "production": {
+              "buildTarget": "angular-ui-library:build:production"
+            },
+            "development": {
+              "buildTarget": "angular-ui-library:build:development"
+            }
+          },
+          "defaultConfiguration": "development"
+        },
+        "test": {
+          "builder": "@angular/build:unit-test"
+        },
+        "storybook": {
+          "builder": "@storybook/angular-vite:start-storybook",
+          "options": {
+            "configDir": ".storybook",
+            "browserTarget": "angular-ui-library:build",
+            "port": 6006
+          }
+        },
+        "build-storybook": {
+          "builder": "@storybook/angular-vite:build-storybook",
+          "options": {
+            "configDir": ".storybook",
+            "browserTarget": "angular-ui-library:build",
+            "outputDir": "storybook-static"
+          }
+        },
+        "build-elements": {
+          "builder": "@angular/build:application",
+          "options": {
+            "outputPath": "dist/nexui-elements",
+            "browser": "src/elements/nexui.ts",
+            "index": false,
+            "tsConfig": "tsconfig.elements.json",
+            "styles": [
+              "src/stories/theme.css"
+            ],
+            "assets": [
+              {
+                "glob": "**/*.svg",
+                "input": "src/stories/icons",
+                "output": "icons"
+              },
+              {
+                "glob": "**/*.json",
+                "input": "src/stories/lottie",
+                "output": "lottie"
+              }
+            ],
+            "outputHashing": "none",
+            "budgets": [
+              {
+                "type": "initial",
+                "maximumWarning": "1mb",
+                "maximumError": "2mb"
+              }
+            ]
+          }
+        }
+      }
+    }
+  }
+}

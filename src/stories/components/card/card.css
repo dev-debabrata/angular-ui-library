@@ -1,0 +1,100 @@
+.card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  overflow: hidden;
+  max-width: 380px;
+  padding: 24px 0;
+  border: 1px solid var(--ui-border);
+  border-radius: var(--ui-radius-lg);
+  background: var(--ui-surface);
+  box-shadow: var(--ui-shadow);
+  transition: box-shadow var(--ui-ease);
+
+  &:hover {
+    box-shadow: var(--ui-shadow-lg);
+  }
+
+  /* Gradient accent on plain cards (an image takes its place on media cards) */
+  &:not(.card--media)::before {
+    content: '';
+    position: absolute;
+    inset: 0 0 auto;
+    height: 4px;
+    background: var(--ui-gradient);
+  }
+
+  /* Image first: no top padding, it sits flush with the card edge */
+  &:has(> .card-image:first-child) {
+    padding-top: 0;
+  }
+}
+
+.card-header,
+.card-body,
+.card-footer {
+  padding: 0 24px;
+}
+
+.card-header--avatar {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+
+  .card-subtitle {
+    margin: 0;
+  }
+}
+
+.card-image {
+  display: block;
+  width: 100%;
+  object-fit: cover;
+}
+
+.card-title {
+  margin: 0 0 4px;
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.card-subtitle {
+  margin: 0;
+  color: var(--ui-text-muted);
+  font-size: 14px;
+}
+
+.card-body {
+  color: var(--ui-text-muted);
+  font-size: 14px;
+  line-height: 1.6;
+
+  &:empty {
+    display: none;
+  }
+}
+
+/* Footer actions (projected with [cardFooter], which uses display: contents from theme.css) */
+.card-footer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 6px;
+
+  &:empty {
+    display: none;
+  }
+
+  &.card-footer--end {
+    justify-content: flex-end;
+  }
+
+  /* Equal-width buttons: grid stretches the projected buttons without styling them */
+  &.card-footer--stretch {
+    display: grid;
+    grid-auto-columns: 1fr;
+    grid-auto-flow: column;
+  }
+}

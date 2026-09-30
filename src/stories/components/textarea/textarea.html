@@ -1,0 +1,17 @@
+<label class="ui-field">
+  @if (label()) {
+    <span class="ui-label">{{ label() }}</span>
+  }
+  <textarea
+    class="ui-control"
+    [rows]="rows()"
+    [placeholder]="placeholder()"
+    [value]="value()"
+    [disabled]="disabled()"
+    [attr.maxlength]="maxLength() || null"
+    (input)="value.set($any($event.target).value)"
+  ></textarea>
+  @if (maxLength()) {
+    <span class="ui-hint count">{{ value().length }} / {{ maxLength() }}</span>
+  }
+</label>

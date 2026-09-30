@@ -1,0 +1,139 @@
+<ng-template #panel>
+  <div class="time-picker-panel" [class.time-picker-panel--disabled]="disabled()">
+    @for (col of columns(); track col.unit) {
+      <div
+        class="time-picker-column"
+        role="spinbutton"
+        [attr.tabindex]="disabled() ? -1 : 0"
+        [attr.aria-label]="col.label"
+        [attr.aria-valuenow]="col.now"
+        [attr.aria-valuetext]="col.text"
+        aria-valuemin="0"
+        [attr.aria-valuemax]="col.max"
+        [attr.aria-disabled]="disabled() || null"
+        (wheel)="onWheel($event, col.unit)"
+        (keydown)="onKeydown($event, col.unit)"
+      >
+        <button
+          type="button"
+          class="time-picker-spin"
+          tabindex="-1"
+          [attr.aria-label]="'Increase ' + col.label"
+          [disabled]="disabled()"
+          (click)="step(col.unit, 1)"
+        >
+          <nex-icon name="chevron-up" [size]="16" />
+        </button>
+        <span class="time-picker-value">{{ col.text }}</span>
+        <button
+          type="button"
+          class="time-picker-spin"
+          tabindex="-1"
+          [attr.aria-label]="'Decrease ' + col.label"
+          [disabled]="disabled()"
+          (click)="step(col.unit, -1)"
+        >
+          <nex-icon name="chevron-down" [size]="16" />
+        </button>
+      </div>
+      @if (col.unit === 'hour' || (col.unit === 'minute' && showSeconds())) {
+        <span class="time-picker-separator" aria-hidden="true">:</span>
+      }
+    }
+  </div>
+</ng-template>
+
+<div class="ui-field">
+  @if (label()) {
+    <label class="ui-label" [id]="id + '-label'" [attr.for]="inline() ? null : id">{{
+      label()
+    }}</label>
+  }
+  @if (inline() && mode() === 'spinner') {
+    <div
+      role="group"
+      [attr.aria-labelledby]="label() ? id + '-label' : null"
+      [attr.aria-label]="label() ? null : 'Time'"
+    >
+      <ng-container [ngTemplateOutlet]="panel" />
+    </div>
+  } @else {
+    <div #field class="time-picker-field">
+      @let list = mode() === 'list';
+      <!-- List mode is a typeable combobox; spinner mode is a readonly field that opens the panel -->
+      <input
+        class="ui-control"
+        autocomplete="off"
+        [id]="id"
+        [readonly]="!list"
+        [value]="draft() ?? text()"
+        [placeholder]="placeholder()"
+        [disabled]="disabled()"
+        [attr.role]="list ? 'combobox' : null"
+        [attr.aria-haspopup]="list ? 'listbox' : 'dialog'"
+        [attr.aria-controls]="list ? id + '-list' : null"
+        [attr.aria-expanded]="opened()"
+        [attr.aria-activedescendant]="
+          list && opened() && active() >= 0 ? id + '-opt-' + active() : null
+        "
+        (click)="open()"
+        (input)="draft.set($any($event.target).value)"
+        (blur)="commit()"
+        (keydown)="onFieldKeydown($event)"
+      />
+      <button
+        type="button"
+        class="time-picker-trigger"
+        aria-label="Choose time"
+        [disabled]="disabled()"
+        (click)="toggle()"
+      >
+        <nex-icon name="clock" [size]="16" />
+      </button>
+    </div>
+    @if (opened()) {
+      <div
+        #popup
+        class="time-picker-popup"
+        [class.time-picker-popup--list]="mode() === 'list'"
+        [attr.role]="mode() === 'list' ? null : 'dialog'"
+        [attr.aria-label]="mode() === 'list' ? null : label() || 'Choose time'"
+        [style.top.px]="position()?.top"
+        [style.left.px]="position()?.left"
+        [style.min-width.px]="mode() === 'list' ? fieldWidth() : null"
+        [style.visibility]="position() ? null : 'hidden'"
+      >
+        @if (mode() === 'list') {
+          <ul
+            class="time-picker-list"
+            role="listbox"
+            [id]="id + '-list'"
+            [attr.aria-label]="label() || 'Times'"
+          >
+            @for (option of options(); track $index; let i = $index) {
+              <li
+                role="option"
+                class="time-picker-option"
+                [id]="id + '-opt-' + i"
+                [attr.data-index]="i"
+                [class.time-picker-option--active]="i === active()"
+                [class.time-picker-option--selected]="option.selected"
+                [attr.aria-selected]="option.selected"
+                (mousedown)="$event.preventDefault()"
+                (mouseenter)="active.set(i)"
+                (click)="choose(option.date)"
+              >
+                {{ option.label }}
+                @if (option.selected) {
+                  <nex-icon name="check" [size]="16" />
+                }
+              </li>
+            }
+          </ul>
+        } @else {
+          <ng-container [ngTemplateOutlet]="panel" />
+        }
+      </div>
+    }
+  }
+</div>

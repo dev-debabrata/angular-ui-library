@@ -1,0 +1,51 @@
+.share {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 360px;
+  max-width: 100%;
+}
+
+.share-row,
+.share-members li,
+.share-role {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ui-btn--icon {
+  flex-shrink: 0;
+}
+
+.share-members {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  li {
+    gap: 10px;
+  }
+}
+
+.share-person {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+  font-size: 13px;
+
+  span {
+    color: var(--ui-text-muted);
+  }
+}
+
+.share-role {
+  gap: 4px;
+  color: var(--ui-text-muted);
+  font-size: 13px;
+  cursor: pointer;
+}

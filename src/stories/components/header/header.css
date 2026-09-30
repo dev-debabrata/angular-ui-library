@@ -1,0 +1,35 @@
+.storybook-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 24px;
+  border-bottom: 1px solid var(--ui-border);
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(8px);
+}
+
+.storybook-header svg,
+.storybook-header h1 {
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.storybook-header h1 {
+  margin: 0 0 0 10px;
+  background: var(--ui-gradient);
+  background-clip: text;
+  color: transparent;
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.storybook-header storybook-button + storybook-button {
+  margin-left: 10px;
+}
+
+.welcome {
+  margin-right: 12px;
+  color: var(--ui-text-muted);
+  font-size: 14px;
+}

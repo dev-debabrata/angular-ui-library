@@ -1,0 +1,108 @@
+<div class="gallery-page icon-gallery">
+  <h1>Icons</h1>
+  <p class="subtitle">
+    {{ icons().length }} icons in <code>src/stories/icons/</code>. Click an icon to copy its code.
+    Add your own <code>.svg</code> files to that folder and they show up here.
+  </p>
+
+  <div class="toolbar">
+    <nex-search-input
+      class="search"
+      [placeholder]="'Search ' + icons().length + ' icons...'"
+      (search)="query.set($event)"
+    />
+    @for (slider of sliders; track slider.key) {
+      <label class="control">
+        <span>{{ slider.label }} <b>{{ settings()[slider.key] }}</b></span>
+        <input
+          type="range"
+          [min]="slider.min"
+          [max]="slider.max"
+          [step]="slider.step"
+          [value]="settings()[slider.key]"
+          (input)="update(slider.key, +$any($event.target).value)"
+        />
+      </label>
+    }
+    <div class="control">
+      <span>Style</span>
+      <nex-button-toggle
+        size="small"
+        ariaLabel="Icon style"
+        [options]="variants"
+        [showCheck]="false"
+        [value]="settings().variant"
+        (valueChange)="update('variant', $any($event))"
+      />
+    </div>
+    <label class="control">
+      <span>Color</span>
+      <input type="color" [value]="settings().color" (input)="update('color', $any($event.target).value)" />
+    </label>
+    @if (isCustomized()) {
+      <storybook-button size="small" label="Reset" (onClick)="reset()" />
+    }
+  </div>
+
+  <p class="count">
+    @if (query()) {
+      {{ filtered().length }} result{{ filtered().length === 1 ? '' : 's' }} for "{{ query() }}"
+    }
+  </p>
+
+  <div class="grid" [style.--size.px]="settings().size">
+    @for (icon of filtered(); track icon.name) {
+      <button
+        type="button"
+        class="card"
+        [class.selected]="selected()?.name === icon.name"
+        [title]="icon.name"
+        (click)="select(icon)"
+      >
+        <ng-container *ngTemplateOutlet="iconTpl; context: { $implicit: icon, size: settings().size }" />
+        <span class="name">{{ icon.name }}</span>
+      </button>
+    } @empty {
+      <p class="empty">
+        No icons match "{{ query() }}". Add <code>{{ query() }}.svg</code> to <code>src/stories/icons/</code>.
+      </p>
+    }
+  </div>
+
+  @if (code(); as code) {
+    <aside class="panel" role="dialog" [attr.aria-label]="selected()!.name">
+      <div class="preview">
+        <ng-container *ngTemplateOutlet="iconTpl; context: { $implicit: selected(), size: 72 }" />
+      </div>
+      <div class="details">
+        <div class="head">
+          <h2>{{ selected()!.name }}</h2>
+          <button type="button" class="ui-close" aria-label="Close" (click)="selected.set(null)">×</button>
+        </div>
+        <pre><code>{{ code.angular }}</code></pre>
+        <div class="actions">
+          <storybook-button
+            size="small"
+            [primary]="true"
+            [label]="copied() === 'angular' ? 'Copied!' : 'Copy Angular'"
+            (onClick)="copy('angular')"
+          />
+          <storybook-button size="small" [label]="copied() === 'svg' ? 'Copied!' : 'Copy SVG'" (onClick)="copy('svg')" />
+          <storybook-button size="small" label="Download" (onClick)="download()" />
+        </div>
+      </div>
+    </aside>
+  }
+</div>
+
+<!-- One icon with the current settings, shared by the grid and the preview -->
+<ng-template #iconTpl let-icon let-size="size">
+  <nex-icon
+    [name]="icon.name"
+    [svg]="icon.svg"
+    [size]="size"
+    [strokeWidth]="settings().strokeWidth"
+    [variant]="settings().variant"
+    [style.color]="color()"
+  />
+</ng-template>

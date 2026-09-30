@@ -1,0 +1,8 @@
+<input
+  type="search"
+  class="ui-control"
+  [placeholder]="placeholder()"
+  [value]="value()"
+  [disabled]="disabled()"
+  (input)="search.emit($any($event.target).value)"
+/>

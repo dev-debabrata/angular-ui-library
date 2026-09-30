@@ -1,0 +1,35 @@
+@if (!popup() || visible()) {
+  <ng-container
+    [ngTemplateOutlet]="list"
+    [ngTemplateOutletContext]="{ $implicit: model(), depth: 0 }"
+  />
+}
+
+<!-- Recursive list: each open item renders its children with this same template, one level deeper -->
+<ng-template #list let-items let-depth="depth">
+  <ul
+    class="tiered-list mi-panel"
+    role="menu"
+    [class.mi-float]="!depth && popup()"
+    [class.mi-flyout]="depth"
+    [style.top.px]="depth ? null : position()?.top"
+    [style.left.px]="depth ? null : position()?.left"
+  >
+    @for (item of items; track $index) {
+      <li role="none" (mouseenter)="path.open(item, depth)">
+        <nex-menu-item
+          [item]="item"
+          chevron="chevron-right"
+          [open]="path.isOpen(item, depth)"
+          (click)="select($event, item, depth)"
+        />
+        @if (path.isOpen(item, depth)) {
+          <ng-container
+            [ngTemplateOutlet]="list"
+            [ngTemplateOutletContext]="{ $implicit: item.items, depth: depth + 1 }"
+          />
+        }
+      </li>
+    }
+  </ul>
+</ng-template>

@@ -1,0 +1,23 @@
+@if (active()) {
+  <div class="content">
+    <ng-content select="[inplaceContent]" />
+    @if (closable()) {
+      <button type="button" class="ui-close" aria-label="Close" (click)="close()">
+        <nex-icon name="x" [size]="16" />
+      </button>
+    }
+  </div>
+} @else {
+  <div
+    class="display"
+    role="button"
+    [class.display--disabled]="disabled()"
+    [attr.tabindex]="disabled() ? null : 0"
+    [attr.aria-disabled]="disabled() || null"
+    (click)="open()"
+    (keydown.enter)="open($event)"
+    (keydown.space)="open($event)"
+  >
+    <ng-content select="[inplaceDisplay]" />
+  </div>
+}

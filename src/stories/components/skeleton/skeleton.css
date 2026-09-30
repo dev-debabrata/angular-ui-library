@@ -1,0 +1,47 @@
+:host {
+  position: relative;
+  display: block;
+  flex-shrink: 0;
+  overflow: hidden;
+  border-radius: var(--ui-radius-sm);
+  background: color-mix(in srgb, var(--ui-border) 80%, var(--ui-surface-sunken));
+}
+
+.skeleton__wave {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    color-mix(in srgb, var(--ui-surface) 65%, transparent) 50%,
+    transparent 100%
+  );
+  transform: translateX(-100%);
+  animation: skeleton-wave 1.4s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+:host(.skeleton--pulse) {
+  animation: skeleton-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes skeleton-wave {
+  to {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes skeleton-pulse {
+  50% {
+    opacity: 0.45;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton__wave {
+    display: none;
+  }
+
+  :host(.skeleton--pulse) {
+    animation: none;
+  }
+}

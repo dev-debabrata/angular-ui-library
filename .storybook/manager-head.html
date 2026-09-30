@@ -1,0 +1,147 @@
+<script>
+  // Opening Storybook without a page (http://localhost:6006/) starts on "Configure your project".
+  // Runs before Storybook boots, which would otherwise pick the Icons page.
+  if (!new URLSearchParams(location.search).has('path')) {
+    history.replaceState(null, '', '?path=/docs/getting-started-configure-your-project--docs');
+  }
+</script>
+<style>
+  /* PrimeNG-style sidebar: top-level rows (group headings and root pages like Icons) get a bold label and a
+     boxed icon; groups get a chevron. Icons are Lucide SVG masks, so they follow the text color.
+     Restart Storybook after editing. */
+  .sidebar-subheading,
+  .sidebar-item:not([data-parent-id]) {
+    --nav-icon: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z'/></svg>");
+  }
+  .sidebar-subheading[data-item-id='getting-started'] {
+    --nav-icon: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8'/><path d='M3 10a2 2 0 0 1 .709-1.528l7-6a2 2 0 0 1 2.582 0l7 6A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z'/></svg>");
+  }
+  .sidebar-subheading[data-item-id='components'] {
+    --nav-icon: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='12' r='10'/><path d='m16.24 7.76-1.804 5.411a2 2 0 0 1-1.265 1.265L7.76 16.24l1.804-5.411a2 2 0 0 1 1.265-1.265z'/></svg>");
+  }
+  /* Storybook lists root pages before groups; order moves Icons, Animations and Onboarding below Components */
+  .sidebar-item[data-item-id='icons--icons'] {
+    --nav-icon: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M8.3 10a.7.7 0 0 1-.626-1.079L11.4 3a.7.7 0 0 1 1.198-.043L16.3 8.9a.7.7 0 0 1-.572 1.1Z'/><rect x='3' y='14' width='7' height='7' rx='1'/><circle cx='17.5' cy='17.5' r='3.5'/></svg>");
+    order: 1;
+  }
+  .sidebar-item[data-item-id='animations--animations'] {
+    --nav-icon: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M11.017 2.814a1 1 0 0 1 1.966 0l1.051 5.558a2 2 0 0 0 1.594 1.594l5.558 1.051a1 1 0 0 1 0 1.966l-5.558 1.051a2 2 0 0 0-1.594 1.594l-1.051 5.558a1 1 0 0 1-1.966 0l-1.051-5.558a2 2 0 0 0-1.594-1.594l-5.558-1.051a1 1 0 0 1 0-1.966l5.558-1.051a2 2 0 0 0 1.594-1.594z'/><path d='M20 2v4'/><path d='M22 4h-4'/><circle cx='4' cy='20' r='2'/></svg>");
+    order: 2;
+  }
+  .sidebar-item[data-item-id='nexlottie--nex-lottie'] {
+    --nav-icon: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='m12.296 3.464 3.02 3.956'/><path d='M20.2 6 3 11l-.9-2.4c-.3-1.1.3-2.2 1.3-2.5l13.5-4c1.1-.3 2.2.3 2.5 1.3z'/><path d='M3 11h18v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z'/><path d='m6.18 5.276 3.1 3.899'/></svg>");
+    order: 4;
+  }
+  /* The Onboarding group (heading + its rows) goes after them too */
+  .sidebar-subheading[data-item-id='onboarding'] {
+    --nav-icon: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M12 13v8'/><path d='M12 3v3'/><path d='M18.172 6a2 2 0 0 1 1.414.586l2.06 2.06a1.207 1.207 0 0 1 0 1.708l-2.06 2.06a2 2 0 0 1-1.414.586H4a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1z'/></svg>");
+  }
+  .sidebar-subheading[data-item-id='onboarding'],
+  .sidebar-item[data-item-id^='onboarding-'] {
+    order: 3;
+  }
+  :has(> .sidebar-item[data-item-id='icons--icons']) {
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Rows, evenly spaced (doubled class beats Storybook's 16px margin above each group) */
+  .sidebar-subheading.sidebar-subheading,
+  .sidebar-item:not([data-parent-id]) {
+    margin: 2px 0;
+    border-radius: 10px;
+  }
+  /* Storybook's "Skip to content" link on the selected row takes up space (and squeezes the label) until focused */
+  .sidebar-item > a[href='#storybook-preview-wrapper']:not(:focus) {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+  /* Hidden: "expand all" next to groups and the "⌃ K" hint in the search box (the shortcut still works) */
+  .search-field > code,
+  .sidebar-subheading .sidebar-subheading-action {
+    display: none !important;
+  }
+  :is(.sidebar-subheading [data-action='collapse-root'], .sidebar-item:not([data-parent-id]) > a) {
+    display: flex;
+    flex: 1;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 12px;
+    height: auto;
+    min-height: 44px;
+    padding: 6px 10px;
+    border-radius: 10px;
+    color: #1e293b;
+    font-size: 14.5px;
+    font-weight: 600;
+    letter-spacing: 0;
+    text-transform: none;
+    white-space: nowrap;
+  }
+  .sidebar-subheading [data-action='collapse-root']:hover {
+    background: #f1f5f9;
+  }
+
+  /* Icon box: Storybook's own icon wrapper, with its icon hidden and ours drawn inside */
+  :is(.sidebar-subheading [data-action='collapse-root'], .sidebar-item:not([data-parent-id]) > a)
+    > :first-child {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 30px;
+    height: 30px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    background: #fff;
+    transform: none;
+  }
+  :is(.sidebar-subheading [data-action='collapse-root'], .sidebar-item:not([data-parent-id]) > a)
+    > :first-child
+    > svg {
+    display: none;
+  }
+  :is(.sidebar-subheading [data-action='collapse-root'], .sidebar-item:not([data-parent-id]) > a)
+    > :first-child::before,
+  .sidebar-subheading [data-action='collapse-root']::after {
+    content: '';
+    width: 16px;
+    height: 16px;
+    background: currentColor;
+    mask: var(--nav-icon) center / contain no-repeat;
+  }
+
+  /* Chevron on the right; points right when the group is collapsed */
+  .sidebar-subheading [data-action='collapse-root']::after {
+    --nav-icon: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='m6 9 6 6 6-6'/></svg>");
+    margin-left: auto;
+    color: #64748b;
+    transition: rotate 0.2s;
+  }
+  .sidebar-subheading [aria-expanded='false']::after {
+    rotate: -90deg;
+  }
+
+  /* Selected root page (e.g. Icons) */
+  /* !important beats Storybook's solid purple hover */
+  .sidebar-item:not([data-parent-id])[data-selected='true'] {
+    background: #eef2ff !important;
+  }
+  /* The dev server adds "+" / "⋯" buttons to rows; top-level pages don't need them */
+  .sidebar-item:not([data-parent-id]) button {
+    display: none !important;
+  }
+  .sidebar-item:not([data-parent-id])[data-selected='true'] > a {
+    color: #4f46e5;
+  }
+  .sidebar-item:not([data-parent-id])[data-selected='true'] > a > :first-child {
+    border-color: #c7d2fe;
+  }
+
+  /* Pages inside a group line up under its label; their Docs/stories shift the same, so the tree keeps its shape */
+  .sidebar-item[data-parent-id] {
+    margin-left: 28px;
+  }
+</style>

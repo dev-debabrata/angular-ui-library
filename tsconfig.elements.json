@@ -1,0 +1,9 @@
+/* Web Components build (npm run build:elements) */
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "./out-tsc/elements",
+    "types": []
+  },
+  "files": ["src/elements/nexui.ts"]
+}

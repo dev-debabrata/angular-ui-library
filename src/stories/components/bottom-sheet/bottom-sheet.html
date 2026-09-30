@@ -1,0 +1,32 @@
+@if (visible()) {
+  <div class="bottom-sheet-backdrop" (click)="dismissable() && close()"></div>
+  <section
+    class="bottom-sheet"
+    role="dialog"
+    aria-modal="true"
+    [attr.aria-labelledby]="header() ? id + '-header' : null"
+    [attr.aria-label]="header() ? null : 'Bottom sheet'"
+    [class.bottom-sheet--dragging]="dragging()"
+    [style.max-height]="maxHeight()"
+    [style.transform]="dragY() ? 'translateY(' + dragY() + 'px)' : null"
+  >
+    @if (showHandle()) {
+      <div
+        class="bottom-sheet-handle"
+        aria-hidden="true"
+        (pointerdown)="onDragStart($event)"
+        (pointermove)="onDragMove($event)"
+        (pointerup)="onDragEnd()"
+        (pointercancel)="onDragEnd()"
+      >
+        <span></span>
+      </div>
+    }
+    @if (header()) {
+      <h3 class="bottom-sheet-header" [id]="id + '-header'">{{ header() }}</h3>
+    }
+    <div class="bottom-sheet-content">
+      <ng-content />
+    </div>
+  </section>
+}

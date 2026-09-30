@@ -1,0 +1,151 @@
+:host {
+  display: block;
+  font-family: var(--ui-font);
+}
+
+.chart {
+  position: relative;
+}
+
+svg {
+  display: block;
+  overflow: visible;
+}
+
+/* Recessive grid and axis: 1px, solid */
+.grid {
+  stroke: var(--ui-border);
+}
+
+.axis {
+  stroke: var(--ui-border-strong);
+}
+
+.tick {
+  fill: var(--ui-text-muted);
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+}
+
+.tick--y {
+  text-anchor: end;
+  dominant-baseline: middle;
+}
+
+.tick--x {
+  text-anchor: middle;
+}
+
+.line {
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* A light wash of the series color */
+.area {
+  opacity: 0.12;
+}
+
+/* 2px surface ring keeps the marker readable where lines cross */
+.dot {
+  stroke: var(--ui-surface);
+  stroke-width: 2;
+}
+
+.crosshair {
+  stroke: var(--ui-border-strong);
+}
+
+.band {
+  fill: var(--ui-primary-soft);
+}
+
+.hit {
+  fill: transparent;
+  cursor: crosshair;
+}
+
+/* 2px surface gap between slices */
+.slice {
+  stroke: var(--ui-surface);
+  stroke-width: 2;
+  stroke-linejoin: round;
+  cursor: pointer;
+  transition: opacity var(--ui-ease);
+}
+
+.slice--dim {
+  opacity: 0.35;
+}
+
+.total {
+  fill: var(--ui-text);
+  font-size: 24px;
+  font-weight: 700;
+  text-anchor: middle;
+}
+
+.total-label {
+  fill: var(--ui-text-muted);
+  font-size: 12px;
+  text-anchor: middle;
+}
+
+.tooltip {
+  position: absolute;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 140px;
+  padding: 8px 10px;
+  border: 1px solid var(--ui-border);
+  border-radius: var(--ui-radius);
+  background: var(--ui-surface);
+  box-shadow: var(--ui-shadow-lg);
+  color: var(--ui-text);
+  font-size: 12px;
+  pointer-events: none;
+  transform: translate(-50%, calc(-100% - 12px));
+}
+
+.tooltip-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--ui-text-muted);
+}
+
+.tooltip-row b {
+  margin-left: auto;
+  padding-left: 12px;
+  color: var(--ui-text);
+  font-variant-numeric: tabular-nums;
+}
+
+.swatch {
+  flex: none;
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+}
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px 18px;
+  margin: 12px 0 0;
+  padding: 0;
+  color: var(--ui-text-muted);
+  font-size: 13px;
+  list-style: none;
+}
+
+.legend li {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}

@@ -1,0 +1,12 @@
+:host {
+  display: block;
+  max-width: 400px;
+}
+
+textarea {
+  resize: vertical;
+}
+
+.count {
+  align-self: flex-end;
+}

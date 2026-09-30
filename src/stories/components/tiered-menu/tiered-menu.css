@@ -1,0 +1,13 @@
+:host {
+  display: inline-block;
+}
+
+.tiered-list {
+  width: 230px;
+  font-family: var(--ui-font);
+  font-size: 14px;
+
+  & li {
+    position: relative;
+  }
+}

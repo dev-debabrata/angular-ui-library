@@ -1,0 +1,312 @@
+:host {
+  display: block;
+}
+
+.shell {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.shell--card {
+  padding: 24px;
+  border: 1px solid var(--ui-border);
+  border-radius: var(--ui-radius-lg);
+  background: var(--ui-surface);
+  box-shadow: var(--ui-shadow);
+}
+
+/* Heading with an icon tile */
+.head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.head__icon {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--ui-radius);
+  background: var(--tone-bg, var(--ui-primary-soft));
+  color: var(--tone-fg, var(--ui-primary));
+}
+
+.head__title {
+  margin: 0;
+  color: var(--ui-text);
+  font-size: 16px;
+}
+
+.head__subtitle {
+  margin: 2px 0 0;
+  color: var(--ui-text-muted);
+  font-size: 13px;
+}
+
+/* Step 1 of 3 + segmented progress bar */
+.progress__text {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  color: var(--ui-text-muted);
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.progress__text b {
+  color: var(--ui-text);
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.progress__bars {
+  display: flex;
+  gap: 6px;
+}
+
+.progress__bar {
+  flex: 1;
+  height: 4px;
+  border-radius: 999px;
+  background: var(--ui-surface-sunken);
+  transition: background var(--ui-ease);
+}
+
+.progress__bar--done {
+  background: var(--ui-gradient);
+}
+
+.form {
+  display: grid;
+  gap: 18px 20px;
+}
+
+.form--two {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.form__field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+/* Inputs fill the field (their components cap the width when used on their own) */
+.form__field > * {
+  max-width: none;
+}
+
+.form__extra:empty {
+  display: none;
+}
+
+.form__field--wide,
+.form__extra,
+.form__actions {
+  grid-column: 1 / -1;
+}
+
+.form__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding-top: 4px;
+}
+
+.form__actions--block .form__submit {
+  flex: 1;
+}
+
+/* Option buttons: chips, cards, segmented, choice list, color swatches */
+.options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.option {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  padding: 8px 14px;
+  border: 1px solid var(--ui-border);
+  border-radius: 999px;
+  background: var(--ui-surface-muted);
+  color: var(--ui-text-muted);
+  font: inherit;
+  font-size: 14px;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    background var(--ui-ease),
+    border-color var(--ui-ease),
+    color var(--ui-ease),
+    box-shadow var(--ui-ease);
+}
+
+.option:hover:not(:disabled) {
+  border-color: var(--ui-primary);
+  color: var(--ui-text);
+}
+
+.option:focus-visible {
+  outline: none;
+  box-shadow: var(--ui-ring);
+}
+
+.option:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.option--on,
+.option--on:hover:not(:disabled) {
+  border-color: var(--ui-primary);
+  background: var(--ui-primary-soft);
+  color: var(--ui-primary);
+  font-weight: 600;
+}
+
+.option__description {
+  color: var(--ui-text-muted);
+  font-size: 12px;
+  font-weight: 400;
+}
+
+.options--cards,
+.options--segmented {
+  display: grid;
+  grid-auto-columns: 1fr;
+  grid-auto-flow: column;
+}
+
+.options--cards .option,
+.options--segmented .option,
+.options--choice .option {
+  border-radius: var(--ui-radius);
+}
+
+.options--cards .option {
+  padding: 10px 12px;
+}
+
+.options--segmented .option {
+  align-items: center;
+}
+
+.options--choice {
+  flex-direction: column;
+}
+
+.options--choice .option {
+  padding: 12px 16px;
+  font-size: 15px;
+}
+
+.options--color .option {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 2px solid var(--ui-surface);
+  border-radius: 50%;
+  background: var(--swatch);
+  box-shadow: 0 0 0 1px var(--ui-border);
+}
+
+.options--color .option--on {
+  box-shadow: 0 0 0 2px var(--swatch);
+}
+
+/* Inline layout: centered heading, fields and button on one row */
+.shell--inline {
+  align-items: center;
+  text-align: center;
+}
+
+.shell--inline .head {
+  flex-direction: column;
+}
+
+.shell--inline .form {
+  display: flex;
+  align-items: flex-start;
+  width: 100%;
+  text-align: left;
+}
+
+.shell--inline .form__field {
+  flex: 1;
+}
+
+.shell--inline .form__actions {
+  padding-top: 0;
+}
+
+/* Same height as the input next to it */
+.shell--inline .form__submit {
+  height: 42px;
+}
+
+.note {
+  margin: 0;
+  color: var(--ui-text-subtle);
+  font-size: 12px;
+}
+
+/* Confirmation after a successful submit */
+.success {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 16px 0 4px;
+  text-align: center;
+  animation: form-pop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.success__icon {
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--ui-success) 14%, transparent);
+  color: var(--ui-success);
+}
+
+.success__title {
+  margin: 4px 0 0;
+  color: var(--ui-text);
+  font-size: 18px;
+}
+
+.success__message {
+  margin: 0 0 8px;
+  color: var(--ui-text-muted);
+  font-size: 14px;
+}
+
+@keyframes form-pop {
+  from {
+    opacity: 0;
+    scale: 0.9;
+  }
+}
+
+/* One column on narrow screens */
+@media (max-width: 560px) {
+  .form--two {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .options--cards,
+  .options--segmented {
+    grid-auto-flow: row;
+  }
+}

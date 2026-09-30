@@ -1,0 +1,31 @@
+<nav class="mega" [class]="'mega--' + orientation()">
+  <ul class="mega-root" role="menubar" [attr.aria-orientation]="orientation()">
+    @for (item of model(); track $index) {
+      @let open = path.isOpen(item, 0);
+      <li class="mega-top" role="none" (mouseenter)="hover(item)">
+        <nex-menu-item
+          [item]="item"
+          [chevron]="orientation() === 'vertical' ? 'chevron-right' : 'chevron-down'"
+          [open]="open"
+          (click)="select($event, item, true)"
+        />
+        @if (open) {
+          <div class="mega-panel mi-panel mi-float" role="menu">
+            @for (column of item.items ?? []; track $index) {
+              <div class="mega-column">
+                @for (section of column.items ?? []; track $index) {
+                  <div class="mega-section" role="group" [attr.aria-label]="section.label">
+                    <span class="mega-heading">{{ section.label }}</span>
+                    @for (link of section.items ?? []; track $index) {
+                      <nex-menu-item [item]="link" (click)="select($event, link)" />
+                    }
+                  </div>
+                }
+              </div>
+            }
+          </div>
+        }
+      </li>
+    }
+  </ul>
+</nav>

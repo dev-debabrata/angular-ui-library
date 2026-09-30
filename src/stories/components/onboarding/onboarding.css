@@ -1,0 +1,244 @@
+:host {
+  --ob-move: 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  --ob-dim: rgb(15 23 42 / 0.6);
+}
+
+.onboarding__backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+}
+
+/* The hole: a rounded box whose huge shadow dims everything else. It glides between steps */
+.onboarding__spotlight {
+  position: fixed;
+  z-index: 1001;
+  border-radius: var(--ui-radius);
+  box-shadow:
+    0 0 0 3px color-mix(in srgb, var(--ui-accent) 70%, transparent),
+    0 0 0 9999px var(--ob-dim);
+  pointer-events: none;
+  transition:
+    top var(--ob-move),
+    left var(--ob-move),
+    width var(--ob-move),
+    height var(--ob-move);
+}
+
+/* Target not found: dim the whole page */
+.onboarding__spotlight--none {
+  inset: 50%;
+  box-shadow: 0 0 0 9999px var(--ob-dim);
+}
+
+/* Beacon mode: a pulsing hotspot (nex-anim-ripple) instead of the dimmed spotlight */
+.onboarding__beacon {
+  position: fixed;
+  z-index: 1001;
+  width: 14px;
+  height: 14px;
+  margin: -7px 0 0 -7px;
+  border: 2px solid var(--ui-surface);
+  border-radius: 50%;
+  background: var(--ui-gradient);
+  pointer-events: none;
+  transition:
+    top var(--ob-move),
+    left var(--ob-move);
+}
+
+/* Tooltip colors come from --ob-* variables, which the themes below override */
+.onboarding__tooltip {
+  position: fixed;
+  z-index: 1002;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: min(320px, calc(100vw - 16px));
+  padding: 16px 18px;
+  border: 1px solid var(--ob-border, var(--ui-border));
+  border-radius: var(--ui-radius-lg);
+  background: var(--ob-bg, var(--ui-surface));
+  box-shadow: var(--ui-shadow-lg);
+  color: var(--ob-fg, var(--ui-text));
+  font-family: var(--ui-font);
+  transition:
+    top var(--ob-move),
+    left var(--ob-move);
+  animation: onboarding-in 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.onboarding__tooltip--above {
+  translate: 0 -100%;
+}
+
+.onboarding__tooltip--center {
+  top: 50%;
+  left: 50%;
+  translate: -50% -50%;
+}
+
+.onboarding__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.onboarding__count {
+  color: var(--ob-count, var(--ui-primary));
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.onboarding__title {
+  margin: 0;
+  font-size: 16px;
+}
+
+.onboarding__text {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.onboarding__text,
+.onboarding__tooltip .ui-close,
+.onboarding__skip {
+  color: var(--ob-muted, var(--ui-text-muted));
+}
+
+.onboarding__dots {
+  display: flex;
+  gap: 5px;
+  margin-top: 4px;
+}
+
+.onboarding__dots i {
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--ob-dot, var(--ui-border-strong));
+  transition:
+    width var(--ui-ease),
+    background var(--ui-ease);
+}
+
+.onboarding__dots .onboarding__dot--on {
+  width: 18px;
+  background: var(--ob-dot-on, var(--ui-gradient));
+}
+
+.onboarding__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+/* Skip sits on the left, away from Next */
+.onboarding__skip {
+  margin-right: auto;
+  padding-left: 0;
+}
+
+/* Welcome mode: wider centered card with a media header */
+.onboarding__tooltip--welcome {
+  width: min(420px, calc(100vw - 16px));
+  padding-top: 0;
+  overflow: hidden;
+  text-align: center;
+}
+
+.onboarding__tooltip--welcome :is(.onboarding__head, .onboarding__dots) {
+  justify-content: center;
+}
+
+.onboarding__tooltip--welcome .ui-close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  color: #fff;
+}
+
+.onboarding__media {
+  display: grid;
+  place-items: center;
+  height: 150px;
+  margin: 0 -18px 8px;
+  background: var(--ui-gradient);
+}
+
+.onboarding__media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.onboarding__media-icon {
+  display: grid;
+  place-items: center;
+  width: 76px;
+  height: 76px;
+  border-radius: 24px;
+  background: rgb(255 255 255 / 0.18);
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.35);
+  color: #fff;
+  animation: nex-float 3s ease-in-out infinite;
+}
+
+/* Themes */
+.onboarding__tooltip--dark {
+  --ob-border: transparent;
+  --ob-bg: #0f172a;
+  --ob-fg: #f8fafc;
+  --ob-muted: #cbd5e1;
+  --ob-count: #a5b4fc;
+  --ob-line: #334155;
+}
+
+.onboarding__tooltip--gradient {
+  --ob-border: transparent;
+  --ob-bg: var(--ui-gradient);
+  --ob-fg: #fff;
+  --ob-muted: rgb(255 255 255 / 0.85);
+  --ob-count: rgb(255 255 255 / 0.85);
+  --ob-line: rgb(255 255 255 / 0.5);
+  --ob-dot: rgb(255 255 255 / 0.4);
+  --ob-dot-on: #fff;
+}
+
+.onboarding__tooltip--gradient .onboarding__next {
+  background: #fff;
+  color: var(--ui-primary);
+}
+
+.onboarding__tooltip--glass {
+  --ob-border: rgb(255 255 255 / 0.6);
+  --ob-bg: rgb(255 255 255 / 0.72);
+  backdrop-filter: blur(14px) saturate(1.4);
+}
+
+/* Outlined Back button on dark backgrounds */
+:is(.onboarding__tooltip--dark, .onboarding__tooltip--gradient) .onboarding__back {
+  border-color: var(--ob-line);
+  background: transparent;
+  color: inherit;
+}
+
+@keyframes onboarding-in {
+  from {
+    opacity: 0;
+    scale: 0.92;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .onboarding__spotlight,
+  .onboarding__tooltip,
+  .onboarding__beacon {
+    transition: none;
+    animation: none;
+  }
+}

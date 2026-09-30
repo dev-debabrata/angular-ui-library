@@ -1,0 +1,84 @@
+<section
+  class="carousel"
+  role="region"
+  aria-roledescription="carousel"
+  tabindex="0"
+  [attr.aria-label]="ariaLabel()"
+  (keydown)="onKeydown($event)"
+>
+  <div class="carousel__body">
+    @if (showNavigators()) {
+      <button
+        type="button"
+        class="carousel__nav ui-btn ui-btn--icon"
+        aria-label="Previous"
+        [disabled]="!canPrev()"
+        (click)="go(page() - 1)"
+      >
+        <nex-icon name="chevron-left" [size]="18" />
+      </button>
+    }
+
+    <div
+      class="carousel__viewport"
+      (pointerdown)="onPointerDown($event)"
+      (pointerup)="onPointerUp($event)"
+      (pointercancel)="onPointerUp($event)"
+    >
+      <div
+        #track
+        class="carousel__track"
+        aria-live="polite"
+        [style.--visible]="numVisible()"
+        [style.--gap]="gap()"
+        [style.transform]="'translateX(calc(' + -first() + ' * (100% + var(--gap)) / var(--visible)))'"
+      >
+        @if (template(); as template) {
+          @for (item of items(); track $index) {
+            <div
+              class="carousel__item"
+              role="group"
+              aria-roledescription="slide"
+              [attr.aria-label]="$index + 1 + ' of ' + items().length"
+              [attr.aria-hidden]="!isVisible($index)"
+              [attr.inert]="isVisible($index) ? null : ''"
+            >
+              <ng-container
+                *ngTemplateOutlet="template; context: { $implicit: item, index: $index }"
+              />
+            </div>
+          }
+        } @else {
+          <ng-content />
+        }
+      </div>
+    </div>
+
+    @if (showNavigators()) {
+      <button
+        type="button"
+        class="carousel__nav ui-btn ui-btn--icon"
+        aria-label="Next"
+        [disabled]="!canNext()"
+        (click)="go(page() + 1)"
+      >
+        <nex-icon name="chevron-right" [size]="18" />
+      </button>
+    }
+  </div>
+
+  @if (showIndicators() && pages() > 1) {
+    <div class="carousel__dots">
+      @for (p of pageList(); track p) {
+        <button
+          type="button"
+          class="carousel__dot"
+          [class.carousel__dot--active]="p === page()"
+          [attr.aria-label]="'Go to page ' + (p + 1)"
+          [attr.aria-current]="p === page() || null"
+          (click)="go(p)"
+        ></button>
+      }
+    </div>
+  }
+</section>

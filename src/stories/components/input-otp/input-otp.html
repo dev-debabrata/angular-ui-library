@@ -1,0 +1,37 @@
+<div class="ui-field">
+  @if (label()) {
+    <span class="ui-label" [id]="id + '-label'">{{ label() }}</span>
+  }
+  <div
+    class="otp"
+    [class]="['otp--' + size(), 'otp--' + variant()]"
+    role="group"
+    [attr.aria-labelledby]="label() ? id + '-label' : null"
+    [attr.aria-describedby]="hint() ? id + '-hint' : null"
+  >
+    @for (c of chars(); track i; let i = $index) {
+      <input
+        #box
+        class="ui-control otp__box"
+        [class.otp__box--filled]="!!c"
+        [type]="mask() ? 'password' : 'text'"
+        [attr.inputmode]="integerOnly() ? 'numeric' : 'text'"
+        [attr.autocomplete]="i === 0 ? 'one-time-code' : 'off'"
+        [attr.aria-label]="'Digit ' + (i + 1) + ' of ' + length()"
+        [attr.aria-invalid]="invalid()"
+        [value]="c"
+        [disabled]="disabled()"
+        (keydown)="onKeydown($event, i)"
+        (input)="onInput($event, i)"
+        (paste)="onPaste($event, i)"
+        (focus)="box.select()"
+      />
+      @if (separatorAfter().includes(i) && !$last) {
+        <span class="otp__separator" aria-hidden="true"></span>
+      }
+    }
+  </div>
+  @if (hint()) {
+    <span [class]="invalid() ? 'ui-error' : 'ui-hint'" [id]="id + '-hint'">{{ hint() }}</span>
+  }
+</div>

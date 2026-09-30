@@ -1,0 +1,61 @@
+.overlay-panel {
+  position: fixed;
+  z-index: 1050;
+  box-sizing: border-box;
+  width: max-content;
+  max-width: calc(100vw - 16px);
+  padding: 20px;
+  border: 1px solid var(--ui-border);
+  border-radius: var(--ui-radius-lg);
+  background: var(--ui-surface);
+  box-shadow: var(--ui-shadow-lg);
+  color: var(--ui-text);
+  font-size: 14px;
+  transform-origin: top left;
+  animation: panel-in 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  /* Arrow: a rotated square pointing at the target */
+  &::before {
+    content: '';
+    position: absolute;
+    top: -6px;
+    left: var(--arrow-left, 20px);
+    width: 10px;
+    height: 10px;
+    border: 1px solid var(--ui-border);
+    border-right: none;
+    border-bottom: none;
+    background: var(--ui-surface);
+    transform: translateX(-50%) rotate(45deg);
+  }
+}
+
+.overlay-panel--above {
+  transform-origin: bottom left;
+
+  &::before {
+    top: auto;
+    bottom: -6px;
+    transform: translateX(-50%) rotate(225deg);
+  }
+}
+
+.overlay-panel-close {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  color: var(--ui-text-muted);
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: var(--ui-ring);
+    opacity: 1;
+  }
+}
+
+@keyframes panel-in {
+  from {
+    opacity: 0;
+    transform: scale(0.94);
+  }
+}

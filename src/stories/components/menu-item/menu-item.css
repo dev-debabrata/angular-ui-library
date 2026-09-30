@@ -1,0 +1,125 @@
+/* Not encapsulated (see menu-item.component.ts), so these classes are shared by every menu.
+   Row tuning: --mi-pad, --mi-gap, --mi-radius, --mi-ring, --mi-icon (icon color),
+   --mi-turn / --mi-turn-ease (open chevron rotation), --mi-lead (-1 puts the chevron first) */
+.nex-menu-item {
+  display: contents;
+}
+
+.mi {
+  display: flex;
+  align-items: center;
+  gap: var(--mi-gap, 10px);
+  box-sizing: border-box;
+  width: 100%;
+  padding: var(--mi-pad, 9px 12px);
+  border: none;
+  border-radius: var(--mi-radius, var(--ui-radius-sm));
+  background: none;
+  color: var(--ui-text);
+  font: inherit;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    background var(--ui-ease),
+    color var(--ui-ease);
+
+  &:hover:not(:disabled, .mi--disabled),
+  &.mi--active {
+    background: var(--ui-primary-soft);
+    color: var(--ui-primary);
+
+    & .nex-icon {
+      color: inherit;
+    }
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: var(--mi-ring, var(--ui-ring));
+  }
+
+  &:disabled,
+  &.mi--disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+}
+
+.mi-icon {
+  color: var(--mi-icon, var(--ui-text-muted));
+}
+
+.mi-chevron {
+  order: var(--mi-lead, 0);
+  color: var(--ui-text-muted);
+  transition: transform var(--mi-turn-ease, var(--ui-ease));
+
+  .mi--open & {
+    transform: rotate(var(--mi-turn, 0deg));
+  }
+}
+
+.mi-label {
+  flex: 1;
+}
+
+.mi-badge {
+  padding: 1px 8px;
+  border-radius: 999px;
+  background: var(--tone-bg);
+  color: var(--tone-fg);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.mi-separator {
+  height: 1px;
+  margin: 4px 6px;
+  background: var(--ui-border);
+}
+
+/* Menu card. .mi-float: popup/dropdown (fixed, animated down); .mi-flyout: submenu to the right of its item */
+.mi-panel {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 6px;
+  border: 1px solid var(--ui-border);
+  border-radius: var(--ui-radius);
+  background: var(--ui-surface);
+  box-shadow: var(--ui-shadow-sm);
+  list-style: none;
+}
+
+.mi-float,
+.mi-flyout {
+  box-shadow: var(--ui-shadow-lg);
+}
+
+.mi-float {
+  position: fixed;
+  z-index: 1000;
+  animation: mi-down 0.16s ease-out;
+}
+
+.mi-flyout {
+  position: absolute;
+  z-index: 1;
+  top: -7px;
+  left: calc(100% + 4px);
+  animation: mi-right 0.14s ease-out;
+}
+
+@keyframes mi-down {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+}
+
+@keyframes mi-right {
+  from {
+    opacity: 0;
+    transform: translateX(-4px);
+  }
+}

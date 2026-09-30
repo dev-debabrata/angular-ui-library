@@ -1,0 +1,63 @@
+.panel-menu {
+  --mi-turn-ease: 0.25s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-width: 320px;
+  font-family: var(--ui-font);
+  font-size: 14px;
+}
+
+.pm-panel {
+  overflow: hidden;
+  border: 1px solid var(--ui-border);
+  border-radius: var(--ui-radius);
+  background: var(--ui-surface);
+  box-shadow: var(--ui-shadow-sm);
+  transition:
+    border-color var(--ui-ease),
+    box-shadow var(--ui-ease);
+}
+
+.pm-panel--open {
+  border-color: var(--ui-primary);
+  box-shadow: 0 4px 14px rgba(99, 102, 241, 0.12);
+}
+
+.pm-header {
+  --mi-pad: 14px 16px;
+  --mi-radius: 0;
+  --mi-ring: inset var(--ui-ring);
+  --mi-icon: var(--ui-primary);
+  --mi-turn: 180deg;
+  font-weight: 600;
+}
+
+/* Expand/collapse animation */
+.pm-collapse {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.25s ease;
+}
+
+.pm-collapse--open {
+  grid-template-rows: 1fr;
+}
+
+.pm-collapse-inner {
+  min-height: 0;
+  overflow: hidden;
+}
+
+.pm-tree {
+  --mi-turn: 90deg;
+  --mi-lead: -1;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.pm-tree--root {
+  padding: 4px 6px 6px;
+  border-top: 1px solid var(--ui-border);
+}

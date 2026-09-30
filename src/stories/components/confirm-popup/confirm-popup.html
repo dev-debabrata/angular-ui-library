@@ -1,0 +1,37 @@
+@if (confirmation(); as c) {
+  <div
+    #popup
+    class="confirm-popup"
+    [class]="'confirm-popup--' + (position()?.placement ?? 'below')"
+    role="alertdialog"
+    [attr.aria-labelledby]="id + '-message'"
+    [style.top.px]="position()?.top"
+    [style.left.px]="position()?.left"
+    [style.--arrow-left.px]="position()?.arrowLeft"
+    [style.visibility]="position() ? null : 'hidden'"
+  >
+    <div class="confirm-popup-body">
+      <nex-icon
+        class="confirm-popup-icon"
+        [class.confirm-popup-icon--danger]="c.acceptTone === 'danger'"
+        [name]="c.icon ?? 'circle-alert'"
+        [size]="22"
+      />
+      <p class="confirm-popup-message" [id]="id + '-message'">{{ c.message }}</p>
+    </div>
+    <div class="confirm-popup-footer">
+      <button type="button" class="ui-btn ui-btn--text ui-btn--sm" (click)="reject()">
+        {{ c.rejectLabel ?? 'No' }}
+      </button>
+      <button
+        #acceptButton
+        type="button"
+        class="ui-btn ui-btn--sm"
+        [class]="'ui-btn--' + (c.acceptTone ?? 'primary')"
+        (click)="accept()"
+      >
+        {{ c.acceptLabel ?? 'Yes' }}
+      </button>
+    </div>
+  </div>
+}

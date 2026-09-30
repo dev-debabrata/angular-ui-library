@@ -1,0 +1,23 @@
+<button
+  type="button"
+  class="scroll-top"
+  [class.scroll-top--visible]="visible()"
+  [attr.aria-label]="ariaLabel()"
+  [attr.aria-hidden]="!visible()"
+  [tabindex]="visible() ? 0 : -1"
+  (click)="scrollUp()"
+>
+  @if (progress()) {
+    <svg class="scroll-top__ring" viewBox="0 0 56 56" aria-hidden="true">
+      <circle class="scroll-top__track" cx="28" cy="28" r="26" />
+      <circle
+        cx="28"
+        cy="28"
+        r="26"
+        [attr.stroke-dasharray]="ring"
+        [attr.stroke-dashoffset]="offset()"
+      />
+    </svg>
+  }
+  <nex-icon [name]="icon()" [size]="22" />
+</button>

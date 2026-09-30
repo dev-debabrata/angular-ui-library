@@ -1,0 +1,8 @@
+<span class="spinner-wrapper" role="status">
+  <span class="spinner" [class]="'spinner--' + size()"></span>
+  @if (label()) {
+    <span class="spinner-label">{{ label() }}</span>
+  } @else {
+    <span class="ui-visually-hidden">Loading</span>
+  }
+</span>

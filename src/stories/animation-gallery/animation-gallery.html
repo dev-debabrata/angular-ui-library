@@ -1,0 +1,105 @@
+<div class="gallery-page">
+  <h1>Animations</h1>
+  <p class="subtitle">
+    {{ animations().length }} CSS animations. Add <code>class="nex-anim-name"</code> to any element,
+    and tune it with <code>--nex-anim-duration</code>, <code>--nex-anim-delay</code>,
+    <code>--nex-anim-ease</code> and <code>--nex-anim-repeat</code>. Click a card to replay it and
+    copy its code.
+  </p>
+
+  <div class="toolbar">
+    <nex-search-input
+      class="search"
+      placeholder="Search animations..."
+      (search)="query.set($event)"
+    />
+    <nex-button-toggle
+      size="small"
+      ariaLabel="Category"
+      [options]="categories()"
+      [showCheck]="false"
+      [value]="category()"
+      (valueChange)="category.set($any($event))"
+    />
+    <label class="control">
+      <span
+        >Duration <b>{{ duration() === null ? 'default' : duration() + 's' }}</b></span
+      >
+      <input
+        type="range"
+        min="0.2"
+        max="4"
+        step="0.1"
+        [value]="duration() ?? 1"
+        (input)="duration.set(+$any($event.target).value)"
+      />
+    </label>
+    <label class="control control--check">
+      <input type="checkbox" [checked]="loop()" (change)="loop.set($any($event.target).checked)" />
+      Loop all
+    </label>
+    <button type="button" class="ui-btn ui-btn--sm" (click)="replayAll()">
+      <nex-icon name="rotate-ccw" [size]="14" /> Replay all
+    </button>
+    @if (duration() !== null) {
+      <button type="button" class="ui-btn ui-btn--sm ui-btn--text" (click)="duration.set(null)">
+        Reset
+      </button>
+    }
+  </div>
+
+  <div class="grid" [style]="vars()">
+    @for (a of filtered(); track a.name) {
+      <button
+        type="button"
+        class="card"
+        [class.selected]="selected()?.name === a.name"
+        [attr.aria-label]="'Replay ' + a.name"
+        (click)="select(a, tile)"
+      >
+        <span class="stage">
+          <span #tile class="tile" [class]="'nex-anim-' + a.name"
+            ><nex-icon name="sparkles" [size]="26"
+          /></span>
+        </span>
+        <span class="name">{{ a.name }}</span>
+        <span class="category">{{ a.category }}</span>
+      </button>
+    } @empty {
+      <p class="empty">No animations match "{{ query() }}".</p>
+    }
+  </div>
+
+  @if (code(); as code) {
+    <aside class="panel" role="dialog" [attr.aria-label]="selected()!.name">
+      <button
+        type="button"
+        class="preview"
+        aria-label="Replay"
+        [style]="vars()"
+        (click)="replay(big)"
+      >
+        <span #big class="tile tile--big" [class]="'nex-anim-' + selected()!.name">
+          <nex-icon name="sparkles" [size]="40" />
+        </span>
+      </button>
+      <div class="details">
+        <div class="head">
+          <h2>nex-anim-{{ selected()!.name }}</h2>
+          <button type="button" class="ui-close" aria-label="Close" (click)="selected.set(null)">
+            ×
+          </button>
+        </div>
+        <pre><code>{{ code.html }}</code></pre>
+        <div class="actions">
+          <button type="button" class="ui-btn ui-btn--sm ui-btn--primary" (click)="copy('html')">
+            {{ copied() === 'html' ? 'Copied!' : 'Copy HTML' }}
+          </button>
+          <button type="button" class="ui-btn ui-btn--sm" (click)="copy('css')">
+            {{ copied() === 'css' ? 'Copied!' : 'Copy CSS' }}
+          </button>
+        </div>
+      </div>
+    </aside>
+  }
+</div>

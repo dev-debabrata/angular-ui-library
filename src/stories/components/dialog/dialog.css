@@ -1,0 +1,122 @@
+.dialog-mask {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  padding: 24px;
+  /* Non-modal: the page behind stays clickable */
+  pointer-events: none;
+}
+
+.dialog-mask--modal {
+  background: rgba(15, 23, 42, 0.5);
+  backdrop-filter: blur(4px);
+  pointer-events: auto;
+  animation: fade-in 0.2s ease-out;
+}
+
+/* Each position aligns the dialog and sets where its entrance animation starts */
+.dialog-mask--top {
+  align-items: flex-start;
+  --dialog-from: translateY(-24px);
+}
+.dialog-mask--bottom {
+  align-items: flex-end;
+  --dialog-from: translateY(24px);
+}
+.dialog-mask--left {
+  justify-content: flex-start;
+  --dialog-from: translateX(-24px);
+}
+.dialog-mask--right {
+  justify-content: flex-end;
+  --dialog-from: translateX(24px);
+}
+.dialog-mask--maximized {
+  padding: 0;
+}
+
+.dialog {
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  max-width: 100%;
+  max-height: 100%;
+  border: 1px solid var(--ui-border);
+  border-radius: var(--ui-radius-lg);
+  background: var(--ui-surface);
+  box-shadow: var(--ui-shadow-lg);
+  pointer-events: auto;
+  animation: dialog-in 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  &:focus {
+    outline: none;
+  }
+}
+
+.dialog--maximized {
+  width: 100% !important;
+  height: 100%;
+  border: none;
+  border-radius: 0;
+}
+
+.dialog-header {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 20px 20px 0 24px;
+  color: var(--ui-text-muted);
+}
+
+.dialog-title {
+  flex: 1;
+  margin: 0;
+  color: var(--ui-text);
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.ui-close:focus-visible {
+  outline: none;
+  box-shadow: var(--ui-ring);
+  opacity: 1;
+}
+
+.dialog-body {
+  flex: 1;
+  overflow: auto;
+  padding: 12px 24px 24px;
+  color: var(--ui-text-muted);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.dialog-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 0 24px 20px;
+
+  /* No footer content projected: hide the empty area */
+  &:empty {
+    display: none;
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes dialog-in {
+  from {
+    opacity: 0;
+    transform: var(--dialog-from, scale(0.94) translateY(8px));
+  }
+}

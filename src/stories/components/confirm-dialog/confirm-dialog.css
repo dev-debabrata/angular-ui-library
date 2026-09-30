@@ -1,0 +1,21 @@
+.confirm-body {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding-top: 8px;
+}
+
+.confirm-icon {
+  color: var(--ui-primary);
+}
+
+.confirm-icon--danger {
+  color: var(--ui-danger);
+}
+
+.confirm-message {
+  margin: 0;
+  color: var(--ui-text);
+  font-size: 14px;
+  line-height: 1.5;
+}

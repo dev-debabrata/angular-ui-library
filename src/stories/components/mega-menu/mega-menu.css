@@ -1,0 +1,94 @@
+.mega {
+  --mi-pad: 8px 12px;
+  position: relative;
+  display: flex;
+  padding: 8px;
+  border: 1px solid var(--ui-border);
+  border-radius: var(--ui-radius-lg);
+  background: var(--ui-surface);
+  box-shadow: var(--ui-shadow);
+  font-family: var(--ui-font);
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+.mega--vertical {
+  display: inline-flex;
+  width: 230px;
+}
+
+.mega-root {
+  display: flex;
+  gap: 4px;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  .mega--vertical & {
+    flex-direction: column;
+  }
+}
+
+.mega-top {
+  position: relative;
+
+  & > nex-menu-item {
+    --mi-pad: 9px 14px;
+    font-weight: 500;
+  }
+}
+
+/* Panel with columns side by side, below (horizontal) or right of (vertical) its top item */
+.mega-panel {
+  position: absolute;
+  display: flex;
+  gap: 8px;
+  padding: 14px;
+  border-radius: var(--ui-radius-lg);
+
+  .mega--horizontal & {
+    top: calc(100% + 14px);
+    left: 0;
+  }
+
+  .mega--vertical & {
+    top: -9px;
+    left: calc(100% + 14px);
+    animation-name: mi-right;
+  }
+}
+
+.mega--horizontal {
+  --mi-turn: 180deg;
+}
+
+.mega-column {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-width: 170px;
+
+  & + & {
+    padding-left: 8px;
+    border-left: 1px solid var(--ui-border);
+  }
+}
+
+.mega-section {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.mega-heading {
+  padding: 4px 12px 6px;
+  background: var(--ui-gradient);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}

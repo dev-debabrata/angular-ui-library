@@ -1,0 +1,142 @@
+.tree-filter {
+  margin-bottom: 12px;
+}
+
+.tree {
+  padding: 8px;
+  border: 1px solid var(--ui-border);
+  border-radius: var(--ui-radius-lg);
+  background: var(--ui-surface);
+  box-shadow: var(--ui-shadow);
+  font-size: 14px;
+}
+
+.tree-group {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  & & {
+    animation: tree-open 180ms ease-out;
+  }
+}
+
+.tree-item {
+  outline: none;
+}
+
+.tree-node {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 10px;
+  border-radius: var(--ui-radius);
+  color: var(--ui-text);
+  user-select: none;
+  transition:
+    background var(--ui-ease),
+    color var(--ui-ease),
+    box-shadow var(--ui-ease);
+
+  &:hover {
+    background: var(--ui-primary-soft);
+  }
+
+  /* Focus ring on the row, not the whole <li> (which also wraps the children) */
+  .tree-item:focus-visible > & {
+    box-shadow: var(--ui-ring);
+  }
+}
+
+.tree-node--selectable {
+  cursor: pointer;
+}
+
+.tree-node--selected,
+.tree-node--selected:hover {
+  background: var(--ui-gradient);
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+}
+
+.tree-toggler {
+  display: inline-grid;
+  flex-shrink: 0;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  color: var(--ui-text-muted);
+  cursor: pointer;
+  transition:
+    transform var(--ui-ease),
+    background var(--ui-ease);
+
+  &:hover {
+    background: rgba(15, 23, 42, 0.08);
+  }
+}
+
+.tree-toggler--open {
+  transform: rotate(90deg);
+}
+
+.tree-toggler--spacer {
+  cursor: default;
+  pointer-events: none;
+}
+
+.tree-node--selected :is(.tree-toggler, .tree-icon) {
+  color: inherit;
+}
+
+.tree-checkbox {
+  display: grid;
+  flex-shrink: 0;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  box-sizing: border-box;
+  border: 2px solid var(--ui-border-strong);
+  border-radius: var(--ui-radius-sm);
+  background: var(--ui-surface);
+  color: #fff;
+  transition:
+    background var(--ui-ease),
+    border-color var(--ui-ease);
+
+  .tree-node:hover > & {
+    border-color: var(--ui-primary);
+  }
+}
+
+.tree-checkbox--true,
+.tree-checkbox--mixed {
+  border-color: transparent !important;
+  background: var(--ui-gradient);
+  box-shadow: 0 2px 8px rgba(99, 102, 241, 0.35);
+}
+
+.tree-icon {
+  color: var(--ui-primary);
+}
+
+.tree-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tree-empty {
+  margin: 0;
+  padding: 24px;
+  color: var(--ui-text-subtle);
+  text-align: center;
+}
+
+@keyframes tree-open {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+}

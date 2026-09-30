@@ -1,0 +1,21 @@
+@if (visible()) {
+  <span class="chip" [class.chip--image]="image()" [class.chip--disabled]="disabled()">
+    @if (image()) {
+      <img class="chip__image" [src]="image()" alt="" />
+    } @else if (icon()) {
+      <nex-icon class="chip__icon" [name]="icon()" [size]="14" />
+    }
+    <span class="chip__label">{{ label() }}</span>
+    @if (removable()) {
+      <button
+        type="button"
+        class="chip__remove"
+        [disabled]="disabled()"
+        [attr.aria-label]="'Remove ' + label()"
+        (click)="close($event)"
+      >
+        <nex-icon name="x" [size]="12" />
+      </button>
+    }
+  </span>
+}

@@ -1,0 +1,33 @@
+<div
+  class="toggle-group"
+  [class]="'toggle-group--' + size()"
+  [class.toggle-group--vertical]="vertical()"
+  [class.toggle-group--disabled]="disabled()"
+  [attr.role]="multiple() ? 'group' : 'radiogroup'"
+  [attr.aria-label]="ariaLabel() || null"
+  [attr.aria-orientation]="vertical() ? 'vertical' : null"
+>
+  @for (option of options(); track $index; let i = $index) {
+    @let on = isSelected(option);
+    <button
+      type="button"
+      class="toggle-button"
+      [class.toggle-button--selected]="on"
+      [attr.role]="multiple() ? null : 'radio'"
+      [attr.aria-checked]="multiple() ? null : on"
+      [attr.aria-pressed]="multiple() ? on : null"
+      [attr.aria-label]="option.ariaLabel ?? null"
+      [attr.tabindex]="tabIndex(i)"
+      [disabled]="disabled() || option.disabled"
+      (click)="toggle(option)"
+      (keydown)="onKeydown($event, i)"
+    >
+      @if (on && showCheck() && option.label) {
+        <nex-icon class="toggle-check" name="check" [size]="16" [strokeWidth]="2.5" />
+      } @else if (option.icon) {
+        <nex-icon [name]="option.icon" [size]="16" />
+      }
+      {{ option.label }}
+    </button>
+  }
+</div>

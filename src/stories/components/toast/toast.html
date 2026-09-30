@@ -1,0 +1,10 @@
+@if (open()) {
+  <div class="toast" [class]="['tone-' + type(), 'toast--' + position()]" role="status">
+    <span class="ui-tone-icon" aria-hidden="true">{{ icons[type()] }}</span>
+    <span class="toast-message">{{ message() }}</span>
+    <button type="button" class="ui-close" aria-label="Close" (click)="open.set(false)">×</button>
+    @if (duration()) {
+      <span class="toast-countdown" [style.animation-duration.ms]="duration()"></span>
+    }
+  </div>
+}

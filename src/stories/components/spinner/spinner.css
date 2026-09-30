@@ -1,0 +1,44 @@
+.spinner-wrapper {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Gradient ring: conic gradient masked down to a donut */
+.spinner {
+  --thickness: 4px;
+  display: inline-block;
+  border-radius: 50%;
+  background: conic-gradient(from 0deg, transparent 10%, var(--ui-primary), var(--ui-accent));
+  mask: radial-gradient(farthest-side, transparent calc(100% - var(--thickness)), #000 0);
+  animation: spin 0.9s linear infinite;
+}
+
+.spinner--small {
+  --thickness: 3px;
+  width: 18px;
+  height: 18px;
+}
+
+.spinner--medium {
+  width: 32px;
+  height: 32px;
+}
+
+.spinner--large {
+  --thickness: 5px;
+  width: 52px;
+  height: 52px;
+}
+
+.spinner-label {
+  color: var(--ui-text-muted);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

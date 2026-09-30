@@ -1,0 +1,42 @@
+@let it = item();
+@let sub = !!chevron() && !!it.items;
+@if (it.separator) {
+  <div class="mi-separator" role="separator"></div>
+} @else if (it.url) {
+  <a
+    class="mi"
+    [attr.role]="tree() ? null : 'menuitem'"
+    [href]="it.url"
+    [class.mi--disabled]="it.disabled"
+    [attr.aria-disabled]="it.disabled || null"
+    [attr.tabindex]="it.disabled ? -1 : null"
+  >
+    <ng-container [ngTemplateOutlet]="content" />
+  </a>
+} @else {
+  <button
+    type="button"
+    class="mi"
+    [attr.role]="tree() ? null : 'menuitem'"
+    [class.mi--open]="open()"
+    [class.mi--active]="open() && !tree()"
+    [disabled]="it.disabled"
+    [attr.aria-haspopup]="sub && !tree() ? 'menu' : null"
+    [attr.aria-expanded]="sub ? open() : null"
+  >
+    <ng-container [ngTemplateOutlet]="content" />
+  </button>
+}
+
+<ng-template #content>
+  @if (it.icon) {
+    <nex-icon class="mi-icon" [name]="it.icon" [size]="16" />
+  }
+  <span class="mi-label">{{ it.label }}</span>
+  @if (it.badge) {
+    <span class="mi-badge tone-info">{{ it.badge }}</span>
+  }
+  @if (sub) {
+    <nex-icon class="mi-chevron" [name]="chevron()" [size]="14" />
+  }
+</ng-template>

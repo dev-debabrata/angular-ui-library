@@ -1,0 +1,158 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+
+<Meta title="Getting Started/Use in React, Vue & Angular" />
+
+# Use NexUI in React, Vue & Angular
+
+NexUI is written in Angular. **Angular apps** use the components directly. **React, Vue, Svelte and plain HTML**
+use the same components as standard **Web Components** (custom elements), built from this repo.
+
+<table>
+  <thead>
+    <tr><th></th><th>Angular</th><th>React / Vue / others</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Tag names</td><td><code>{'<nex-chart>'}</code></td><td><code>{'<nexui-chart>'}</code></td></tr>
+    <tr><td>Pass data</td><td><code>{'[datasets]="data"'}</code></td><td>set the <b>property</b> (see below)</td></tr>
+    <tr><td>Listen</td><td><code>{'(submitted)="save($event)"'}</code></td><td>DOM event, value in <code>event.detail</code></td></tr>
+  </tbody>
+</table>
+
+## 1. Build the Web Components
+
+```bash
+npm run build:elements
+```
+
+This creates `dist/nexui-elements/browser/`:
+
+- `nexui.js`: every component, registered as `<nexui-*>` elements (about 116 KB gzipped, includes the Angular runtime once)
+- `styles.css`: the theme (colors, buttons, form fields) and the `nex-anim-*` animations
+- `icons/`: the SVG icons used by `<nexui-icon>` and inside components
+
+Copy that folder into your app's public/static folder (for example `public/nexui/`), then load it once:
+
+```html
+<link rel="stylesheet" href="/nexui/styles.css" />
+<script type="module" src="/nexui/nexui.js"></script>
+<script>
+  // Icons load from "icons/" next to the page by default
+  window.NEXUI_ICONS_URL = '/nexui/icons/';
+</script>
+```
+
+The elements register asynchronously; a `nexui:ready` event fires on `window` when they are ready.
+
+## 2. Rules that apply everywhere
+
+- **Tag names** are the Angular selectors with `nexui-`: `nex-form` → `nexui-form`, `nex-voice-chat` → `nexui-voice-chat`.
+- **Strings, numbers and booleans** can be HTML attributes in kebab-case: `num-visible="3"`, `card`, `submit-label="Send"`.
+- **Arrays, objects and functions** (`datasets`, `fields`, `items`, `options`, `format`) must be set as
+  **properties**. Vue and React 19 do this for you; in plain JS write `el.fields = [...]`.
+- **Outputs are DOM events** with the output's name (`submitted`, `valueChange`, `send`); the value is `event.detail`.
+  camelCase events are also sent in kebab-case (`valueChange` and `value-change`).
+- **Content**: children are projected once, when the element starts (e.g. Card body, Dialog content, `formBeforeActions`).
+- **Carousel**: without an Angular `<ng-template>`, each **child element is a slide**.
+- **Confirm dialogs**: put `<nexui-confirm-dialog>` (or `-popup`) on the page and call
+  `window.NexUI.confirm({ header, message, accept, reject, target })`.
+
+## React (19+)
+
+```jsx
+export function Signup() {
+  return (
+    <nexui-form
+      card
+      title="Create account"
+      submit-label="Sign up"
+      fields={[
+        { name: 'email', label: 'Email', type: 'email', required: true },
+        { name: 'password', label: 'Password', type: 'password', minLength: 8, required: true },
+      ]}
+      onsubmitted={(e) => console.log(e.detail)}
+    />
+  );
+}
+
+<nexui-carousel num-visible="3" circular autoplay-interval="3000">
+  {products.map((p) => <div key={p.id}>{p.name}</div>)}
+</nexui-carousel>
+```
+
+React 19 sets object props as properties and `on<event>` props as listeners (`onsubmitted`, `onvalueChange`).
+On **React 18**, use a ref: `ref.current.fields = [...]` and `ref.current.addEventListener('submitted', …)`.
+
+TypeScript: declare the tags once, e.g. in `src/nexui.d.ts`:
+
+```ts
+import 'react';
+declare module 'react' {
+  namespace JSX {
+    interface IntrinsicElements {
+      [tag: `nexui-${string}`]: any;
+    }
+  }
+}
+```
+
+## Vue 3
+
+Tell Vue these are custom elements (`vite.config.ts`):
+
+```ts
+vue({ template: { compilerOptions: { isCustomElement: (tag) => tag.startsWith('nexui-') } } })
+```
+
+```vue
+<template>
+  <nexui-chart type="bar" :labels="labels" :datasets="datasets" />
+  <nexui-button-toggle :options="options" :value="period" @value-change="period = $event.detail" />
+  <nexui-chat title="Support" :messages="messages" @send="reply($event.detail)" />
+</template>
+```
+
+Vue passes arrays and objects as properties automatically. Use the kebab-case event names (`@value-change`).
+
+## Angular
+
+Use the components directly (no Web Components needed): copy or import them from `src/stories/components/`
+and add them to your component's `imports`:
+
+```ts
+@Component({
+  imports: [ChartComponent, FormComponent],
+  template: `<nex-chart type="line" [labels]="labels" [datasets]="data" />`,
+})
+```
+
+Import `src/stories/theme.css` in your global styles and serve `src/stories/icons` at `/icons`
+(see `angular.json` in this repo).
+
+## Plain HTML
+
+```html
+<nexui-chart id="sales" type="line"></nexui-chart>
+<script>
+  const chart = document.getElementById('sales');
+  chart.labels = ['Q1', 'Q2', 'Q3', 'Q4'];
+  chart.datasets = [{ label: 'Sales', data: [120, 150, 170, 210] }];
+</script>
+```
+
+## Available elements
+
+`nexui-accordion` `nexui-alert` `nexui-animate-on-scroll` `nexui-avatar` `nexui-badge` `nexui-bottom-sheet`
+`nexui-breadcrumb` `nexui-button-toggle` `nexui-calendar` `nexui-card` `nexui-carousel` `nexui-chart`
+`nexui-chat` `nexui-checkbox` `nexui-chip` `nexui-confirm-dialog` `nexui-confirm-popup` `nexui-dialog`
+`nexui-file-upload` `nexui-form` `nexui-helpful` `nexui-icon` `nexui-image-upload` `nexui-inplace`
+`nexui-input-number` `nexui-input-otp` `nexui-lottie` `nexui-mega-menu` `nexui-menu` `nexui-menubar` `nexui-modal` `nexui-onboarding` `nexui-onboarding-checklist`
+`nexui-overlay-badge` `nexui-overlay-panel` `nexui-pagination` `nexui-panel-menu` `nexui-pick-list`
+`nexui-progress-bar` `nexui-radio-group` `nexui-rating` `nexui-scroll-top` `nexui-search-input` `nexui-select` `nexui-skeleton`
+`nexui-spinner` `nexui-stepper` `nexui-table` `nexui-tabs` `nexui-tag` `nexui-text-input` `nexui-textarea`
+`nexui-tiered-menu` `nexui-time-picker` `nexui-timeline` `nexui-toast` `nexui-toggle` `nexui-tooltip`
+`nexui-tree` `nexui-tree-table` `nexui-voice-chat`
+
+Each component's **Docs** page lists its inputs (properties/attributes) and outputs (events).
+
+**Angular-only features:** custom item templates (`<ng-template>`) for Pick List and Timeline; the Web Components
+use their default layout.

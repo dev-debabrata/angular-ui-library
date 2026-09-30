@@ -1,0 +1,46 @@
+/* Hidden start state per animation; .aos--visible transitions back to the natural position */
+:host {
+  display: block;
+  opacity: 0;
+  transition:
+    opacity var(--aos-duration) cubic-bezier(0.22, 1, 0.36, 1) var(--aos-delay),
+    transform var(--aos-duration) cubic-bezier(0.22, 1, 0.36, 1) var(--aos-delay);
+}
+
+:host(.aos--fade-up) {
+  transform: translateY(32px);
+}
+
+:host(.aos--fade-down) {
+  transform: translateY(-32px);
+}
+
+:host(.aos--fade-left) {
+  transform: translateX(40px);
+}
+
+:host(.aos--fade-right) {
+  transform: translateX(-40px);
+}
+
+:host(.aos--zoom-in) {
+  transform: scale(0.85);
+}
+
+:host(.aos--flip) {
+  transform: perspective(800px) rotateX(-70deg);
+  transform-origin: top center;
+}
+
+:host(.aos--visible) {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :host {
+    opacity: 1;
+    transform: none !important;
+    transition: none;
+  }
+}

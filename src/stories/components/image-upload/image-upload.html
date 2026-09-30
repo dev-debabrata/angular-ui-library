@@ -1,0 +1,59 @@
+<input
+  #fileInput
+  type="file"
+  accept="image/*"
+  class="ui-visually-hidden"
+  tabindex="-1"
+  aria-hidden="true"
+  [disabled]="disabled()"
+  (change)="onInputChange($event)"
+/>
+
+<div
+  class="box"
+  [class]="'box--' + shape()"
+  [class.box--active]="dragging()"
+  [class.box--filled]="!!value()"
+  [class.box--disabled]="disabled()"
+  [style.width]="width()"
+  [style.aspect-ratio]="ratio()"
+  (dragover)="onDragOver($event)"
+  (dragleave)="dragging.set(false)"
+  (drop)="onDrop($event)"
+>
+  @if (value()) {
+    <img class="preview" [src]="value()" alt="Uploaded image" />
+    @if (!disabled()) {
+      <div class="overlay">
+        <button
+          type="button"
+          class="ui-btn ui-btn--icon"
+          aria-label="Change image"
+          (click)="fileInput.click()"
+        >
+          <nex-icon name="pencil" [size]="16" />
+        </button>
+        <button
+          type="button"
+          class="ui-btn ui-btn--icon remove"
+          aria-label="Remove image"
+          (click)="clear()"
+        >
+          <nex-icon name="trash-2" [size]="16" />
+        </button>
+      </div>
+    }
+  } @else {
+    <button type="button" class="empty" [disabled]="disabled()" (click)="fileInput.click()">
+      <span class="empty-icon"><nex-icon name="image-plus" [size]="22" /></span>
+      <b>{{ label() }}</b>
+      @if (shape() === 'square') {
+        <small>{{ hintText() }}</small>
+      }
+    </button>
+  }
+</div>
+
+@if (error()) {
+  <p class="ui-error" role="alert" [style.max-width]="width()">{{ error() }}</p>
+}

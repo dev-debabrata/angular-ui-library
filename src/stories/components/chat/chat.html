@@ -1,0 +1,82 @@
+<section class="chat" [style.height]="height()" [attr.aria-label]="title() || 'Chat'">
+  @if (title()) {
+    <header class="chat__header">
+      <nex-avatar [src]="avatar()" [name]="title()" status="online" />
+      <div>
+        <b class="chat__title">{{ title() }}</b>
+        @if (subtitle()) {
+          <span class="chat__subtitle">{{ subtitle() }}</span>
+        }
+      </div>
+    </header>
+  }
+
+  <div #list class="chat__list" role="log" aria-live="polite">
+    @for (row of rows(); track $index) {
+      @let m = row.message;
+      <div
+        class="chat__row"
+        [class.chat__row--me]="m.from === 'me'"
+        [class.chat__row--first]="row.first"
+      >
+        @if (m.from === 'them') {
+          <span class="chat__avatar">
+            @if (row.last) {
+              <nex-avatar size="small" [src]="m.avatar ?? (m.author ? '' : avatar())" [name]="m.author ?? title()" />
+            }
+          </span>
+        }
+        <div class="chat__bubble" [class.chat__bubble--last]="row.last">
+          @if (m.from === 'them' && row.first && m.author) {
+            <span class="chat__author">{{ m.author }}</span>
+          }
+          <span class="chat__text">{{ m.text }}</span>
+          @if (m.time || m.status) {
+            <span class="chat__meta">
+              {{ formatTime(m.time) }}
+              @if (m.from === 'me' && m.status) {
+                <nex-icon
+                  [name]="m.status === 'read' ? 'check-check' : 'check'"
+                  [size]="14"
+                  [label]="m.status"
+                />
+              }
+            </span>
+          }
+        </div>
+      </div>
+    } @empty {
+      <p class="chat__empty">No messages yet. Say hello!</p>
+    }
+
+    @if (typing()) {
+      <div class="chat__row chat__row--first">
+        <span class="chat__avatar"><nex-avatar size="small" [src]="avatar()" [name]="title()" /></span>
+        <div class="chat__bubble chat__bubble--last chat__typing" aria-label="Typing">
+          <i></i><i></i><i></i>
+        </div>
+      </div>
+    }
+  </div>
+
+  <form class="chat__composer" (submit)="$event.preventDefault(); submit()">
+    <textarea
+      class="chat__input"
+      rows="1"
+      aria-label="Message"
+      [placeholder]="placeholder()"
+      [disabled]="disabled()"
+      [value]="draft()"
+      (input)="draft.set($any($event.target).value)"
+      (keydown)="onKeydown($event)"
+    ></textarea>
+    <button
+      type="submit"
+      class="ui-btn ui-btn--primary ui-btn--icon chat__send"
+      aria-label="Send"
+      [disabled]="disabled() || !draft().trim()"
+    >
+      <nex-icon name="send-horizontal" [size]="18" />
+    </button>
+  </form>
+</section>

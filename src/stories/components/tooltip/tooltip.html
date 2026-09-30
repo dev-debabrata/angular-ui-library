@@ -1,0 +1,6 @@
+<span class="tooltip-wrapper" [attr.aria-describedby]="id">
+  <ng-content />
+  <span class="tooltip" [class]="'tooltip--' + position()" role="tooltip" [id]="id">
+    {{ text() }}
+  </span>
+</span>

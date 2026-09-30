@@ -1,0 +1,80 @@
+:host {
+  position: relative;
+  display: inline-flex;
+  vertical-align: middle;
+}
+
+.overlay-badge {
+  --badge-size: 18px;
+  position: absolute;
+  display: inline-grid;
+  place-items: center;
+  box-sizing: border-box;
+  min-width: var(--badge-size);
+  height: var(--badge-size);
+  padding: 0 5px;
+  border-radius: 999px;
+  background: var(--tone-solid);
+  /* Ring in the surface color separates the badge from the content under it */
+  box-shadow: 0 0 0 2px var(--ui-surface);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  white-space: nowrap;
+  pointer-events: none;
+  animation: badge-pop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.tone-info.overlay-badge {
+  background: var(--ui-gradient);
+}
+
+.overlay-badge--small {
+  --badge-size: 14px;
+  padding: 0 4px;
+  font-size: 9px;
+}
+
+.overlay-badge--large {
+  --badge-size: 22px;
+  padding: 0 6px;
+  font-size: 12px;
+}
+
+.overlay-badge--dot {
+  --badge-size: 10px;
+  min-width: 0;
+  width: var(--badge-size);
+  padding: 0;
+}
+
+/* Center the badge on the chosen corner (default top-right) */
+.overlay-badge {
+  --x: 50%;
+  --y: -50%;
+  top: 0;
+  right: 0;
+  transform: translate(var(--x), var(--y));
+}
+
+.overlay-badge--top-left,
+.overlay-badge--bottom-left {
+  --x: -50%;
+  right: auto;
+  left: 0;
+}
+
+.overlay-badge--bottom-right,
+.overlay-badge--bottom-left {
+  --y: 50%;
+  top: auto;
+  bottom: 0;
+}
+
+@keyframes badge-pop {
+  from {
+    scale: 0;
+  }
+}

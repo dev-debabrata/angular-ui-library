@@ -1,0 +1,237 @@
+.pick-list {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: stretch;
+  gap: 18px;
+  font-size: 14px;
+}
+
+.pick-list-panel {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid var(--ui-border);
+  border-radius: var(--ui-radius-lg);
+  background: var(--ui-surface);
+  box-shadow: var(--ui-shadow);
+
+  /* Gradient accent along the top of each list */
+  &::before {
+    content: '';
+    height: 3px;
+    background: var(--ui-gradient);
+  }
+}
+
+.pick-list-panel--target::before {
+  background: linear-gradient(135deg, var(--ui-accent), var(--ui-primary));
+}
+
+.pick-list-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--ui-border);
+  background: linear-gradient(180deg, var(--ui-primary-soft), var(--ui-surface));
+  color: var(--ui-text);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.pick-list-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.pick-list-title-icon {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 8px;
+  background: var(--ui-gradient);
+  color: var(--ui-surface);
+  box-shadow: 0 3px 8px rgba(99, 102, 241, 0.3);
+}
+
+.pick-list-count {
+  min-width: 24px;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: var(--ui-surface);
+  box-shadow: inset 0 0 0 1px var(--ui-border);
+  color: var(--ui-primary);
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+  letter-spacing: 0;
+}
+
+.pick-list-filter {
+  padding: 10px 10px 0;
+}
+
+.pick-list-items {
+  flex: 1;
+  min-height: 240px;
+  max-height: 320px;
+  margin: 0;
+  padding: 8px;
+  overflow-y: auto;
+  list-style: none;
+}
+
+.pick-list-item {
+  margin-bottom: 2px;
+  padding: 10px 12px;
+  border-radius: var(--ui-radius);
+  outline: none;
+  cursor: pointer;
+  user-select: none;
+  transition:
+    background var(--ui-ease),
+    color var(--ui-ease),
+    box-shadow var(--ui-ease);
+
+  &:hover {
+    background: var(--ui-surface-muted);
+    box-shadow: inset 0 0 0 1px var(--ui-border);
+  }
+
+  &:focus-visible {
+    box-shadow: var(--ui-ring);
+  }
+}
+
+/* Selected: soft tint with a gradient bar on the left */
+.pick-list-item--selected,
+.pick-list-item--selected:hover {
+  background:
+    linear-gradient(var(--ui-primary), var(--ui-accent)) left / 3px 100% no-repeat,
+    var(--ui-primary-soft);
+  box-shadow: inset 0 0 0 1px var(--ui-primary-ring);
+  color: var(--ui-primary-hover);
+}
+
+.pick-list-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: calc(100% - 4px);
+  min-height: 200px;
+  border: 2px dashed var(--ui-border);
+  border-radius: var(--ui-radius);
+  color: var(--ui-text-subtle);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.pick-list-controls {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 10px;
+}
+
+.pick-list-button {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  padding: 0;
+  border: 1px solid var(--ui-border-strong);
+  border-radius: 12px;
+  background: var(--ui-surface);
+  color: var(--ui-primary);
+  box-shadow: var(--ui-shadow-sm);
+  cursor: pointer;
+  transition:
+    background var(--ui-ease),
+    border-color var(--ui-ease),
+    box-shadow var(--ui-ease),
+    color var(--ui-ease);
+
+  &:hover:not(:disabled) {
+    border-color: transparent;
+    background: var(--ui-gradient);
+    color: var(--ui-surface);
+    box-shadow: 0 6px 16px rgba(99, 102, 241, 0.35);
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: var(--ui-ring);
+  }
+
+  &:disabled {
+    border-color: var(--ui-border);
+    background: var(--ui-surface-sunken);
+    color: var(--ui-text-subtle);
+    box-shadow: none;
+    cursor: not-allowed;
+  }
+}
+
+/* Drag and drop (CDK). The preview is a clone of the item, so these component styles still apply to it */
+.pick-list-item.cdk-drag:not(.cdk-drag-disabled) {
+  cursor: grab;
+}
+
+.pick-list-item.cdk-drag-preview {
+  box-sizing: border-box;
+  list-style: none;
+  background: var(--ui-surface);
+  box-shadow:
+    inset 0 0 0 1px var(--ui-primary-ring),
+    var(--ui-shadow-lg);
+  font-family: var(--ui-font);
+  font-size: 14px;
+  cursor: grabbing;
+}
+
+/* Gap where the item will land */
+.pick-list-item.cdk-drag-placeholder {
+  background: var(--ui-primary-soft);
+  box-shadow: inset 0 0 0 2px var(--ui-primary-ring);
+  color: transparent;
+  outline: 2px dashed var(--ui-primary);
+  outline-offset: -2px;
+
+  * {
+    visibility: hidden;
+  }
+}
+
+.pick-list-item.cdk-drag-animating,
+.cdk-drop-list-dragging .pick-list-item:not(.cdk-drag-placeholder) {
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.pick-list-items.cdk-drop-list-dragging {
+  background: color-mix(in srgb, var(--ui-primary-soft) 50%, transparent);
+}
+
+.cdk-drop-list-dragging .pick-list-empty {
+  display: none;
+}
+
+@media (max-width: 640px) {
+  .pick-list {
+    grid-template-columns: 1fr;
+  }
+
+  .pick-list-controls {
+    flex-direction: row;
+    justify-content: center;
+  }
+
+  .pick-list-controls nex-icon {
+    transform: rotate(90deg);
+  }
+}

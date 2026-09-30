@@ -1,0 +1,173 @@
+:host {
+  display: block;
+  width: max-content;
+  max-width: 100%;
+}
+
+.time-picker-panel {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 14px;
+  border: 1px solid var(--ui-border);
+  border-radius: var(--ui-radius-lg);
+  background: var(--ui-surface);
+  box-shadow: var(--ui-shadow);
+}
+
+.time-picker-panel--disabled {
+  background: var(--ui-surface-sunken);
+  box-shadow: none;
+  opacity: 0.6;
+}
+
+.time-picker-column {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 2px 4px;
+  border-radius: var(--ui-radius);
+  outline: none;
+  transition: box-shadow var(--ui-ease);
+
+  &:focus-visible {
+    box-shadow: var(--ui-ring);
+  }
+}
+
+/* Round icon buttons: chevrons and the popup's clock button */
+.time-picker-spin,
+.time-picker-trigger {
+  display: inline-grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: none;
+  color: var(--ui-text-muted);
+  cursor: pointer;
+  transition:
+    background var(--ui-ease),
+    color var(--ui-ease);
+
+  &:hover:not(:disabled) {
+    background: var(--ui-primary-soft);
+    color: var(--ui-primary);
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: var(--ui-ring);
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+  }
+}
+
+.time-picker-value,
+.time-picker-separator {
+  color: var(--ui-text-subtle);
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.time-picker-value {
+  min-width: 2ch;
+  color: var(--ui-text);
+  font-variant-numeric: tabular-nums;
+  line-height: 1.2;
+  text-align: center;
+  user-select: none;
+}
+
+/* Popup mode: readonly input with a clock button, panel in a fixed popup */
+.time-picker-field {
+  position: relative;
+  width: 200px;
+
+  .ui-control {
+    padding-right: 44px;
+    cursor: pointer;
+
+    &:disabled {
+      cursor: not-allowed;
+    }
+  }
+}
+
+.time-picker-trigger {
+  position: absolute;
+  top: 50%;
+  right: 6px;
+  transform: translateY(-50%);
+
+  &:disabled {
+    opacity: 0.5;
+  }
+}
+
+.time-picker-popup {
+  position: fixed;
+  z-index: 1050;
+  animation: time-picker-in 0.18s var(--ui-ease);
+
+  .time-picker-panel {
+    box-shadow: var(--ui-shadow-lg);
+  }
+}
+
+/* List mode dropdown */
+.time-picker-list {
+  max-height: 248px;
+  margin: 0;
+  padding: 6px;
+  overflow-y: auto;
+  border: 1px solid var(--ui-border);
+  border-radius: var(--ui-radius);
+  background: var(--ui-surface);
+  box-shadow: var(--ui-shadow-lg);
+  list-style: none;
+}
+
+.time-picker-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: var(--ui-radius-sm);
+  font-size: 14px;
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+  transition:
+    background var(--ui-ease),
+    color var(--ui-ease);
+
+  &.time-picker-option--active {
+    background: var(--ui-surface-sunken);
+  }
+
+  &.time-picker-option--selected {
+    background: var(--ui-primary-soft);
+    color: var(--ui-primary);
+    font-weight: 600;
+  }
+}
+
+@keyframes time-picker-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+}
+
+/* Embedded in another panel (e.g. Calendar with showTime): <nex-time-picker class="time-picker--flat"> */
+:host(.time-picker--flat) .time-picker-panel {
+  padding: 0;
+  border: none;
+  box-shadow: none;
+}

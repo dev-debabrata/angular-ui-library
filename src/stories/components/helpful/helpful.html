@@ -1,0 +1,24 @@
+<section class="helpful" [attr.aria-label]="question()">
+  <b class="helpful__question">{{ question() }}</b>
+  <div class="helpful__buttons">
+    @for (option of ['yes', 'no']; track option) {
+      <button
+        type="button"
+        class="helpful__button"
+        [class.helpful__button--on]="vote() === option"
+        [attr.aria-pressed]="vote() === option"
+        [disabled]="!!vote() && vote() !== option"
+        (click)="cast($any(option))"
+      >
+        <nex-icon [name]="option === 'yes' ? 'thumbs-up' : 'thumbs-down'" [size]="16" />
+        {{ option === 'yes' ? yesLabel() : noLabel() }}
+      </button>
+    }
+  </div>
+  <p class="helpful__counts" aria-live="polite">
+    @if (vote()) {
+      <span class="helpful__thanks">Thanks for your feedback!</span>
+    }
+    {{ counts().yes }} found helpful · {{ counts().no }} didn't
+  </p>
+</section>

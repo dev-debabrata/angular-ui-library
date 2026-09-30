@@ -1,0 +1,88 @@
+<div class="pick-list" cdkDropListGroup>
+  @for (side of sides; track side; let first = $first) {
+    <section class="pick-list-panel" [class]="'pick-list-panel--' + side">
+      <header class="pick-list-header">
+        <span class="pick-list-title">
+          <span class="pick-list-title-icon">
+            <nex-icon [name]="first ? 'layers' : 'list-checks'" [size]="14" />
+          </span>
+          {{ header(side) }}
+        </span>
+        <span class="pick-list-count">{{ (first ? source() : target()).length }}</span>
+      </header>
+      @if (filter()) {
+        <nex-search-input
+          class="pick-list-filter"
+          [placeholder]="filterPlaceholder()"
+          (search)="query[side].set($event)"
+        />
+      }
+      <ul
+        class="pick-list-items"
+        cdkDropList
+        [cdkDropListData]="side"
+        [cdkDropListDisabled]="!dragdrop()"
+        (cdkDropListDropped)="drop($event)"
+        role="listbox"
+        aria-multiselectable="true"
+        [attr.aria-label]="header(side)"
+      >
+        @for (item of visible[side](); track item) {
+          <li
+            class="pick-list-item"
+            cdkDrag
+            [cdkDragData]="item"
+            role="option"
+            tabindex="0"
+            [class.pick-list-item--selected]="selected[side]().has(item)"
+            [attr.aria-selected]="selected[side]().has(item)"
+            (click)="onItemClick(side, item, $event)"
+            (dblclick)="move(side, [item])"
+            (keydown.enter)="move(side, [item])"
+            (keydown.space)="onItemClick(side, item, $event); $event.preventDefault()"
+          >
+            @if (itemTemplate(); as tpl) {
+              <ng-container
+                [ngTemplateOutlet]="tpl"
+                [ngTemplateOutletContext]="{ $implicit: item }"
+              />
+            } @else {
+              {{ label(item) }}
+            }
+          </li>
+        } @empty {
+          <li class="pick-list-empty">
+            <nex-icon [name]="first ? 'package-open' : 'inbox'" [size]="28" />
+            {{
+              first ? 'All items moved' : dragdrop() ? 'Drag or move items here' : 'Move items here'
+            }}
+          </li>
+        }
+      </ul>
+    </section>
+
+    <!-- Move buttons between the lists: [selected, all] to target, then [selected, all] to source -->
+    @if (first) {
+      <div class="pick-list-controls">
+        @for (from of sides; track from; let toTarget = $first) {
+          @for (all of [false, true]; track all) {
+            <button
+              type="button"
+              class="pick-list-button"
+              [attr.aria-label]="
+                'Move ' + (all ? 'all' : 'selected') + ' to ' + (toTarget ? 'target' : 'source')
+              "
+              [disabled]="all ? !visible[from]().length : !selected[from]().size"
+              (click)="all ? move(from, visible[from]()) : move(from)"
+            >
+              <nex-icon
+                [name]="'chevron' + (all ? 's-' : '-') + (toTarget ? 'right' : 'left')"
+                [size]="18"
+              />
+            </button>
+          }
+        }
+      </div>
+    }
+  }
+</div>

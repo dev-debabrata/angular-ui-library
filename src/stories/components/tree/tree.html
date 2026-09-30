@@ -1,0 +1,94 @@
+@if (filter()) {
+  <nex-search-input
+    class="tree-filter"
+    [placeholder]="filterPlaceholder()"
+    (search)="onFilter($event)"
+  />
+}
+
+<ng-template #nodeTpl let-nodes let-level="level">
+  @for (node of nodes; track node.key) {
+    @let parent = !!node.children?.length;
+    @let open = isExpanded(node);
+    @let state = checkState(node);
+    @let selected = selectedKeys().has(node.key);
+    <li
+      role="treeitem"
+      tabindex="0"
+      class="tree-item"
+      [attr.aria-level]="level + 1"
+      [attr.aria-expanded]="parent ? open : null"
+      [attr.aria-selected]="selectionMode() && selectionMode() !== 'checkbox' ? selected : null"
+      [attr.aria-checked]="selectionMode() === 'checkbox' ? state : null"
+      (keydown)="onKeydown($event, node)"
+    >
+      <div
+        class="tree-node"
+        [class.tree-node--selectable]="selectionMode() && node.selectable !== false"
+        [class.tree-node--selected]="selectionMode() !== 'checkbox' && selected"
+        [style.padding-left.px]="8 + level * 22"
+        (click)="select(node)"
+      >
+        <!-- Leaves get an empty spacer (pointer-events: none) so labels line up -->
+        <span
+          class="tree-toggler"
+          [class.tree-toggler--open]="open"
+          [class.tree-toggler--spacer]="!parent"
+          aria-hidden="true"
+          (click)="toggle(node); $event.stopPropagation()"
+        >
+          @if (parent) {
+            <nex-icon name="chevron-right" [size]="16" />
+          }
+        </span>
+
+        @if (selectionMode() === 'checkbox') {
+          <span class="tree-checkbox" [class]="'tree-checkbox--' + state" aria-hidden="true">
+            @if (state !== 'false') {
+              <nex-icon
+                [name]="state === 'true' ? 'check' : 'minus'"
+                [size]="14"
+                [strokeWidth]="3"
+              />
+            }
+          </span>
+        }
+
+        <nex-icon
+          class="tree-icon"
+          [name]="node.icon ?? (parent ? (open ? 'folder-open' : 'folder') : 'file')"
+          [size]="18"
+        />
+        <span class="tree-label">{{ node.label }}</span>
+      </div>
+
+      @if (parent && open) {
+        <ul role="group" class="tree-group">
+          <ng-container
+            [ngTemplateOutlet]="nodeTpl"
+            [ngTemplateOutletContext]="{ $implicit: node.children, level: level + 1 }"
+          />
+        </ul>
+      }
+    </li>
+  }
+</ng-template>
+
+<div class="tree">
+  @if (visibleNodes().length) {
+    <ul
+      role="tree"
+      class="tree-group"
+      [attr.aria-multiselectable]="
+        selectionMode() === 'multiple' || selectionMode() === 'checkbox' || null
+      "
+    >
+      <ng-container
+        [ngTemplateOutlet]="nodeTpl"
+        [ngTemplateOutletContext]="{ $implicit: visibleNodes(), level: 0 }"
+      />
+    </ul>
+  } @else {
+    <p class="tree-empty">{{ emptyMessage() }}</p>
+  }
+</div>

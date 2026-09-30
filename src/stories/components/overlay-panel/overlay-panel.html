@@ -1,0 +1,25 @@
+@if (visible()) {
+  <div
+    #panel
+    class="overlay-panel"
+    [class]="'overlay-panel--' + (position()?.placement ?? 'below')"
+    role="dialog"
+    [attr.aria-label]="ariaLabel() || null"
+    [style.top.px]="position()?.top"
+    [style.left.px]="position()?.left"
+    [style.--arrow-left.px]="position()?.arrowLeft"
+    [style.visibility]="position() ? null : 'hidden'"
+  >
+    @if (showCloseIcon()) {
+      <button
+        type="button"
+        class="ui-close overlay-panel-close"
+        aria-label="Close"
+        (click)="hide()"
+      >
+        <nex-icon name="x" [size]="16" />
+      </button>
+    }
+    <ng-content />
+  </div>
+}

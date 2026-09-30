@@ -1,0 +1,217 @@
+<div
+  class="shell"
+  [class.shell--card]="card()"
+  [class.shell--inline]="layout() === 'inline'"
+  aria-live="polite"
+>
+  @if (title()) {
+    <header class="head">
+      @if (icon()) {
+        <span class="head__icon" [class]="tone() ? 'tone-' + tone() : ''">
+          <nex-icon [name]="icon()" [size]="20" />
+        </span>
+      }
+      <div>
+        <h3 class="head__title">{{ title() }}</h3>
+        @if (subtitle()) {
+          <p class="head__subtitle">{{ subtitle() }}</p>
+        }
+      </div>
+    </header>
+  }
+
+  @if (done()) {
+    <div class="success">
+      <span class="success__icon"><nex-icon name="circle-check" [size]="28" /></span>
+      <h3 class="success__title">{{ successTitle() }}</h3>
+      @if (successMessage()) {
+        <p class="success__message">{{ successMessage() }}</p>
+      }
+      <button type="button" class="ui-btn" (click)="reset()">Start over</button>
+    </div>
+  } @else {
+    @if (steps().length) {
+      <div class="progress">
+        <div class="progress__text">
+          <span>Step {{ step() + 1 }} of {{ steps().length }}</span>
+          <b>{{ steps()[step()].title }}</b>
+        </div>
+        <div class="progress__bars" aria-hidden="true">
+          @for (s of steps(); track $index) {
+            <span class="progress__bar" [class.progress__bar--done]="$index <= step()"></span>
+          }
+        </div>
+      </div>
+    }
+
+    <form
+      class="form"
+      [class.form--two]="columns() === 2 && layout() === 'stacked'"
+      novalidate
+      (submit)="submit($event)"
+    >
+      @for (field of visibleFields(); track field.name) {
+        @let message = error(field);
+        <div
+          class="form__field"
+          [class.form__field--wide]="field.wide || field.type === 'textarea'"
+          [attr.data-field]="field.name"
+          (focusout)="touch(field)"
+        >
+          @if (isText(field)) {
+            <nex-text-input
+              [type]="$any(field.type)"
+              [label]="field.hideLabel ? '' : field.label"
+              [ariaLabel]="field.hideLabel ? field.label : ''"
+              [required]="!!field.required && !field.hideLabel"
+              [placeholder]="field.placeholder ?? ''"
+              [hint]="field.hint ?? ''"
+              [error]="message"
+              [disabled]="locked()"
+              [value]="text(field)"
+              (valueChange)="set(field, $event)"
+            />
+          } @else if (isOptions(field) || field.type === 'rating') {
+            <span class="ui-label" [id]="id + field.name">
+              {{ field.label }}
+              @if (field.required) {
+                <span class="ui-error">*</span>
+              }
+            </span>
+            @if (field.type === 'rating') {
+              <nex-rating
+                [readonly]="locked()"
+                [value]="rating(field)"
+                (valueChange)="set(field, $event); touch(field)"
+              />
+            } @else {
+              <div
+                class="options"
+                [class]="'options--' + field.type"
+                role="group"
+                [attr.aria-labelledby]="id + field.name"
+              >
+                @for (option of field.options ?? []; track option.value) {
+                  <button
+                    type="button"
+                    class="option"
+                    [class.option--on]="isOn(field, option)"
+                    [attr.aria-pressed]="isOn(field, option)"
+                    [attr.aria-label]="field.type === 'color' ? option.label : null"
+                    [style.--swatch]="field.type === 'color' ? option.value : null"
+                    [disabled]="locked()"
+                    (click)="pick(field, option)"
+                  >
+                    @if (field.type !== 'color') {
+                      <span class="option__label">{{ option.label }}</span>
+                      @if (option.description) {
+                        <span class="option__description">{{ option.description }}</span>
+                      }
+                    }
+                  </button>
+                }
+              </div>
+            }
+          } @else {
+            @switch (field.type) {
+              @case ('textarea') {
+                <nex-textarea
+                  [label]="label(field)"
+                  [placeholder]="field.placeholder ?? ''"
+                  [rows]="field.rows ?? 4"
+                  [maxLength]="field.maxLength ?? 0"
+                  [disabled]="locked()"
+                  [value]="text(field)"
+                  (valueChange)="set(field, $event)"
+                />
+              }
+              @case ('select') {
+                <nex-select
+                  [label]="label(field)"
+                  [options]="field.options ?? []"
+                  [placeholder]="field.placeholder ?? 'Select an option'"
+                  [disabled]="locked()"
+                  [value]="text(field)"
+                  (valueChange)="set(field, $event); touch(field)"
+                />
+              }
+              @case ('radio') {
+                <nex-radio-group
+                  [label]="label(field)"
+                  [options]="field.options ?? []"
+                  [horizontal]="true"
+                  [disabled]="locked()"
+                  [value]="text(field)"
+                  (valueChange)="set(field, $event)"
+                />
+              }
+              @case ('checkbox') {
+                <nex-checkbox
+                  [label]="label(field)"
+                  [disabled]="locked()"
+                  [checked]="checked(field)"
+                  (checkedChange)="set(field, $event)"
+                />
+              }
+              @case ('toggle') {
+                <nex-toggle
+                  [label]="label(field)"
+                  [disabled]="locked()"
+                  [checked]="checked(field)"
+                  (checkedChange)="set(field, $event)"
+                />
+              }
+            }
+          }
+          <!-- Text inputs show their own hint and error -->
+          @if (!isText(field)) {
+            @if (message) {
+              <span class="ui-error" role="alert">{{ message }}</span>
+            } @else if (field.hint) {
+              <span class="ui-hint">{{ field.hint }}</span>
+            }
+          }
+        </div>
+      }
+
+      <!-- Extra content above the buttons, e.g. a "Forgot password?" link -->
+      <div class="form__extra"><ng-content select="[formBeforeActions]" /></div>
+
+      <div class="form__actions" [class.form__actions--block]="block()">
+        @if (step() > 0) {
+          <button
+            type="button"
+            class="ui-btn ui-btn--text"
+            [disabled]="locked()"
+            (click)="goTo(step() - 1)"
+          >
+            <nex-icon name="arrow-left" [size]="16" /> Back
+          </button>
+        }
+        @if (resetLabel()) {
+          <button type="button" class="ui-btn" [disabled]="locked()" (click)="reset()">
+            {{ resetLabel() }}
+          </button>
+        }
+        <button type="submit" class="ui-btn ui-btn--primary form__submit" [disabled]="locked()">
+          @if (loading()) {
+            <nex-icon class="nex-anim-spin" name="loader-circle" [size]="16" />
+          } @else if (submitIcon() && lastStep()) {
+            <nex-icon [name]="submitIcon()" [size]="16" />
+          }
+          @if (steps().length && !lastStep()) {
+            Next <nex-icon name="arrow-right" [size]="16" />
+          } @else {
+            {{ submitLabel() }}
+          }
+        </button>
+      </div>
+    </form>
+
+    @if (note()) {
+      <p class="note">{{ note() }}</p>
+    }
+    <!-- Extra content below the form, e.g. social sign-in buttons -->
+    <ng-content />
+  }
+</div>
