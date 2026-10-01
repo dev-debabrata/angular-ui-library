@@ -7,7 +7,7 @@
     "prestart": "npm run site-data",
     "start": "ng serve",
     "prebuild": "npm run site-data",
-    "build": "ng build",
+    "build": "ng build && npm run build-storybook && node -e \"require('fs').cpSync('storybook-static', 'dist/angular-ui-library/browser/storybook', {recursive: true})\"",
     "prewatch": "npm run site-data",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",

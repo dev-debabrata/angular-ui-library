@@ -10,7 +10,7 @@ import {
   themeHash,
   themeOf,
 } from './nexui-theme';
-import { APP_URL, SITE_PAGES } from '../src/stories/getting-started/landing';
+import { APP_URL, SITE_PAGES, isLocal } from '../src/stories/getting-started/landing';
 import { ModeTool, PaletteTool, SearchTool, managerTheme } from './theme-tools';
 
 // A link from the Angular app brings its light/dark mode and theme color (themeHash in nexui-theme.ts)
@@ -63,7 +63,11 @@ addons.register('nexui/theme', (api) => {
 const APP_PAGES = SITE_PAGES.filter(Boolean);
 function openInApp(id: string | undefined) {
   const page = id?.split('--')[0];
-  if (page && APP_PAGES.includes(page)) location.replace(APP_URL + page + themeHash());
+  const appUrl =
+    typeof window !== 'undefined' && window.location && !isLocal()
+      ? `${window.location.origin}/`
+      : APP_URL;
+  if (page && APP_PAGES.includes(page)) location.replace(appUrl + page + themeHash());
 }
 openInApp(
   new URLSearchParams(location.search).get('path')?.split('/')[2] ??
@@ -147,7 +151,11 @@ addons.register('nexui/page-url', (api) => {
 // middle button and "Open in new tab" get it too
 for (const type of ['mousedown', 'click']) {
   document.addEventListener(type, (event) => {
-    const link = (event.target as Element).closest?.<HTMLAnchorElement>(`a[href^="${APP_URL}"]`);
+    const appUrl =
+      typeof window !== 'undefined' && window.location && !isLocal()
+        ? `${window.location.origin}/`
+        : APP_URL;
+    const link = (event.target as Element).closest?.<HTMLAnchorElement>(`a[href^="${appUrl}"]`);
     if (link) carryTheme(link);
   });
 }
