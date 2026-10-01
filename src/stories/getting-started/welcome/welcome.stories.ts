@@ -4,8 +4,8 @@ import { SITE_STORY, type SiteComponent } from '../site/site-story';
 
 const meta: Meta<SiteComponent> = {
   title: 'Getting Started/Welcome',
-  // A page of the NexUI site, full screen like a website: manager.ts hides the sidebar, toolbar and addon panel
-  tags: ['nexui-landing'],
+  // A page of the NexUI site, full screen like a website: manager.ts hides the sidebar, toolbar and addon panel; not listed in the sidebar
+  tags: ['!dev', '!autodocs', 'nexui-landing'],
   ...SITE_STORY,
   args: { page: '' },
 };

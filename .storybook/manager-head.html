@@ -79,7 +79,9 @@
   }
   /* Hidden: "expand all" next to groups and the "⌃ K" hint in the search box (the shortcut still works) */
   .search-field > code,
-  .sidebar-subheading .sidebar-subheading-action {
+  .sidebar-subheading .sidebar-subheading-action,
+  .sidebar-item[data-item-id='getting-started-welcome--welcome'],
+  .sidebar-item[data-item-id='getting-started-welcome'] {
     display: none !important;
   }
   :is(.sidebar-subheading [data-action='collapse-root'], .sidebar-item:not([data-parent-id]) > a) {

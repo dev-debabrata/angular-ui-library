@@ -45,7 +45,7 @@ const preview: Preview = {
       storySort: {
         order: [
           'Getting Started',
-          ['Welcome', 'Use in React, Vue & Angular'],
+          ['Use in React, Vue & Angular'],
           'Components',
           [
             'Overview',
