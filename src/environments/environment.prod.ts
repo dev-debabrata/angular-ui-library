@@ -1,5 +1,5 @@
 export const environment = {
   production: true,
-  appUrl: 'https://your-app.vercel.app/',
-  storybookUrl: 'https://your-app-storybook.vercel.app/',
+  appUrl: 'https://nexui-dev.vercel.app/',
+  storybookUrl: 'nexui-storybook-dev.vercel.app',
 };
