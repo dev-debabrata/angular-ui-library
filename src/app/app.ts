@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 
-import { ScrollTopComponent } from '../stories/components/scroll-top/scroll-top.component';
+import { ScrollTopComponent } from '../stories/components/misc/scroll-top/scroll-top.component';
 
 @Component({
   selector: 'nex-root',

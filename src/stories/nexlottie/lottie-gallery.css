@@ -1,0 +1,38 @@
+/* Shared page layout comes from src/stories/styles/gallery-page.css */
+.link {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  max-width: 720px;
+  margin: 0 auto 24px;
+}
+
+.link .ui-control {
+  flex: 1 1 320px;
+}
+
+.link__error {
+  flex-basis: 100%;
+}
+
+.grid {
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 16px;
+  margin-top: 24px;
+}
+
+/* Soft tile like LottieFiles; files can set their own background in meta.bg */
+.card {
+  justify-content: center;
+  gap: 6px;
+  aspect-ratio: 4 / 3;
+  padding: 12px;
+  border-color: transparent;
+  border-radius: var(--ui-radius-lg);
+  background: var(--ui-surface-muted);
+}
+
+.name {
+  color: var(--ui-text-muted);
+  font-size: 12px;
+}

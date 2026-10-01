@@ -1,0 +1,69 @@
+/* Layout comes from .nex-effect in theme.css. The pointer position doesn't inherit, so moving it only
+   restyles the host, not the content */
+@property --spot-x {
+  syntax: '<length-percentage>';
+  inherits: false;
+  initial-value: 50%;
+}
+
+@property --spot-y {
+  syntax: '<length-percentage>';
+  inherits: false;
+  initial-value: 50%;
+}
+
+:host {
+  --spot-color: color-mix(in srgb, var(--ui-primary) 38%, transparent);
+  --spot-size: 420px;
+  isolation: isolate;
+}
+
+:host::before,
+:host::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.35s var(--ui-ease);
+}
+
+/* Glow behind the content */
+:host::before {
+  z-index: -1;
+  background: radial-gradient(
+    calc(var(--spot-size) / 2) circle at var(--spot-x) var(--spot-y),
+    var(--spot-color),
+    transparent 70%
+  );
+}
+
+/* Flashlight: a dark layer over the content with a clear hole at the pointer */
+:host::after {
+  z-index: 1;
+  background: radial-gradient(
+    calc(var(--spot-size) / 2) circle at var(--spot-x) var(--spot-y),
+    transparent 0,
+    transparent 35%,
+    rgb(2 6 23 / 0.88) 100%
+  );
+}
+
+:host(.spotlight--on)::before {
+  opacity: 1;
+}
+
+:host(.spotlight--dim)::after {
+  opacity: 0.6;
+}
+
+:host(.spotlight--dim.spotlight--on)::after {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :host::before,
+  :host::after {
+    transition: none;
+  }
+}

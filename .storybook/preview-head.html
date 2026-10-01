@@ -1,3 +1,42 @@
+<!-- Storybook's loading screen (spinner, docs skeleton) in the saved light/dark mode and theme color. It paints
+     before the stories bundle (and theme.css) loads, so this applies manager.ts's saveTheme() first, and the
+     dark colors are theme.css's surface, surface-muted and border tokens. color-scheme darkens the page itself -->
+<script>
+  try {
+    const saved = JSON.parse(localStorage.getItem('nexui-theme') ?? '{}');
+    if (saved.theme === 'dark') document.documentElement.dataset.theme = 'dark';
+    for (const [name, value] of Object.entries(saved.vars ?? {}))
+      document.documentElement.style.setProperty(name, value);
+  } catch {}
+</script>
+<style>
+  .sb-loader {
+    border: 3px solid color-mix(in srgb, var(--ui-primary, #6366f1) 22%, transparent);
+    border-top-color: var(--ui-primary, #6366f1);
+    mix-blend-mode: normal;
+  }
+  :root[data-theme='dark'] {
+    color-scheme: dark;
+    --sb-line: #1e293b;
+    & :is(.sb-preparing-story, .sb-preparing-docs) {
+      background: #0f172a;
+    }
+    & :is(.sb-previewBlock, .sb-argstableBlock-body td) {
+      border-color: var(--sb-line);
+      background: #0b1222;
+    }
+    & :is(.sb-previewBlock_icon, .sb-argstableBlock span, .sb-argstableBlock-body button) {
+      background: var(--sb-line);
+    }
+    & :is(.sb-previewBlock_header, .sb-argstableBlock-body) {
+      box-shadow: 0 0 0 1px var(--sb-line);
+    }
+    & .sb-argstableBlock-body tr {
+      border-color: var(--sb-line);
+    }
+  }
+</style>
+
 <!-- "Back to top" button on every Storybook page (docs pages scroll inside this preview frame).
      Same look as <nex-scroll-top>, written in plain JS so it doesn't depend on any story. -->
 <style>

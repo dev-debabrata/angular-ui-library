@@ -26,12 +26,12 @@
               },
               {
                 "glob": "**/*.svg",
-                "input": "src/stories/icons",
+                "input": "src/stories/icons/svg",
                 "output": "icons"
               },
               {
                 "glob": "**/*.json",
-                "input": "src/stories/lottie",
+                "input": "src/stories/nexlottie/files",
                 "output": "lottie"
               }
             ],
@@ -113,17 +113,17 @@
             "index": false,
             "tsConfig": "tsconfig.elements.json",
             "styles": [
-              "src/stories/theme.css"
+              "src/stories/styles/theme.css"
             ],
             "assets": [
               {
                 "glob": "**/*.svg",
-                "input": "src/stories/icons",
+                "input": "src/stories/icons/svg",
                 "output": "icons"
               },
               {
                 "glob": "**/*.json",
-                "input": "src/stories/lottie",
+                "input": "src/stories/nexlottie/files",
                 "output": "lottie"
               }
             ],

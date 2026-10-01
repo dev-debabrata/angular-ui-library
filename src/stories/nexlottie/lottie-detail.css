@@ -1,0 +1,345 @@
+.detail {
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+  gap: 20px;
+}
+
+@media (max-width: 760px) {
+  .detail {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Focus ring for the dialog's own buttons (related cards get theirs from .card) */
+.swatch:focus-visible,
+.option:focus-visible,
+.color:focus-visible {
+  outline: none;
+  box-shadow: var(--ui-ring);
+}
+
+/* ---- preview ---- */
+.stage {
+  display: grid;
+  place-items: center;
+  min-height: 360px;
+  border: 1px solid var(--ui-border);
+  border-radius: var(--ui-radius-lg);
+  transition: background 0.2s var(--ui-ease);
+}
+
+.stage--checker,
+.swatch--checker {
+  background-color: #fff;
+  background-image: conic-gradient(#e2e8f0 25%, transparent 0 50%, #e2e8f0 0 75%, transparent 0);
+  background-size: 16px 16px;
+}
+
+.player {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.swatches {
+  display: flex;
+  gap: 6px;
+  margin-left: auto;
+}
+
+.swatch {
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: 1px solid var(--ui-border-strong);
+  border-radius: 50%;
+  cursor: pointer;
+  transition: box-shadow 0.15s var(--ui-ease);
+}
+
+.swatch--checker {
+  background-size: 8px 8px;
+}
+
+.swatch--active {
+  box-shadow:
+    0 0 0 2px var(--ui-surface),
+    0 0 0 4px var(--ui-primary);
+}
+
+.about {
+  margin-top: 14px;
+}
+
+.about p {
+  margin: 8px 0 0;
+  color: var(--ui-text-muted);
+  font-size: 14px;
+}
+
+.chip,
+.badge {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 999px;
+  background: var(--ui-primary-soft);
+  color: var(--ui-primary);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* ---- side panel ---- */
+.side {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+}
+
+.tabs {
+  align-self: flex-start;
+}
+
+.box {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+  border: 1px solid var(--ui-border);
+  border-radius: var(--ui-radius-lg);
+  background: var(--ui-surface);
+}
+
+.option {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid transparent;
+  border-radius: var(--ui-radius);
+  background: none;
+  color: var(--ui-text);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    background 0.15s var(--ui-ease),
+    border-color 0.15s var(--ui-ease);
+}
+
+.option:hover {
+  border-color: var(--ui-border);
+  background: var(--ui-primary-soft);
+}
+
+.option__icon {
+  flex: none;
+  color: var(--ui-primary);
+}
+
+.option__text {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.option__label {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.option__hint {
+  color: var(--ui-text-muted);
+  font-size: 12px;
+}
+
+.option__size {
+  flex: none;
+  font-size: 13px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.option__go {
+  flex: none;
+  color: var(--ui-text-subtle);
+}
+
+.other {
+  margin-top: 4px;
+  padding-top: 10px;
+  border-top: 1px solid var(--ui-border);
+}
+
+.other__title {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--ui-text-muted);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* MP4 · WebM · MOV · SVG · GIF · PNG, equal width like LottieFiles */
+.formats {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 6px;
+  margin-top: 8px;
+}
+
+@media (max-width: 420px) {
+  .formats {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.format {
+  justify-content: center;
+  padding-inline: 4px;
+  font-variant-numeric: tabular-nums;
+}
+
+.progress {
+  overflow: hidden;
+  height: 6px;
+  margin-top: 10px;
+  border-radius: 999px;
+  background: var(--ui-surface-sunken);
+}
+
+.progress span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  /* No width transition: encoding keeps the main thread busy, so a transition never gets to paint */
+  background: var(--ui-gradient);
+}
+
+.other .ui-hint,
+.other .ui-error {
+  margin: 6px 0 0;
+}
+
+/* ---- embed ---- */
+.asset__row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.asset__row code {
+  flex: 1;
+  overflow: hidden;
+  padding: 6px 10px;
+  font-size: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.snippet__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: var(--ui-text-muted);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* Code block look comes from gallery-page.css */
+.snippet pre {
+  margin-top: 4px;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+/* ---- details ---- */
+.facts {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin: 0;
+}
+
+.fact {
+  padding: 8px 10px;
+  border-radius: var(--ui-radius);
+  background: var(--ui-surface-muted);
+}
+
+.fact dt {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--ui-text-muted);
+  font-size: 12px;
+}
+
+.fact dd {
+  margin: 2px 0 0;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.colors {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.color {
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 1px solid var(--ui-border-strong);
+  border-radius: var(--ui-radius-sm);
+  cursor: pointer;
+}
+
+/* ---- related ---- */
+.related {
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid var(--ui-border);
+}
+
+.related h4 {
+  margin: 0 0 12px;
+  font-size: 15px;
+}
+
+.related__grid {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 12px;
+}
+
+@media (max-width: 760px) {
+  .related__grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+/* Layout, hover, focus and dark labels come from .card in gallery-page.css */
+.related__card {
+  gap: 4px;
+  padding: 10px;
+  border-color: transparent;
+  border-radius: var(--ui-radius-lg);
+  background: var(--ui-surface-muted);
+}
+
+.related__card .name {
+  color: var(--ui-text-muted);
+  font-size: 12px;
+}

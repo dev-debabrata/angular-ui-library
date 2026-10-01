@@ -1,0 +1,6 @@
+<div #layer class="blobs" aria-hidden="true">
+  @for (color of blobs(); track $index) {
+    <span class="blob" [style.background]="color"></span>
+  }
+</div>
+<div class="nex-effect__content"><ng-content /></div>
