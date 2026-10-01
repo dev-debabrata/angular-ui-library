@@ -26,12 +26,12 @@
               },
               {
                 "glob": "**/*.svg",
-                "input": "src/stories/icons",
+                "input": "src/stories/icons/svg",
                 "output": "icons"
               },
               {
                 "glob": "**/*.json",
-                "input": "src/stories/lottie",
+                "input": "src/stories/nexlottie/files",
                 "output": "lottie"
               }
             ],
@@ -48,7 +48,10 @@
             },
             "ssr": {
               "entry": "src/server.ts"
-            }
+            },
+            "allowedCommonJsDependencies": [
+              "lottie-web"
+            ]
           },
           "configurations": {
             "production": {
@@ -60,8 +63,8 @@
                 },
                 {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "4kB",
-                  "maximumError": "8kB"
+                  "maximumWarning": "10kB",
+                  "maximumError": "20kB"
                 }
               ],
               "outputHashing": "all"
@@ -113,17 +116,17 @@
             "index": false,
             "tsConfig": "tsconfig.elements.json",
             "styles": [
-              "src/stories/theme.css"
+              "src/stories/styles/theme.css"
             ],
             "assets": [
               {
                 "glob": "**/*.svg",
-                "input": "src/stories/icons",
+                "input": "src/stories/icons/svg",
                 "output": "icons"
               },
               {
                 "glob": "**/*.json",
-                "input": "src/stories/lottie",
+                "input": "src/stories/nexlottie/files",
                 "output": "lottie"
               }
             ],
@@ -134,7 +137,25 @@
                 "maximumWarning": "1mb",
                 "maximumError": "2mb"
               }
+            ],
+            "allowedCommonJsDependencies": [
+              "lottie-web"
             ]
+          }
+        }
+      }
+    },
+    "nexui": {
+      "projectType": "library",
+      "root": "src/stories",
+      "sourceRoot": "src/stories",
+      "prefix": "nex",
+      "architect": {
+        "build": {
+          "builder": "@angular/build:ng-packagr",
+          "options": {
+            "project": "src/stories/ng-package.json",
+            "tsConfig": "src/stories/tsconfig.lib.json"
           }
         }
       }

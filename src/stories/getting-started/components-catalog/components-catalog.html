@@ -1,0 +1,56 @@
+<div class="catalog">
+  <header class="hero">
+    <span class="gallery-version"><i></i>{{ version }}</span>
+    <h1>Components</h1>
+    <p>
+      Discover
+      @if (total()) {
+        <b>{{ total() }}</b>
+      }
+      UI components, crafted for real-world Angular applications and equally at home in React, Vue
+      or plain HTML.
+    </p>
+    <div class="tools">
+      <nex-search-input
+        class="search"
+        placeholder="Search components..."
+        (search)="query.set($event)"
+      />
+      <nex-button-toggle
+        size="small"
+        ariaLabel="Layout"
+        [options]="views"
+        [showCheck]="false"
+        [value]="view()"
+        (valueChange)="view.set($any($event))"
+      />
+    </div>
+  </header>
+
+  @for (group of groups(); track group.key) {
+    <section class="group">
+      <h2>
+        {{ group.label }} <span>({{ group.items.length }})</span>
+      </h2>
+      <div class="cards" [class]="'cards--' + view()">
+        @for (item of group.items; track item.folder) {
+          <a class="card" [href]="item.href">
+            <span class="thumb" aria-hidden="true">
+              <nex-icon
+                [name]="item.icon"
+                [size]="view() === 'list' ? 20 : view() === 'compact' ? 30 : 44"
+                [strokeWidth]="1.5"
+              />
+            </span>
+            <span class="name">{{ item.title }}</span>
+            @if (view() === 'list') {
+              <nex-icon class="go" name="arrow-right" [size]="16" />
+            }
+          </a>
+        }
+      </div>
+    </section>
+  } @empty {
+    <p class="empty">No components match "{{ query() }}".</p>
+  }
+</div>

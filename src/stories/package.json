@@ -1,0 +1,34 @@
+{
+  "name": "nexui",
+  "version": "0.1.0",
+  "description": "NexUI (Next-generation UI): Angular components, icons, animations, Lottie and effects in the Aurora design",
+  "keywords": [
+    "angular",
+    "ui",
+    "components",
+    "signals",
+    "ssr",
+    "lottie",
+    "icons"
+  ],
+  "license": "UNLICENSED",
+  "peerDependencies": {
+    "@angular/cdk": ">=21.0.0",
+    "@angular/common": ">=21.0.0",
+    "@angular/core": ">=21.0.0",
+    "@angular/platform-browser": ">=21.0.0"
+  },
+  "dependencies": {
+    "fflate": "^0.8.3",
+    "lottie-web": "^5.13.0",
+    "tslib": "^2.3.0"
+  },
+  "exports": {
+    "./styles/*": {
+      "default": "./styles/*"
+    },
+    "./icons/*": {
+      "default": "./icons/*"
+    }
+  }
+}

@@ -1,0 +1,101 @@
+<div class="gallery-page">
+  <header class="gallery-hero">
+    <span class="gallery-version"><i></i>{{ version }}</span>
+    <h1>NexLottie</h1>
+    <p class="subtitle">
+      {{ animations().length }} Lottie animations in <code>src/stories/nexlottie/files/</code>,
+      played with <code>&lt;nex-lottie&gt;</code>. Download any animation from LottieFiles (<code
+        >.json</code
+      >
+      or <code>.lottie</code>), or export one from After Effects, drop it into that folder and it
+      shows up here. Or paste a link below to try it first.
+    </p>
+  </header>
+
+  <form class="link" (submit)="$event.preventDefault(); addLink(link)">
+    <input
+      #link
+      class="ui-control"
+      type="url"
+      placeholder="Paste a LottieFiles link (…/animation.json or .lottie)"
+      aria-label="Lottie file URL"
+    />
+    <button type="submit" class="ui-btn ui-btn--primary">Preview</button>
+    @if (linkError()) {
+      <span class="ui-error link__error">{{ linkError() }}</span>
+    }
+  </form>
+
+  <div class="toolbar">
+    <nex-search-input
+      class="search"
+      placeholder="Search animations..."
+      (search)="query.set($event)"
+    />
+    <nex-button-toggle
+      size="small"
+      ariaLabel="Category"
+      [options]="categories()"
+      [showCheck]="false"
+      [value]="category()"
+      (valueChange)="category.set($any($event))"
+    />
+    <label class="control">
+      <span
+        >Speed <b>{{ speed() }}×</b></span
+      >
+      <input
+        type="range"
+        min="0.25"
+        max="3"
+        step="0.25"
+        [value]="speed()"
+        (input)="speed.set(+$any($event.target).value)"
+      />
+    </label>
+    <label class="control control--check">
+      <input
+        type="checkbox"
+        [checked]="hoverOnly()"
+        (change)="hoverOnly.set($any($event.target).checked)"
+      />
+      Play on hover
+    </label>
+  </div>
+
+  <div class="grid">
+    @for (a of shown(); track a.src ?? a.name) {
+      <button
+        type="button"
+        class="card"
+        [class.selected]="selected() === a"
+        [style.background]="a.data?.meta?.bg ?? null"
+        [class.card--dark]="isDarkBg(a.data?.meta?.bg)"
+        [attr.aria-label]="a.name"
+        (click)="selected.set(a)"
+      >
+        <nex-lottie
+          [data]="a.data ?? null"
+          [speed]="speed()"
+          [hover]="hoverOnly()"
+          [paused]="!!selected()"
+          size="140px"
+        />
+        <span class="name">{{ a.name }}</span>
+      </button>
+    } @empty {
+      <p class="empty">No animations match "{{ query() }}".</p>
+    }
+  </div>
+  <!-- Near the screen, the grid renders its next batch of animations -->
+  <div #end></div>
+
+  @if (selected(); as a) {
+    <nex-lottie-detail
+      [animation]="a"
+      [related]="related()"
+      (closed)="selected.set(null)"
+      (picked)="selected.set($event)"
+    />
+  }
+</div>

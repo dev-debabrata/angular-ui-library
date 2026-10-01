@@ -1,0 +1,139 @@
+/* Near-opaque instead of a backdrop blur: the blur would re-render every frame over the animated hero */
+:host {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  display: block;
+  border-bottom: 1px solid var(--ui-border);
+  background: color-mix(in srgb, var(--ui-surface) 94%, transparent);
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  max-width: 1200px;
+  height: 64px;
+  margin: 0 auto;
+  padding: 0 24px;
+  font-family: var(--ui-font);
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+:is(a, .tool, .swatch):focus-visible {
+  outline: none;
+  border-radius: var(--ui-radius-sm);
+  box-shadow: var(--ui-ring);
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--ui-text);
+  font-size: 20px;
+  letter-spacing: 0.04em;
+}
+
+.brand b {
+  font-weight: 800;
+}
+
+.links {
+  display: flex;
+  gap: 4px;
+  margin-left: auto;
+}
+
+/* Section links, and the search / light-dark / theme color buttons (like PrimeNG's header) */
+.links a,
+.tool {
+  border-radius: var(--ui-radius);
+  color: var(--ui-text-muted);
+  transition:
+    color 0.15s var(--ui-ease),
+    background 0.15s var(--ui-ease);
+}
+
+.links a {
+  padding: 8px 12px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+:is(.links a, .tool):hover,
+.links a.active {
+  background: var(--ui-primary-soft);
+  color: var(--ui-primary);
+}
+
+.tools {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.tool {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+
+.palette {
+  position: relative;
+}
+
+.palette__menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  display: grid;
+  grid-template-columns: repeat(4, 28px);
+  gap: 10px;
+  padding: 14px;
+  border: 1px solid var(--ui-border);
+  border-radius: var(--ui-radius-lg);
+  background: var(--ui-surface);
+  box-shadow: var(--ui-shadow-lg);
+}
+
+.swatch {
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 0;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.get-started {
+  padding: 9px 16px;
+  border-radius: var(--ui-radius);
+  background: var(--ui-text);
+  color: var(--ui-surface);
+  font-size: 14px;
+  font-weight: 700;
+  transition: box-shadow 0.15s var(--ui-ease);
+}
+
+.get-started:hover {
+  box-shadow: var(--ui-shadow);
+}
+
+@media (max-width: 760px) {
+  .links {
+    display: none;
+  }
+
+  .tools {
+    margin-left: auto;
+  }
+}

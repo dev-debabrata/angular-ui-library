@@ -1,1 +1,8 @@
-@import './stories/theme.css';
+@import './stories/styles/theme.css';
+/* Shared layout of the Icons, Animations and NexLottie pages (Storybook loads it in preview.ts) */
+@import './stories/styles/gallery-page.css';
+
+/* The site fills the window edge to edge (Storybook's fullscreen layout does the same) */
+body {
+  margin: 0;
+}

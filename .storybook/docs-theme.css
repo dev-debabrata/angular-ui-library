@@ -1,0 +1,79 @@
+/* Storybook's own docs pages (MDX pages, autodocs) in the NexUI look: modern type and rounded, soft cards in both
+   modes, plus dark-mode colors below */
+.sbdocs .sbdocs-title {
+  font-size: clamp(34px, 4.5vw, 46px);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+}
+
+.sbdocs .sbdocs-h2 {
+  border: 0;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.sbdocs .sbdocs-subtitle {
+  color: var(--ui-text-muted);
+  font-size: 17px;
+  font-weight: 400;
+}
+
+.sbdocs :is(.sbdocs-preview, .docblock-argstable, .docblock-source) {
+  overflow: hidden;
+  border: 1px solid var(--ui-border);
+  border-radius: var(--ui-radius-lg);
+  box-shadow: var(--ui-shadow-sm);
+}
+
+:root[data-theme='dark'] .sbdocs-wrapper,
+:root[data-theme='dark'] .sbdocs-content {
+  background: var(--ui-surface);
+  color: var(--ui-text);
+}
+
+:root[data-theme='dark'] .sbdocs :is(h1, h2, h3, h4, h5, h6, p, li, td, th, strong) {
+  color: var(--ui-text);
+}
+
+:root[data-theme='dark'] .sbdocs :is(.sbdocs-subtitle, .sbdocs-p, p) {
+  color: color-mix(in srgb, var(--ui-text) 85%, transparent);
+}
+
+:root[data-theme='dark'] .sbdocs a {
+  color: color-mix(in srgb, var(--ui-primary) 70%, #fff);
+}
+
+/* Story previews, args tables and code blocks */
+:root[data-theme='dark'] :is(
+    .sbdocs :is(.docs-story, .docblock-argstable, .docblock-source, pre),
+    .sbdocs-preview,
+    .sbdocs-preview > div:first-child
+  ) {
+  border-color: var(--ui-border);
+  background: var(--ui-surface-muted);
+  color: var(--ui-text);
+}
+
+:root[data-theme='dark'] .docblock-argstable :is(tbody, tr, td, th) {
+  border-color: var(--ui-border) !important;
+  background: var(--ui-surface) !important;
+  color: var(--ui-text) !important;
+}
+
+:root[data-theme='dark'] .sbdocs :not(pre) > code {
+  border-color: var(--ui-border);
+  background: var(--ui-surface-sunken);
+  color: var(--ui-text);
+}
+
+/* Controls in the args table */
+:root[data-theme='dark'] .docblock-argstable :is(input, textarea, select, button) {
+  border-color: var(--ui-border-strong);
+  background: var(--ui-surface-sunken);
+  color: var(--ui-text);
+}
+
+:root[data-theme='dark'] .docblock-argstable :is(span, code) {
+  color: var(--ui-text-muted);
+}

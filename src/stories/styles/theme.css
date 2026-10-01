@@ -1,0 +1,408 @@
+/* Shared design tokens and utility classes used by every component in src/stories. */
+
+/* nex-anim-* animation classes (Animations page) */
+@import './animations.css';
+
+:root {
+  --ui-font: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+
+  /* Brand */
+  --ui-primary: #6366f1;
+  --ui-primary-hover: #4f46e5;
+  --ui-accent: #a855f7;
+  --ui-gradient: linear-gradient(135deg, var(--ui-primary) 0%, var(--ui-accent) 100%);
+  /* Derived from --ui-primary, so changing the brand colors (e.g. the Storybook palette menu) updates them too */
+  --ui-primary-soft: color-mix(in srgb, var(--ui-primary) 10%, var(--ui-surface));
+  --ui-primary-ring: color-mix(in srgb, var(--ui-primary) 28%, transparent);
+
+  /* Neutrals */
+  --ui-text: #0f172a;
+  --ui-text-muted: #64748b;
+  --ui-text-subtle: #94a3b8;
+  --ui-border: #e2e8f0;
+  --ui-border-strong: #cbd5e1;
+  --ui-surface: #fff;
+  --ui-surface-muted: #f8fafc;
+  --ui-surface-sunken: #f1f5f9;
+  --ui-success: #10b981;
+  --ui-warning: #f59e0b;
+  --ui-danger: #f43f5e;
+
+  /* Shape & depth */
+  --ui-radius-sm: 6px;
+  --ui-radius: 10px;
+  --ui-radius-lg: 16px;
+  --ui-shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.06);
+  --ui-shadow: 0 1px 3px rgba(15, 23, 42, 0.08), 0 4px 12px rgba(15, 23, 42, 0.06);
+  --ui-shadow-lg: 0 10px 25px rgba(15, 23, 42, 0.12), 0 20px 48px rgba(15, 23, 42, 0.1);
+
+  /* Chart series colors, used in this order (validated for color-blind separation on white) */
+  --ui-chart-1: #6366f1;
+  --ui-chart-2: #eb6834;
+  --ui-chart-3: #1baf7a;
+  --ui-chart-4: #eda100;
+  --ui-chart-5: #e87ba4;
+  --ui-chart-6: #008300;
+  --ui-chart-7: #4a3aa7;
+  --ui-chart-8: #e34948;
+  --ui-ring: 0 0 0 4px var(--ui-primary-ring);
+  --ui-ease: 160ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Dark mode: set data-theme="dark" on <html>. Same tokens, dark values; brand colors stay as they are */
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --ui-primary-soft: color-mix(in srgb, var(--ui-primary) 18%, var(--ui-surface));
+  --ui-primary-ring: color-mix(in srgb, var(--ui-primary) 40%, transparent);
+  --ui-text: #e2e8f0;
+  --ui-text-muted: #94a3b8;
+  --ui-text-subtle: #64748b;
+  --ui-border: #1e293b;
+  --ui-border-strong: #334155;
+  --ui-surface: #0f172a;
+  --ui-surface-muted: #0b1222;
+  --ui-surface-sunken: #1e293b;
+  --ui-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --ui-shadow: 0 1px 3px rgba(0, 0, 0, 0.45), 0 4px 12px rgba(0, 0, 0, 0.35);
+  --ui-shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.5), 0 20px 48px rgba(0, 0, 0, 0.4);
+}
+
+:root[data-theme='dark'] body {
+  background: var(--ui-surface);
+}
+
+body {
+  font-family: var(--ui-font);
+  color: var(--ui-text);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Slim scrollbars for every scrolling area (lists, menus, dialogs) */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--ui-border-strong) transparent;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  border: 2px solid transparent;
+  border-radius: 999px;
+  background: var(--ui-border-strong) padding-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--ui-gradient) border-box;
+}
+
+/* Color tones. Set a tone-* class, then read --tone-bg / --tone-fg / --tone-border / --tone-solid. */
+.tone-info {
+  /* Brand-colored, so it follows the theme color */
+  --tone-bg: var(--ui-primary-soft);
+  --tone-fg: color-mix(in srgb, var(--ui-primary) 72%, #000);
+  --tone-border: color-mix(in srgb, var(--ui-primary) 30%, var(--ui-surface));
+  --tone-solid: var(--ui-primary);
+}
+
+.tone-success {
+  --tone-bg: #ecfdf5;
+  --tone-fg: #065f46;
+  --tone-border: #a7f3d0;
+  --tone-solid: var(--ui-success);
+}
+
+.tone-warning {
+  --tone-bg: #fffbeb;
+  --tone-fg: #92400e;
+  --tone-border: #fde68a;
+  --tone-solid: var(--ui-warning);
+}
+
+.tone-danger {
+  --tone-bg: #fff1f2;
+  --tone-fg: #9f1239;
+  --tone-border: #fecdd3;
+  --tone-solid: var(--ui-danger);
+}
+
+.tone-neutral {
+  --tone-bg: #f1f5f9;
+  --tone-fg: #334155;
+  --tone-border: #e2e8f0;
+  --tone-solid: #64748b;
+}
+
+/* Dark mode tones: tinted from the solid color */
+:root[data-theme='dark']
+  :is(.tone-info, .tone-success, .tone-warning, .tone-danger, .tone-neutral) {
+  --tone-bg: color-mix(in srgb, var(--tone-solid) 16%, var(--ui-surface));
+  --tone-fg: color-mix(in srgb, var(--tone-solid) 60%, #fff);
+  --tone-border: color-mix(in srgb, var(--tone-solid) 38%, var(--ui-surface));
+}
+
+/* Round tone icon used by Alert and Toast */
+.ui-tone-icon {
+  display: inline-grid;
+  flex-shrink: 0;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--tone-solid);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+/* Form fields: .ui-field wraps .ui-label + .ui-control + .ui-hint / .ui-error */
+.ui-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 14px;
+}
+
+.ui-label {
+  color: var(--ui-text);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.ui-control {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid var(--ui-border-strong);
+  border-radius: var(--ui-radius);
+  background: var(--ui-surface);
+  box-shadow: var(--ui-shadow-sm);
+  font: inherit;
+  color: inherit;
+  transition:
+    border-color var(--ui-ease),
+    box-shadow var(--ui-ease);
+}
+
+.ui-control::placeholder {
+  color: var(--ui-text-subtle);
+}
+
+.ui-control:hover:not(:disabled) {
+  border-color: var(--ui-text-subtle);
+}
+
+.ui-control:focus {
+  outline: none;
+  border-color: var(--ui-primary);
+  box-shadow: var(--ui-ring);
+}
+
+.ui-control:disabled {
+  background: var(--ui-surface-sunken);
+  color: var(--ui-text-subtle);
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
+.ui-control[aria-invalid='true'] {
+  border-color: var(--ui-danger);
+}
+
+.ui-control[aria-invalid='true']:focus {
+  box-shadow: 0 0 0 4px rgba(244, 63, 94, 0.2);
+}
+
+select.ui-control {
+  appearance: none;
+  padding-right: 40px;
+  background: var(--ui-surface)
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%2364748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m4 6 4 4 4-4'/%3E%3C/svg%3E")
+    no-repeat right 14px center;
+  cursor: pointer;
+}
+
+.ui-hint {
+  color: var(--ui-text-muted);
+  font-size: 12px;
+}
+
+.ui-error {
+  color: var(--ui-danger);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+/* Close (×) button used by Alert, Modal and Toast */
+.ui-close {
+  display: inline-grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: none;
+  color: inherit;
+  font-size: 18px;
+  line-height: 1;
+  opacity: 0.6;
+  cursor: pointer;
+  transition:
+    background var(--ui-ease),
+    opacity var(--ui-ease);
+}
+
+.ui-close:hover {
+  background: rgba(15, 23, 42, 0.08);
+  opacity: 1;
+}
+
+/* Dialog/Card footer slots: the wrapper steps aside so its buttons are laid out (with gap) by the footer */
+[dialogFooter],
+[cardFooter] {
+  display: contents;
+}
+
+/* Buttons: .ui-btn (outline) + --primary (gradient) | --danger (red) | --text (no box), with --sm / --icon sizes.
+   Combine --text --danger for a red text button. */
+.ui-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 9px 16px;
+  border: none;
+  border-radius: 999px;
+  background: var(--ui-surface);
+  box-shadow:
+    inset 0 0 0 1px var(--ui-border-strong),
+    var(--ui-shadow-sm);
+  color: var(--ui-text);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    background var(--ui-ease),
+    color var(--ui-ease),
+    box-shadow var(--ui-ease),
+    filter var(--ui-ease);
+}
+
+.ui-btn:hover:not(:disabled) {
+  box-shadow:
+    inset 0 0 0 1px var(--ui-primary),
+    var(--ui-shadow);
+  color: var(--ui-primary);
+}
+
+.ui-btn:focus-visible {
+  outline: none;
+  box-shadow: var(--ui-ring);
+}
+
+.ui-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.ui-btn--primary,
+.ui-btn--danger,
+.ui-btn--primary:hover:not(:disabled),
+.ui-btn--danger:hover:not(:disabled) {
+  color: #fff;
+}
+
+.ui-btn--primary {
+  background: var(--ui-gradient);
+  box-shadow: 0 4px 14px rgba(99, 102, 241, 0.35);
+}
+
+.ui-btn--danger {
+  background: var(--ui-danger);
+  box-shadow: 0 4px 14px rgba(244, 63, 94, 0.3);
+}
+
+.ui-btn--primary:hover:not(:disabled),
+.ui-btn--danger:hover:not(:disabled) {
+  box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
+  filter: brightness(1.06);
+}
+
+.ui-btn--text,
+.ui-btn--text:hover:not(:disabled) {
+  background: none;
+  box-shadow: none;
+  color: var(--ui-primary);
+  filter: none;
+}
+
+.ui-btn--text:hover:not(:disabled) {
+  background: var(--ui-primary-soft);
+}
+
+.ui-btn--text.ui-btn--danger,
+.ui-btn--text.ui-btn--danger:hover:not(:disabled) {
+  color: var(--ui-danger);
+}
+
+.ui-btn--text.ui-btn--danger:hover:not(:disabled) {
+  background: rgba(244, 63, 94, 0.1);
+}
+
+.ui-btn--sm {
+  padding: 7px 12px;
+  font-size: 12px;
+}
+
+.ui-btn--icon {
+  width: 36px;
+  height: 36px;
+  padding: 0;
+}
+
+.ui-visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* Effects (src/stories/effects): the host is a box with the projected content on top. A canvas effect's canvas
+   paints behind the content and never takes clicks (the host listens for the pointer). Give the host a height. */
+.nex-effect {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  touch-action: pan-y;
+}
+
+.nex-effect__canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.nex-effect__content {
+  position: relative;
+  height: 100%;
+}
+
+/* Effects that draw over the content (Confetti, Cursor Trail) */
+.nex-effect__canvas--front {
+  z-index: 1;
+}

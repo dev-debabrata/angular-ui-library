@@ -1,0 +1,230 @@
+<nex-dialog
+  [visible]="true"
+  [header]="title()"
+  width="min(1040px, 94vw)"
+  dismissableMask
+  (visibleChange)="!$event && closed.emit()"
+>
+  <div class="detail">
+    <section class="stage-col">
+      <div
+        #stage
+        class="stage"
+        [style.background]="previewBg()"
+        [class.stage--checker]="background() === 'transparent'"
+      >
+        <nex-lottie
+          [data]="animation().data ?? null"
+          [speed]="speed()"
+          size="min(340px, 70vw)"
+          [ariaLabel]="title()"
+        />
+      </div>
+
+      <div class="player">
+        <button
+          type="button"
+          class="ui-btn ui-btn--icon ui-btn--sm"
+          [attr.aria-label]="playing() ? 'Pause' : 'Play'"
+          (click)="togglePlay()"
+        >
+          <nex-icon [name]="playing() ? 'pause' : 'play'" [size]="16" />
+        </button>
+        <nex-button-toggle
+          size="small"
+          ariaLabel="Speed"
+          [options]="speeds"
+          [showCheck]="false"
+          [value]="speed()"
+          (valueChange)="speed.set($any($event))"
+        />
+        <div class="swatches" role="radiogroup" aria-label="Preview background">
+          @for (b of backgrounds; track b.label) {
+            <button
+              type="button"
+              role="radio"
+              class="swatch"
+              [class.swatch--checker]="b.value === 'transparent'"
+              [class.swatch--active]="background() === b.value"
+              [style.background]="swatchBg(b.value)"
+              [attr.aria-checked]="background() === b.value"
+              [attr.aria-label]="b.label"
+              [title]="b.label"
+              (click)="background.set(b.value)"
+            ></button>
+          }
+        </div>
+      </div>
+
+      <div class="about">
+        <span class="chip">{{ category() }}</span>
+        <p>{{ description() }}</p>
+      </div>
+    </section>
+
+    <section class="side">
+      <nex-button-toggle
+        class="tabs"
+        size="small"
+        ariaLabel="Panel"
+        [options]="tabs"
+        [showCheck]="false"
+        [value]="tab()"
+        (valueChange)="tab.set($any($event))"
+      />
+
+      @switch (tab()) {
+        @case ('download') {
+          <div class="box">
+            @if (downloads.isLoading()) {
+              <p class="ui-hint">Preparing downloads…</p>
+            }
+            @for (d of downloads.value() ?? []; track d.label; let first = $first) {
+              <button type="button" class="option" (click)="download(d)">
+                <nex-icon
+                  [name]="d.ext === 'lottie' ? 'package' : 'file-json'"
+                  [size]="20"
+                  class="option__icon"
+                />
+                <span class="option__text">
+                  <span class="option__label">
+                    {{ d.label }}
+                    @if (first) {
+                      <span class="badge">Recommended</span>
+                    }
+                  </span>
+                  <span class="option__hint">{{ d.hint }}</span>
+                </span>
+                <span class="option__size">{{ formatSize(d.blob.size) }}</span>
+                <nex-icon name="download" [size]="16" class="option__go" />
+              </button>
+            }
+            @if (data()) {
+              <div class="other">
+                <span class="other__title">Other export formats</span>
+                <div class="formats">
+                  @for (f of exportFormats; track f.id) {
+                    <button
+                      type="button"
+                      class="ui-btn ui-btn--sm format"
+                      [disabled]="!!exporting()"
+                      [attr.aria-busy]="exporting()?.format === f.id || null"
+                      [title]="f.title"
+                      (click)="exportFormat(f.id)"
+                    >
+                      @if (exporting()?.format === f.id) {
+                        {{ (exporting()!.progress * 100).toFixed(0) }}%
+                      } @else {
+                        {{ f.label }}
+                      }
+                    </button>
+                  }
+                </div>
+                @if (exporting(); as e) {
+                  <div
+                    class="progress"
+                    role="progressbar"
+                    aria-label="Export progress"
+                    [attr.aria-valuenow]="(e.progress * 100).toFixed(0)"
+                    aria-valuemin="0"
+                    aria-valuemax="100"
+                  >
+                    <span [style.width.%]="e.progress * 100"></span>
+                  </div>
+                  <p class="ui-hint">Rendering {{ e.format.toUpperCase() }} in your browser…</p>
+                }
+                @if (exportError()) {
+                  <p class="ui-error">{{ exportError() }}</p>
+                }
+              </div>
+            }
+          </div>
+        }
+        @case ('embed') {
+          <div class="box">
+            <div class="asset">
+              <span class="other__title">Asset path</span>
+              <div class="asset__row">
+                <code>{{ path() }}</code>
+                <button
+                  type="button"
+                  class="ui-btn ui-btn--icon ui-btn--sm"
+                  aria-label="Copy path"
+                  (click)="copy('path', path())"
+                >
+                  <nex-icon [name]="copied() === 'path' ? 'check' : 'copy'" [size]="14" />
+                </button>
+              </div>
+            </div>
+            @for (s of snippets(); track s.id) {
+              <div class="snippet">
+                <div class="snippet__head">
+                  <span>{{ s.label }}</span>
+                  <button
+                    type="button"
+                    class="ui-btn ui-btn--text ui-btn--sm"
+                    (click)="copy(s.id, s.code)"
+                  >
+                    <nex-icon [name]="copied() === s.id ? 'check' : 'copy'" [size]="14" />
+                    {{ copied() === s.id ? 'Copied' : 'Copy' }}
+                  </button>
+                </div>
+                <pre><code>{{ s.code }}</code></pre>
+              </div>
+            }
+          </div>
+        }
+        @case ('details') {
+          <div class="box">
+            @if (details().length) {
+              <dl class="facts">
+                @for (f of details(); track f.label) {
+                  <div class="fact">
+                    <dt><nex-icon [name]="f.icon" [size]="14" /> {{ f.label }}</dt>
+                    <dd>{{ f.value }}</dd>
+                  </div>
+                }
+              </dl>
+              @if (colors().length) {
+                <span class="other__title"><nex-icon name="palette" [size]="14" /> Colors</span>
+                <div class="colors">
+                  @for (c of colors(); track c) {
+                    <button
+                      type="button"
+                      class="color"
+                      [style.background]="c"
+                      [attr.aria-label]="'Copy ' + c"
+                      [title]="copied() === c ? 'Copied' : c"
+                      (click)="copy(c, c)"
+                    ></button>
+                  }
+                </div>
+              }
+            }
+          </div>
+        }
+      }
+    </section>
+  </div>
+
+  @if (related().length) {
+    <section class="related">
+      <h4>Related animations</h4>
+      <div class="related__grid">
+        @for (r of related(); track r.name) {
+          <button
+            type="button"
+            class="card related__card"
+            [class.card--dark]="isDarkBg(r.data?.meta?.bg)"
+            [style.background]="r.data?.meta?.bg ?? null"
+            [attr.aria-label]="r.name"
+            (click)="picked.emit(r)"
+          >
+            <nex-lottie [data]="r.data ?? null" size="96px" />
+            <span class="name">{{ r.name }}</span>
+          </button>
+        }
+      </div>
+    </section>
+  }
+</nex-dialog>
