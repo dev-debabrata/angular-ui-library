@@ -20,7 +20,7 @@
   "private": true,
   "packageManager": "npm@11.6.2",
   "engines": {
-    "node": ">=20.0.0"
+    "node": "22.x"
   },
   "dependencies": {
     "@angular/cdk": "~21.2.0",
