@@ -6,11 +6,20 @@ export const VERSION = `nexui@${pkg.version}`;
 
 import { environment } from '../../environments/environment';
 
+/** Ensures URLs always have a protocol (http/https) and a trailing slash */
+function formatUrl(url: string): string {
+  let formatted = (url || '').trim();
+  if (!/^https?:\/\//i.test(formatted) && !formatted.startsWith('/')) {
+    formatted = `https://${formatted}`;
+  }
+  return formatted.endsWith('/') ? formatted : `${formatted}/`;
+}
+
 /** The Angular app (`npm start`), home of the NexUI site; Storybook's logo and site entries open it */
-export const APP_URL = environment.appUrl;
+export const APP_URL = formatUrl(environment.appUrl);
 
 /** Storybook (`npm run storybook`), where the site's links to other pages go: component docs, Get Started, Effects */
-export const STORYBOOK_URL = environment.storybookUrl;
+export const STORYBOOK_URL = formatUrl(environment.storybookUrl);
 
 /** Link to a page by its short URL (see manager.ts): the site's pages stay in the app, the others open Storybook */
 export function pageHref(page: string) {
