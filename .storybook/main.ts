@@ -1,3 +1,4 @@
+import path from 'node:path';
 import type { StorybookConfig } from '@storybook/angular-vite';
 
 const config: StorybookConfig = {
@@ -25,5 +26,17 @@ const config: StorybookConfig = {
     { from: '../src/stories/icons/svg', to: '/icons' },
     { from: '../src/stories/nexlottie/files', to: '/lottie' },
   ],
+  async viteFinal(config, { configType }) {
+    if (configType === 'PRODUCTION') {
+      config.resolve = config.resolve || {};
+      const alias = Array.isArray(config.resolve.alias) ? {} : { ...(config.resolve.alias || {}) };
+      alias[path.resolve(import.meta.dirname, '../src/environments/environment.ts')] =
+        path.resolve(import.meta.dirname, '../src/environments/environment.prod.ts');
+      alias['../../environments/environment'] =
+        path.resolve(import.meta.dirname, '../src/environments/environment.prod.ts');
+      config.resolve.alias = alias;
+    }
+    return config;
+  },
 };
 export default config;

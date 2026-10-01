@@ -4,11 +4,13 @@ import pkg from '../package.json';
 
 export const VERSION = `nexui@${pkg.version}`;
 
+import { environment } from '../../environments/environment';
+
 /** The Angular app (`npm start`), home of the NexUI site; Storybook's logo and site entries open it */
-export const APP_URL = 'http://localhost:4200/';
+export const APP_URL = environment.appUrl;
 
 /** Storybook (`npm run storybook`), where the site's links to other pages go: component docs, Get Started, Effects */
-export const STORYBOOK_URL = 'http://localhost:6006/';
+export const STORYBOOK_URL = environment.storybookUrl;
 
 /** Link to a page by its short URL (see manager.ts): the site's pages stay in the app, the others open Storybook */
 export function pageHref(page: string) {
