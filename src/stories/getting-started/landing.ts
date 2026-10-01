@@ -15,11 +15,27 @@ function formatUrl(url: string): string {
   return formatted.endsWith('/') ? formatted : `${formatted}/`;
 }
 
+/** Check if currently running in a local development environment */
+const isLocal = () => {
+  if (typeof window !== 'undefined' && window.location) {
+    const host = window.location.hostname;
+    return host === 'localhost' || host === '127.0.0.1' || host.endsWith('.local');
+  }
+  return typeof process !== 'undefined' && process.env?.['NODE_ENV'] !== 'production';
+};
+
+const PROD_APP = 'https://nexui-dev.vercel.app/';
+const PROD_STORYBOOK = 'https://nexui-storybook-dev.vercel.app/';
+
 /** The Angular app (`npm start`), home of the NexUI site; Storybook's logo and site entries open it */
-export const APP_URL = formatUrl(environment.appUrl);
+export const APP_URL = isLocal()
+  ? 'http://localhost:4200/'
+  : formatUrl(environment.appUrl && !environment.appUrl.includes('localhost') ? environment.appUrl : PROD_APP);
 
 /** Storybook (`npm run storybook`), where the site's links to other pages go: component docs, Get Started, Effects */
-export const STORYBOOK_URL = formatUrl(environment.storybookUrl);
+export const STORYBOOK_URL = isLocal()
+  ? 'http://localhost:6006/'
+  : formatUrl(environment.storybookUrl && !environment.storybookUrl.includes('localhost') ? environment.storybookUrl : PROD_STORYBOOK);
 
 /** Link to a page by its short URL (see manager.ts): the site's pages stay in the app, the others open Storybook */
 export function pageHref(page: string) {
