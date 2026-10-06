@@ -1,13 +1,19 @@
+/* A popover (top layer); inset/margin/overflow/color undo its defaults. Variants set --op-bg/-border/-arrow */
 .overlay-panel {
+  --op-bg: var(--ui-surface);
+  --op-border: var(--ui-border);
   position: fixed;
+  inset: auto;
   z-index: 1050;
   box-sizing: border-box;
   width: max-content;
   max-width: calc(100vw - 16px);
+  margin: 0;
   padding: 20px;
-  border: 1px solid var(--ui-border);
+  overflow: visible;
+  border: 1px solid var(--op-border);
   border-radius: var(--ui-radius-lg);
-  background: var(--ui-surface);
+  background: var(--op-bg);
   box-shadow: var(--ui-shadow-lg);
   color: var(--ui-text);
   font-size: 14px;
@@ -16,16 +22,16 @@
 
   /* Arrow: a rotated square pointing at the target */
   &::before {
-    content: '';
+    content: var(--op-arrow-content, '');
     position: absolute;
     top: -6px;
     left: var(--arrow-left, 20px);
     width: 10px;
     height: 10px;
-    border: 1px solid var(--ui-border);
+    border: 1px solid var(--op-border);
     border-right: none;
     border-bottom: none;
-    background: var(--ui-surface);
+    background: var(--op-arrow, var(--op-bg));
     transform: translateX(-50%) rotate(45deg);
   }
 }
@@ -38,6 +44,62 @@
     bottom: -6px;
     transform: translateX(-50%) rotate(225deg);
   }
+}
+
+.overlay-panel--glass {
+  --op-bg: color-mix(in srgb, var(--ui-surface) 72%, transparent);
+  --op-border: color-mix(in srgb, #fff 45%, transparent);
+  backdrop-filter: blur(16px) saturate(1.6);
+}
+
+.overlay-panel--glow {
+  --op-border: var(--ui-primary);
+  border-color: transparent;
+  background:
+    linear-gradient(var(--op-bg), var(--op-bg)) padding-box,
+    var(--ui-gradient) border-box;
+  box-shadow:
+    var(--ui-shadow-lg),
+    0 12px 40px -12px color-mix(in srgb, var(--ui-primary) 55%, transparent);
+}
+
+/* Gradient: the header sits on a gradient band (the arrow takes its color when below) */
+.overlay-panel--gradient:has(.overlay-panel-header) {
+  &:not(.overlay-panel--above) {
+    --op-arrow: var(--ui-primary);
+  }
+  .overlay-panel-header {
+    margin: -20px -20px 16px;
+    padding: 16px 20px;
+    border-radius: calc(var(--ui-radius-lg) - 1px) calc(var(--ui-radius-lg) - 1px) 0 0;
+    background: var(--ui-gradient);
+    color: #fff;
+  }
+  np-icon,
+  .overlay-panel-close {
+    color: #fff;
+  }
+}
+
+.overlay-panel--minimal {
+  --op-border: transparent;
+  --op-arrow-content: none;
+}
+
+.overlay-panel-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+  padding-right: 24px;
+  font-size: 15px;
+}
+
+.overlay-panel-footer:not(:empty) {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 16px;
 }
 
 .overlay-panel-close {
@@ -57,5 +119,11 @@
   from {
     opacity: 0;
     transform: scale(0.94);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .overlay-panel {
+    animation: none;
   }
 }

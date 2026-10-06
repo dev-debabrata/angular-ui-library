@@ -6,18 +6,19 @@
   overflow: hidden;
   max-width: 380px;
   padding: 24px 0;
-  border: 1px solid var(--ui-border);
+  border: 1px solid var(--card-border, var(--ui-border));
   border-radius: var(--ui-radius-lg);
-  background: var(--ui-surface);
-  box-shadow: var(--ui-shadow);
-  transition: box-shadow var(--ui-ease);
+  background: var(--card-bg, var(--ui-surface));
+  box-shadow: var(--card-shadow, var(--ui-shadow));
+  transition: var(--ui-ease);
+  transition-property: box-shadow, border-color;
 
   &:hover {
-    box-shadow: var(--ui-shadow-lg);
+    box-shadow: var(--card-hover, var(--ui-shadow-lg));
   }
 
-  /* Gradient accent on plain cards (an image takes its place on media cards) */
-  &:not(.card--media)::before {
+  /* Gradient accent on plain default cards (an image takes its place on media cards) */
+  &.card--default:not(.card--media)::before {
     content: '';
     position: absolute;
     inset: 0 0 auto;
@@ -26,8 +27,133 @@
   }
 
   /* Image first: no top padding, it sits flush with the card edge */
-  &:has(> .card-image:first-child) {
+  &:not(.card--horizontal):has(> .card-image:first-child) {
     padding-top: 0;
+  }
+
+  &:has(.card-action:focus-visible) {
+    box-shadow: var(--ui-ring);
+  }
+
+  /* Loading: only the skeleton placeholders and the badge show */
+  &[aria-busy] > :not(i, .card-skeleton, .card-badge) {
+    display: none;
+  }
+}
+
+.card--elevated {
+  --card-border: transparent;
+  --card-shadow: var(--ui-shadow-lg);
+  --card-hover: 0 24px 48px -16px color-mix(in srgb, var(--ui-primary) 35%, transparent);
+}
+
+.card--outlined {
+  --card-shadow: none;
+  --card-hover: none;
+  &:hover {
+    border-color: var(--ui-primary);
+  }
+}
+
+.card--glass {
+  --card-bg: color-mix(in srgb, var(--ui-surface) 55%, transparent);
+  --card-border: color-mix(in srgb, #fff 45%, transparent);
+  backdrop-filter: blur(14px) saturate(1.6);
+}
+
+/* Gradient border: the surface on the padding box, the gradient under the transparent border */
+.card--gradient {
+  --card-border: transparent;
+  --card-bg: linear-gradient(var(--ui-surface) 0 0) padding-box, var(--ui-gradient) border-box;
+  border-width: 2px;
+}
+
+.card--glow {
+  --glow: color-mix(in srgb, var(--ui-accent) 55%, transparent);
+  --card-hover: 0 0 0 1px var(--ui-primary), 0 16px 48px -12px var(--glow);
+}
+
+.card--horizontal {
+  max-width: 640px;
+  min-height: 200px;
+  padding-left: 40%;
+  & > .card-image {
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 40%;
+    height: 100% !important;
+  }
+}
+
+.card--overlay {
+  display: grid;
+  & > :is(.card-image, .card-header) {
+    grid-area: 1 / 1;
+  }
+  & > .card-header {
+    align-self: end;
+    padding: 48px 24px 20px;
+    background: linear-gradient(transparent, rgb(0 0 0 / 0.7));
+    color: #fff;
+    & .card-subtitle {
+      color: inherit;
+      opacity: 0.85;
+    }
+  }
+}
+
+/* Link or button over the whole card */
+.card-action {
+  all: unset;
+  position: absolute;
+  inset: 0;
+  cursor: pointer;
+}
+
+.card-badge {
+  position: absolute;
+  inset: 14px 14px auto auto;
+  padding: 4px 10px;
+  border-radius: var(--ui-radius-full);
+  background: var(--ui-gradient);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  box-shadow: var(--ui-shadow-sm);
+}
+
+/* Loading skeleton: this template's <i> placeholders shimmer */
+i {
+  --sk: var(--ui-surface-sunken);
+  background: linear-gradient(90deg, var(--sk) 30%, var(--ui-surface-muted), var(--sk) 70%);
+  background-size: 300%;
+}
+
+.card-skeleton {
+  display: grid;
+  gap: 10px;
+  & i {
+    height: 12px;
+    border-radius: var(--ui-radius-full);
+    &:first-child {
+      width: 60%;
+      height: 18px;
+    }
+    &:last-child {
+      width: 80%;
+    }
+  }
+}
+
+@keyframes card-shimmer {
+  from {
+    background-position: 100% 0;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  i {
+    animation: card-shimmer 1.4s linear infinite;
   }
 }
 
@@ -78,6 +204,8 @@
 
 /* Footer actions (projected with [cardFooter], which uses display: contents from theme.css) */
 .card-footer {
+  position: relative;
+  z-index: 1;
   display: flex;
   flex-wrap: wrap;
   gap: 10px;

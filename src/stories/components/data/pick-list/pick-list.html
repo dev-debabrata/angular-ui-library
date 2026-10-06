@@ -1,4 +1,4 @@
-<div class="pick-list" cdkDropListGroup>
+<div class="pick-list" [class]="'pick-list--' + variant()" cdkDropListGroup>
   @for (side of sides; track side; let first = $first) {
     <section class="pick-list-panel" [class]="'pick-list-panel--' + side">
       <header class="pick-list-header">
@@ -7,8 +7,16 @@
             <np-icon [name]="first ? 'layers' : 'list-checks'" [size]="14" />
           </span>
           {{ header(side) }}
+          @if (selected[side]().size; as n) {
+            <small class="pick-list-selected">{{ n }} selected</small>
+          }
         </span>
-        <span class="pick-list-count">{{ (first ? source() : target()).length }}</span>
+        <span class="pick-list-count" [class.pick-list-count--full]="!first && !room()">
+          {{
+            (first ? source() : target()).length +
+              (!first && targetLimit() ? ' / ' + targetLimit() : '')
+          }}
+        </span>
       </header>
       @if (filter()) {
         <np-search-input
@@ -22,6 +30,7 @@
         cdkDropList
         [cdkDropListData]="side"
         [cdkDropListDisabled]="!dragdrop()"
+        [cdkDropListEnterPredicate]="canEnter"
         (cdkDropListDropped)="drop($event)"
         role="listbox"
         aria-multiselectable="true"
@@ -47,7 +56,15 @@
                 [ngTemplateOutletContext]="{ $implicit: item }"
               />
             } @else {
-              {{ label(item) }}
+              @if (optionIcon() && field(item, optionIcon()); as icon) {
+                <span class="pick-list-item-icon"><np-icon [name]="icon" [size]="16" /></span>
+              }
+              <span class="pick-list-item-text">
+                {{ field(item) }}
+                @if (optionDescription()) {
+                  <small>{{ field(item, optionDescription()) }}</small>
+                }
+              </span>
             }
           </li>
         } @empty {
@@ -72,7 +89,9 @@
               [attr.aria-label]="
                 'Move ' + (all ? 'all' : 'selected') + ' to ' + (toTarget ? 'target' : 'source')
               "
-              [disabled]="all ? !visible[from]().length : !selected[from]().size"
+              [disabled]="
+                (toTarget && !room()) || (all ? !visible[from]().length : !selected[from]().size)
+              "
               (click)="all ? move(from, visible[from]()) : move(from)"
             >
               <np-icon

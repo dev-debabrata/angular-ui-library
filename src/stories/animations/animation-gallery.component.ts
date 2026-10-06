@@ -1,4 +1,12 @@
-import { Component, ElementRef, computed, inject, input, signal } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  computed,
+  inject,
+  input,
+  signal,
+  linkedSignal,
+} from '@angular/core';
 
 import { copyToClipboard } from '../utils/clipboard';
 import {
@@ -70,7 +78,9 @@ export class AnimationGalleryComponent {
 
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
 
-  protected readonly query = signal('');
+  /** Search text to start with (the site search opens the page with ?q=…) */
+  readonly q = input<string | undefined>('');
+  protected readonly query = linkedSignal(() => this.q() ?? '');
   protected readonly category = signal('All');
   /** Seconds; null keeps each animation's own duration */
   protected readonly duration = signal<number | null>(null);

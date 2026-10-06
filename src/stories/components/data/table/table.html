@@ -1,16 +1,39 @@
+@let total = sortedData().length;
+@let perPage = rows();
+@let shown = perPage ? sortedData().slice((page() - 1) * perPage, page() * perPage) : sortedData();
+@let noMatch = filterText() && data().length;
 @if (filterable()) {
   <div class="table-filter">
     <np-search-input [placeholder]="filterPlaceholder()" (search)="filterText.set($event)" />
   </div>
 }
-<div class="table-wrapper">
-  <table class="table" [class.table--striped]="striped()" [class.table--bordered]="bordered()">
+<div
+  class="table-wrapper"
+  [class]="'np-table--' + variant() + ' np-table--' + size()"
+  [class.is-striped]="striped()"
+  [class.is-bordered]="bordered()"
+  [style.max-height]="scrollHeight() || null"
+>
+  <table class="table" [attr.aria-busy]="loading() || null">
     <thead>
       <tr>
+        @if (selectable()) {
+          <th class="table__check">
+            <input
+              type="checkbox"
+              aria-label="Select all rows"
+              [checked]="total > 0 && selectedCount() === total"
+              [indeterminate]="selectedCount() > 0 && selectedCount() < total"
+              [disabled]="!total"
+              (change)="select(sortedData(), selectedCount() < total)"
+            />
+          </th>
+        }
         @for (column of columns(); track column.key) {
           <th
             [class.sortable]="column.sortable"
             [class.sorted]="sortKey() === column.key"
+            [style.text-align]="column.align"
             [attr.aria-sort]="ariaSort(column.key)"
             (click)="column.sortable && sortBy(column.key)"
           >
@@ -25,19 +48,69 @@
       </tr>
     </thead>
     <tbody>
-      @for (row of sortedData(); track $index) {
-        <tr (click)="rowClick.emit(row)">
-          @for (column of columns(); track column.key) {
-            <td>{{ row[column.key] }}</td>
-          }
-        </tr>
-      } @empty {
-        <tr>
-          <td class="empty" [attr.colspan]="columns().length">
-            {{ filterText() && data().length ? noResultsMessage() : emptyMessage() }}
-          </td>
-        </tr>
+      @if (loading()) {
+        @for (i of [1, 2, 3, 4, 5]; track i) {
+          <tr class="table__skeleton" aria-hidden="true">
+            @if (selectable()) {
+              <td></td>
+            }
+            @for (column of columns(); track column.key) {
+              <td><span></span></td>
+            }
+          </tr>
+        }
+      } @else {
+        @for (row of shown; track $index) {
+          @let selected = selection().includes(row);
+          <tr [class.selected]="selected" (click)="rowClick.emit(row)">
+            @if (selectable()) {
+              <td class="table__check" (click)="$event.stopPropagation()">
+                <input
+                  type="checkbox"
+                  aria-label="Select row"
+                  [checked]="selected"
+                  (change)="select([row], !selected)"
+                />
+              </td>
+            }
+            @for (column of columns(); track column.key) {
+              @let value = row[column.key];
+              <td [style.text-align]="column.align">
+                @if (column.image) {
+                  <img class="table__avatar" [src]="'' + row[column.image]" alt="" />
+                }
+                @if (column.tones) {
+                  <span
+                    class="table__status"
+                    [class]="'tone-' + (column.tones['' + value] ?? 'neutral')"
+                  >
+                    {{ value }}
+                  </span>
+                } @else {
+                  {{ value }}
+                }
+              </td>
+            }
+          </tr>
+        } @empty {
+          <tr>
+            <td class="empty" [attr.colspan]="columns().length + (selectable() ? 1 : 0)">
+              <np-icon [name]="noMatch ? 'search-x' : 'inbox'" [size]="32" />
+              {{ noMatch ? noResultsMessage() : emptyMessage() }}
+            </td>
+          </tr>
+        }
       }
     </tbody>
   </table>
 </div>
+@if (perPage && !loading()) {
+  <np-pagination
+    class="table-pager"
+    size="small"
+    [(page)]="page"
+    [totalRecords]="total"
+    [rows]="perPage"
+    showSummary
+  />
+}

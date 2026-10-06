@@ -1,9 +1,35 @@
-<label class="checkbox" [class.checkbox--disabled]="disabled()">
-  <input
-    type="checkbox"
-    [checked]="checked()"
-    [disabled]="disabled()"
-    (change)="checked.set($any($event.target).checked)"
-  />
-  <span>{{ label() }}</span>
+@let withIcon = !!icon() && (variant() === 'card' || variant() === 'chip');
+<label
+  class="checkbox"
+  [class]="['checkbox--' + variant(), 'checkbox--' + size()]"
+  [class.checkbox--on]="checked() || indeterminate()"
+  [class.checkbox--disabled]="disabled()"
+>
+  @if (withIcon) {
+    <span class="checkbox__icon"><np-icon [name]="icon()" [size]="variant() === 'card' ? 20 : 16" /></span>
+  }
+  <span class="checkbox__box">
+    <input
+      type="checkbox"
+      class="checkbox__input"
+      [checked]="checked()"
+      [indeterminate]="indeterminate()"
+      [disabled]="disabled()"
+      [attr.aria-invalid]="invalid() || null"
+      (change)="onChange($event)"
+    />
+    <svg class="checkbox__mark" viewBox="0 0 20 20" aria-hidden="true">
+      <path class="checkbox__path" pathLength="1" [attr.d]="indeterminate() ? 'M5 10h10' : 'M4.5 10.5l3.8 3.8 7.2-8.3'" />
+    </svg>
+  </span>
+  @if (label() || description()) {
+    <span class="checkbox__text">
+      @if (label()) {
+        <span class="checkbox__label">{{ label() }}</span>
+      }
+      @if (description()) {
+        <span class="checkbox__description">{{ description() }}</span>
+      }
+    </span>
+  }
 </label>

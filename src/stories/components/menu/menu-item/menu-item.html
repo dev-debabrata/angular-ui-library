@@ -7,7 +7,9 @@
     class="mi"
     [attr.role]="tree() ? null : 'menuitem'"
     [href]="it.url"
+    [class.mi--active]="active()"
     [class.mi--disabled]="it.disabled"
+    [attr.aria-current]="active() || null"
     [attr.aria-disabled]="it.disabled || null"
     [attr.tabindex]="it.disabled ? -1 : null"
   >
@@ -19,8 +21,9 @@
     class="mi"
     [attr.role]="tree() ? null : 'menuitem'"
     [class.mi--open]="open()"
-    [class.mi--active]="open() && !tree()"
+    [class.mi--active]="active() || (open() && !tree())"
     [disabled]="it.disabled"
+    [attr.aria-current]="active() || null"
     [attr.aria-haspopup]="sub && !tree() ? 'menu' : null"
     [attr.aria-expanded]="sub ? open() : null"
   >

@@ -4,26 +4,28 @@
   gap: 10px;
 }
 
+/* Variants set --acc-border, --acc-bg, --acc-radius, --acc-shadow and the open item's --acc-open-* */
 .accordion-item {
   overflow: hidden;
-  border: 1px solid var(--ui-border);
-  border-radius: var(--ui-radius);
-  background: var(--ui-surface);
-  box-shadow: var(--ui-shadow-sm);
+  border: 1px solid var(--acc-border, var(--ui-border));
+  border-radius: var(--acc-radius, var(--ui-radius));
+  background: var(--acc-bg, var(--ui-surface));
+  box-shadow: var(--acc-shadow, var(--ui-shadow-sm));
   transition:
     border-color var(--ui-ease),
     box-shadow var(--ui-ease);
 }
 
 .accordion-item:has([aria-expanded='true']) {
-  border-color: var(--ui-primary);
-  box-shadow: 0 4px 14px rgba(99, 102, 241, 0.12);
+  border-color: var(--acc-open-border, var(--ui-primary));
+  box-shadow: var(--acc-open-shadow, 0 4px 14px rgba(99, 102, 241, 0.12));
 }
 
 .accordion-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 12px;
   width: 100%;
   padding: 16px 18px;
   border: none;
@@ -34,6 +36,19 @@
   font-weight: 600;
   text-align: left;
   cursor: pointer;
+  transition: background var(--ui-ease);
+  &[aria-expanded='true'] {
+    background: var(--acc-open-bg, none);
+    color: var(--acc-open-fg, var(--ui-text));
+    & + .accordion-body {
+      grid-template-rows: 1fr;
+      padding-bottom: 16px;
+    }
+  }
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
 }
 
 .accordion-header:focus-visible {
@@ -41,12 +56,22 @@
   box-shadow: inset var(--ui-ring);
 }
 
+.accordion-title {
+  flex: 1;
+  & small {
+    display: block;
+    color: color-mix(in srgb, currentColor 65%, transparent);
+    font-size: 13px;
+    font-weight: 400;
+  }
+}
+
 .accordion-icon {
   display: grid;
   place-items: center;
   width: 24px;
   height: 24px;
-  border-radius: 50%;
+  border-radius: var(--ui-radius-full);
   background: var(--ui-surface-sunken);
   color: var(--ui-text-muted);
   font-size: 12px;
@@ -56,23 +81,95 @@
     color var(--ui-ease);
 }
 
+.accordion--start .accordion-icon {
+  order: -1;
+}
+
 .accordion-icon--open {
   background: var(--ui-gradient);
   color: #fff;
   transform: rotate(180deg);
 }
 
+/* Always rendered, so the height animates (grid rows 0fr -> 1fr) */
 .accordion-body {
-  padding: 0 18px 16px;
+  display: grid;
+  grid-template-rows: 0fr;
+  padding: 0 18px;
   color: var(--ui-text-muted);
   font-size: 14px;
   line-height: 1.6;
-  animation: body-in 0.2s ease-out;
+  transition: 0.25s ease;
+  transition-property: grid-template-rows, padding;
+  & > div {
+    overflow: hidden;
+  }
 }
 
-@keyframes body-in {
-  from {
-    opacity: 0;
-    transform: translateY(-4px);
+.accordion--bordered,
+.accordion--minimal,
+.accordion--soft {
+  --acc-shadow: none;
+  --acc-open-shadow: none;
+  --acc-open-fg: var(--ui-primary);
+}
+
+.accordion--bordered,
+.accordion--minimal {
+  --acc-radius: 0;
+  gap: 0;
+}
+
+/* Bordered: stacked items overlap their borders; the box clips them to one rounded outline */
+.accordion--bordered {
+  --acc-open-border: var(--ui-border);
+  overflow: hidden;
+  border-radius: var(--ui-radius);
+  & .accordion-item + .accordion-item {
+    margin-top: -1px;
+  }
+}
+
+.accordion--minimal {
+  --acc-bg: transparent;
+  & .accordion-item {
+    border-width: 0 0 1px;
+  }
+  & :is(.accordion-header, .accordion-body) {
+    padding-inline: 4px;
+  }
+}
+
+.accordion--soft {
+  --acc-border: transparent;
+  --acc-bg: var(--ui-surface-muted);
+  --acc-open-border: transparent;
+  --acc-open-bg: var(--ui-primary-soft);
+}
+
+.accordion--glass {
+  --acc-bg: color-mix(in srgb, var(--ui-surface) 60%, transparent);
+  --acc-border: color-mix(in srgb, #fff 45%, transparent);
+  & .accordion-item {
+    backdrop-filter: blur(12px) saturate(1.6);
+  }
+}
+
+.accordion--gradient {
+  --acc-open-border: transparent;
+  --acc-open-bg: var(--ui-gradient);
+  --acc-open-fg: #fff;
+  & [aria-expanded='true'] :is(.np-icon--soft, .accordion-icon) {
+    background: color-mix(in srgb, #fff 22%, transparent);
+    color: inherit;
+  }
+  & [aria-expanded='true'] + .accordion-body {
+    padding-top: 14px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .accordion * {
+    transition: none !important;
   }
 }

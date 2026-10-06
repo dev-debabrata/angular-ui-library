@@ -1,6 +1,7 @@
 <div
   class="shell"
-  [class.shell--card]="card()"
+  [class]="'shell--' + variant()"
+  [class.shell--card]="isCard()"
   [class.shell--inline]="layout() === 'inline'"
   aria-live="polite"
 >
@@ -30,7 +31,9 @@
       <button type="button" class="ui-btn" (click)="reset()">Start over</button>
     </div>
   } @else {
-    @if (steps().length) {
+    @if (steps().length && progress() === 'stepper') {
+      <np-stepper [steps]="stepTitles()" [activeStep]="step()" />
+    } @else if (steps().length) {
       <div class="progress">
         <div class="progress__text">
           <span>Step {{ step() + 1 }} of {{ steps().length }}</span>
@@ -67,19 +70,24 @@
               [placeholder]="field.placeholder ?? ''"
               [hint]="field.hint ?? ''"
               [error]="message"
+              [variant]="fieldVariant()"
+              [icon]="field.icon ?? ''"
               [disabled]="locked()"
               [value]="text(field)"
               (valueChange)="set(field, $event)"
             />
-          } @else if (isOptions(field) || field.type === 'rating') {
+          } @else if (isOptions(field) || field.type === 'rating' || field.type === 'emoji') {
             <span class="ui-label" [id]="id + field.name">
               {{ field.label }}
               @if (field.required) {
                 <span class="ui-error">*</span>
               }
             </span>
-            @if (field.type === 'rating') {
+            @if (field.type === 'rating' || field.type === 'emoji') {
               <np-rating
+                [variant]="field.type === 'emoji' ? 'emoji' : 'star'"
+                [size]="field.type === 'emoji' ? 'large' : 'medium'"
+                [labels]="optionLabels(field)"
                 [readonly]="locked()"
                 [value]="rating(field)"
                 (valueChange)="set(field, $event); touch(field)"
@@ -103,7 +111,12 @@
                     (click)="pick(field, option)"
                   >
                     @if (field.type !== 'color') {
-                      <span class="option__label">{{ option.label }}</span>
+                      <span class="option__label">
+                        @if (option.icon) {
+                          <np-icon class="option__icon" [name]="option.icon" [size]="16" />
+                        }
+                        {{ option.label }}
+                      </span>
                       @if (option.description) {
                         <span class="option__description">{{ option.description }}</span>
                       }
@@ -120,6 +133,7 @@
                   [placeholder]="field.placeholder ?? ''"
                   [rows]="field.rows ?? 4"
                   [maxLength]="field.maxLength ?? 0"
+                  [variant]="fieldVariant()"
                   [disabled]="locked()"
                   [value]="text(field)"
                   (valueChange)="set(field, $event)"
@@ -130,6 +144,8 @@
                   [label]="label(field)"
                   [options]="field.options ?? []"
                   [placeholder]="field.placeholder ?? 'Select an option'"
+                  [variant]="fieldVariant()"
+                  [icon]="field.icon ?? ''"
                   [disabled]="locked()"
                   [value]="text(field)"
                   (valueChange)="set(field, $event); touch(field)"
@@ -140,6 +156,35 @@
                   [label]="label(field)"
                   [options]="field.options ?? []"
                   [horizontal]="true"
+                  [disabled]="locked()"
+                  [value]="text(field)"
+                  (valueChange)="set(field, $event)"
+                />
+              }
+              @case ('number') {
+                <np-input-number
+                  [label]="label(field)"
+                  [variant]="fieldVariant()"
+                  [icon]="field.icon ?? ''"
+                  [min]="field.min"
+                  [max]="field.max"
+                  [step]="field.step ?? 1"
+                  [placeholder]="field.placeholder ?? ''"
+                  [invalid]="!!message"
+                  showButtons
+                  buttonLayout="split"
+                  [disabled]="locked()"
+                  [value]="number(field)"
+                  (valueChange)="set(field, $event ?? '')"
+                />
+              }
+              @case ('otp') {
+                <np-input-otp
+                  [label]="label(field)"
+                  [length]="field.length ?? 6"
+                  [placeholder]="field.placeholder ?? ''"
+                  [invalid]="!!message"
+                  integerOnly
                   [disabled]="locked()"
                   [value]="text(field)"
                   (valueChange)="set(field, $event)"

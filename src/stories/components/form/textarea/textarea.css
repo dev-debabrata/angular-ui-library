@@ -7,6 +7,12 @@ textarea {
   resize: vertical;
 }
 
+/* Auto-resize: the component sets the height, so there's no scrollbar or drag handle */
+.textarea--auto {
+  overflow: hidden;
+  resize: none;
+}
+
 .count {
   align-self: flex-end;
 }

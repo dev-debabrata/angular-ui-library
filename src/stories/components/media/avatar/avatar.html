@@ -1,11 +1,16 @@
 <span
   class="avatar"
-  [class]="'avatar--' + size()"
-  [style.background]="src() ? null : gradient()"
-  [attr.title]="name()"
+  [class]="'avatar--' + size() + ' avatar--' + variant()"
+  [class.avatar--more]="more()"
+  [style.--hue]="hue()"
+  [attr.title]="more() ? '+' + more() + ' more' : name()"
 >
-  @if (src()) {
+  @if (more()) {
+    +{{ more() }}
+  } @else if (src()) {
     <img [src]="src()" [alt]="name()" />
+  } @else if (!initials() && icon()) {
+    <np-icon [name]="icon()" [size]="{ small: 14, medium: 20, large: 32 }[size()]" />
   } @else {
     {{ initials() }}
   }

@@ -23,5 +23,5 @@
 }
 
 .badge--pill {
-  border-radius: 999px;
+  border-radius: var(--ui-radius-full);
 }

@@ -1,5 +1,6 @@
 /** Shared by the full-screen landing pages (Welcome, Components overview). Not part of the library */
-import pkg from '../../../package.json';
+// The npm package (src/package.json), not the repo's own package.json
+import pkg from '../../package.json';
 
 export const VERSION = `${pkg.name}@${pkg.version}`;
 
@@ -10,7 +11,7 @@ export const VERSION = `${pkg.name}@${pkg.version}`;
 export const PAGES = {
   welcome: '',
   catalog: 'components-overview',
-  getStarted: 'getting-started-use-in-react-vue-angular',
+  getStarted: 'getting-started-installation',
   icons: 'icons',
   animations: 'animations',
   lottie: 'nexlottie',

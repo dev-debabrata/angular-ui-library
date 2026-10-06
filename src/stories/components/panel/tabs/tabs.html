@@ -1,21 +1,47 @@
-<div class="tabs">
-  <div class="tab-list" role="tablist">
+<div class="tabs" [class]="'tabs--' + variant()" [class.tabs--vertical]="vertical()">
+  <div
+    class="tab-list"
+    [class.tab-list--stretch]="stretch()"
+    role="tablist"
+    [attr.aria-orientation]="vertical() ? 'vertical' : null"
+    (keydown)="onKeydown($event)"
+  >
     @for (tab of tabs(); track tab.id) {
+      @let active = tab.id === activeTab();
       <button
         type="button"
         role="tab"
         class="tab"
-        [class.tab--active]="tab.id === activeTab()"
-        [attr.aria-selected]="tab.id === activeTab()"
+        [id]="uid + '-tab-' + tab.id"
+        [class.tab--active]="active"
+        [attr.aria-selected]="active"
+        [attr.aria-controls]="uid + '-panel-' + tab.id"
+        [attr.tabindex]="active ? 0 : -1"
+        [disabled]="tab.disabled"
         (click)="activeTab.set(tab.id)"
       >
-        {{ tab.label }}
+        @if (tab.icon) {
+          <np-icon [name]="tab.icon" [size]="16" />
+        }
+        <span>{{ tab.label }}</span>
+        @if (tab.badge !== undefined) {
+          <span class="tab__badge">{{ tab.badge }}</span>
+        }
       </button>
     }
   </div>
+  <!-- A new panel per tab (tracked by id), so its entrance animation plays on every switch -->
   @for (tab of tabs(); track tab.id) {
     @if (tab.id === activeTab()) {
-      <div class="tab-panel" role="tabpanel">{{ tab.content }}</div>
+      <div
+        class="tab-panel"
+        role="tabpanel"
+        [id]="uid + '-panel-' + tab.id"
+        [attr.aria-labelledby]="uid + '-tab-' + tab.id"
+        tabindex="0"
+      >
+        {{ tab.content }}
+      </div>
     }
   }
 </div>

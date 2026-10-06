@@ -1,4 +1,8 @@
-<div class="panel-menu">
+<div
+  class="panel-menu"
+  [class]="'panel-menu--' + variant() + ' mi-look-' + variant()"
+  [class.panel-menu--collapsed]="collapsed()"
+>
   @for (panel of model(); track $index) {
     @let open = openPanels().includes(panel);
     <div class="pm-panel" [class.pm-panel--open]="open">
@@ -8,6 +12,8 @@
         chevron="chevron-down"
         [open]="open"
         [tree]="true"
+        [active]="panel === selected()"
+        [attr.title]="collapsed() ? panel.label : null"
         (click)="toggle($event, panel, openPanels, !multiple())"
       />
       @if (panel.items) {
@@ -33,6 +39,7 @@
               chevron="chevron-right"
               [open]="expanded"
               [tree]="true"
+              [active]="item === selected()"
               [style.--mi-pad]="'8px 12px 8px ' + (12 + depth * 18) + 'px'"
               (click)="toggle($event, item, expandedItems)"
             />

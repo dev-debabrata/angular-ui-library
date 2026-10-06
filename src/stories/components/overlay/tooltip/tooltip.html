@@ -1,6 +1,22 @@
 <span class="tooltip-wrapper" [attr.aria-describedby]="id">
   <ng-content />
-  <span class="tooltip" [class]="'tooltip--' + position()" role="tooltip" [id]="id">
+  <span
+    class="tooltip"
+    [class]="
+      'tooltip--' + position() + ' tooltip--' + variant() + (tone() ? ' tone-' + tone() : '')
+    "
+    [class.tooltip--no-arrow]="!arrow()"
+    [style.--tt-show.ms]="showDelay()"
+    [style.--tt-hide.ms]="hideDelay()"
+    role="tooltip"
+    [id]="id"
+  >
+    @if (heading()) {
+      <strong class="tooltip-heading">{{ heading() }}</strong>
+    }
     {{ text() }}
+    @for (key of shortcut() ? shortcut().split('+') : []; track $index) {
+      <kbd>{{ key }}</kbd>
+    }
   </span>
 </span>

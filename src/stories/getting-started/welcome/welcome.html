@@ -1,11 +1,10 @@
 <div class="welcome">
-  <!-- Hero: aurora blobs with a particle network on top -->
-  <np-aurora
-    class="hero"
-    [colors]="['#6366f1', '#a855f7', '#ec4899', '#0ea5e9']"
-    [opacity]="0.55"
-    [blur]="90"
-  >
+  <!-- Hero: the NexPrime banner as the background, with a particle network on top -->
+  <section class="hero">
+    <!-- Background: the NexPrime banner (public/nexprime-hero.svg), dimmed so the text reads on top -->
+    <div class="hero__bg" aria-hidden="true">
+      <img class="hero__banner" src="nexprime-hero.svg" alt="" width="1600" height="900" />
+    </div>
     <np-particles
       class="hero__particles"
       color="rgb(255 255 255 / 0.75)"
@@ -24,10 +23,10 @@
           ><i></i>{{ version }}</span
         >
         <span class="eyebrow np-anim-fade-down">
-          <np-icon name="sparkles" [size]="14" /> Angular 21 · Signals · SSR · Web Components
+          <np-icon name="sparkles" [size]="14" /> Angular 21 · React · Next.js · Vue · Svelte · HTML
         </span>
         <h1 class="hero__title np-anim-fade-up">
-          Build <span class="gradient-text">beautiful</span> Angular apps, faster
+          <span class="hero__shine">Build beautiful Angular apps, faster</span>
         </h1>
         <p class="hero__lead np-anim-fade-up">
           NexPrime is a next-generation UI library: accessible components, thousands of icons,
@@ -55,7 +54,7 @@
         </div>
       </div>
     </np-particles>
-  </np-aurora>
+  </section>
 
   <!-- Stats, floating over the hero's bottom edge -->
   <div class="stats">
@@ -256,11 +255,12 @@
           <span class="kicker">Quick start</span>
           <h2>Up and running in minutes</h2>
           <p>
-            Import a component and use it with signals in Angular, or load the Web Components bundle
-            in any other framework. Same components, same design.
+            Run <code>npm install nexprime</code>, then import a component in Angular, or use the
+            same components as Web Components in React, Next.js, Vue, Svelte or plain HTML. Same
+            components, same design.
           </p>
           <a class="ui-btn" [href]="href(pages.getStarted)" target="_top">
-            Read the framework guide <np-icon name="arrow-right" [size]="16" />
+            Read the installation guide <np-icon name="arrow-right" [size]="16" />
           </a>
         </div>
       </np-animate-on-scroll>
@@ -308,7 +308,8 @@
       </div>
     </np-animate-on-scroll>
     <footer class="footer">
-      NexPrime — One UI system for every framework · Built with Angular 21 and Storybook 10
+      NexPrime — One UI system for every framework
+      <p class="footer__credit">Created by <b>Debabrata Das</b> & <b>Salman Ali</b></p>
     </footer>
   </section>
 </div>

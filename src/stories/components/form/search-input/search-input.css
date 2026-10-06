@@ -2,9 +2,145 @@
   display: block;
 }
 
-input {
+/* The input with the search icon (or spinner) and the × / shortcut hint laid over it */
+.search-box {
+  position: relative;
+}
+
+.ui-control {
+  padding-right: 44px;
   padding-left: 40px;
-  background: var(--ui-surface)
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='7' cy='7' r='5'/%3E%3Cpath d='m14 14-3.5-3.5'/%3E%3C/svg%3E")
-    no-repeat 14px center;
+
+  /* Our own × button replaces the browser's */
+  &::-webkit-search-cancel-button {
+    display: none;
+    appearance: none;
+  }
+}
+
+.ui-control.search-control--kbd {
+  padding-right: 72px;
+}
+
+.search-icon,
+.search-spinner {
+  position: absolute;
+  top: 50%;
+  left: 14px;
+  color: var(--ui-text-subtle);
+  pointer-events: none;
+  translate: 0 -50%;
+  transition: color var(--ui-ease);
+}
+
+.search-box:focus-within .search-icon {
+  color: var(--ui-primary);
+}
+
+.search-spinner {
+  box-sizing: border-box;
+  width: 16px;
+  height: 16px;
+  margin-top: -8px;
+  border: 2px solid var(--ui-primary-soft);
+  border-top-color: var(--ui-primary);
+  border-radius: 50%;
+  translate: none;
+  animation: search-spin 0.7s linear infinite;
+}
+
+.search-clear {
+  position: absolute;
+  top: 50%;
+  right: 8px;
+  display: inline-grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: none;
+  border-radius: var(--ui-radius-full);
+  background: none;
+  color: var(--ui-text-subtle);
+  cursor: pointer;
+  translate: 0 -50%;
+  transition:
+    background var(--ui-ease),
+    color var(--ui-ease);
+
+  &:hover {
+    background: var(--ui-primary-soft);
+    color: var(--ui-primary);
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: var(--ui-ring);
+  }
+}
+
+.search-kbd {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  padding: 2px 7px;
+  border: 1px solid var(--ui-border);
+  border-bottom-width: 2px;
+  border-radius: var(--ui-radius-sm);
+  background: var(--ui-surface-muted);
+  color: var(--ui-text-muted);
+  font: 600 11px / 1.4 var(--ui-font);
+  white-space: nowrap;
+  pointer-events: none;
+  translate: 0 -50%;
+}
+
+.search-box:focus-within .search-kbd {
+  opacity: 0;
+}
+
+/* Underline: no side padding, so the icons hug the line's ends */
+.ui-field--underline {
+  .ui-control {
+    padding-left: 28px;
+  }
+
+  .search-icon,
+  .search-spinner {
+    left: 2px;
+  }
+
+  .search-clear {
+    right: 0;
+  }
+
+  .search-kbd {
+    right: 2px;
+  }
+}
+
+/* Floating: the resting label sits after the icon, and moves to the border's start when it floats */
+.ui-field--floating > .ui-label {
+  left: 36px;
+  transition:
+    top var(--ui-ease),
+    left var(--ui-ease),
+    font-size var(--ui-ease),
+    color var(--ui-ease);
+}
+
+.ui-field--floating:is(:focus-within, .ui-field--has-value) > .ui-label {
+  left: 11px;
+}
+
+@keyframes search-spin {
+  to {
+    rotate: 360deg;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .search-spinner {
+    animation-duration: 2s;
+  }
 }

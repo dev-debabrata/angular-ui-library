@@ -1,4 +1,8 @@
-<section class="voice" [class]="'voice--' + state()" aria-label="Voice assistant">
+<section
+  class="voice"
+  [class]="'voice--' + state() + ' voice--' + variant()"
+  aria-label="Voice assistant"
+>
   <div class="voice__wave" aria-hidden="true">
     @for (bar of bars; track bar) {
       <i [style.--i]="bar"></i>
@@ -13,12 +17,36 @@
     [class.np-anim-ripple]="state() === 'listening'"
     [class.np-anim-glow]="state() === 'speaking'"
     [disabled]="state() === 'processing'"
-    (click)="toggle()"
+    [style.touch-action]="mode() === 'push' ? 'none' : null"
+    (click)="(mode() === 'toggle' || state() === 'speaking') && toggle()"
+    (pointerdown)="press(true)"
+    (pointerup)="press(false)"
+    (pointerleave)="press(false)"
+    (keydown.space)="press(true)"
+    (keyup.space)="press(false)"
   >
     <np-icon [class.np-anim-spin]="state() === 'processing'" [name]="micIcon()" [size]="30" />
   </button>
 
   <p class="voice__status" aria-live="polite">{{ status() }}</p>
+
+  @if (muteButton()) {
+    <button
+      type="button"
+      class="ui-btn ui-btn--text ui-btn--icon voice__mute"
+      [attr.aria-label]="muted() ? 'Unmute replies' : 'Mute replies'"
+      [attr.aria-pressed]="muted()"
+      (click)="toggleMute()"
+    >
+      <np-icon [name]="muted() ? 'volume-x' : 'volume-2'" [size]="18" />
+    </button>
+  }
+
+  @let line =
+    state() === 'listening' ? transcript() : state() === 'speaking' && messages().at(-1)?.text;
+  @if (caption() && line) {
+    <p class="voice__caption" aria-hidden="true">{{ line }}</p>
+  }
 
   @if (state() === 'listening' && typed) {
     <input

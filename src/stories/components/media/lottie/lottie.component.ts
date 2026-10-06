@@ -9,11 +9,18 @@ import {
   effect,
   inject,
   input,
+  linkedSignal,
   numberAttribute,
   output,
   signal,
 } from '@angular/core';
 import type { AnimationItem } from 'lottie-web';
+
+import { IconComponent } from '../icon/icon.component';
+
+/** Play directions: forward, reverse (backwards) or bounce (forward, then back) */
+export const LOTTIE_DIRECTIONS = ['forward', 'reverse', 'bounce'] as const;
+export type LottieDirection = (typeof LOTTIE_DIRECTIONS)[number];
 
 /** Reads a .lottie file (a zip: manifest, animations/ or a/, images/ or i/) into Lottie JSON with images inlined */
 async function loadDotLottie(url: string): Promise<object> {
@@ -56,6 +63,7 @@ export async function loadLottie(url: string): Promise<object> {
  */
 @Component({
   selector: 'np-lottie',
+  imports: [IconComponent],
   templateUrl: './lottie.html',
   styleUrl: './lottie.css',
   host: {
@@ -96,17 +104,28 @@ export class LottieComponent {
   /** Accessible name. Leave empty for decorative animations */
   readonly ariaLabel = input('');
 
+  /** Play direction: forward, reverse (backwards) or bounce (forward, then back) */
+  readonly direction = input<LottieDirection>('forward');
+  /** Show a player bar over the bottom edge: play/pause, a scrubber and a speed toggle */
+  readonly controls = input(false, { transform: booleanAttribute });
   /** Emits when the animation is ready */
   readonly loaded = output<void>();
 
   /** Emits when a non-looping animation reaches its end */
   readonly complete = output<void>();
+  /** Emits at the end of each loop (each way, with bounce) */
+  readonly loopComplete = output<void>();
 
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
   private readonly browser = isPlatformBrowser(inject(PLATFORM_ID));
   private readonly animation = signal<AnimationItem | null>(null);
   /** Off screen the animation holds its frame, so pages with many animations stay fast */
   private readonly onScreen = signal(true);
+  /** Player bar state: playing, current and last frame, speed (the speed toggle overrides `speed`) */
+  protected readonly playing = signal(false);
+  protected readonly frame = signal(0);
+  protected readonly frames = signal(0);
+  protected readonly rate = linkedSignal(() => this.speed());
 
   constructor() {
     const destroyRef = inject(DestroyRef);
@@ -120,7 +139,8 @@ export class LottieComponent {
 
     // (Re)create the animation when the source or playback mode changes
     effect((onCleanup) => {
-      const [src, data, loop] = [this.src(), this.data(), this.loop()];
+      const [src, data, loop, direction] = [this.src(), this.data(), this.loop(), this.direction()];
+      const controls = this.controls();
       const autoplay = this.autoplay() && !this.hover();
       if (!this.browser || (!src && !data)) return;
       let cancelled = false;
@@ -136,15 +156,36 @@ export class LottieComponent {
           const animation = lottie.loadAnimation({
             container: this.host.querySelector('.lottie')!,
             renderer: 'svg',
-            loop,
-            autoplay: autoplay && !reduced,
+            loop: loop && direction !== 'bounce',
+            // Reverse starts from the last frame once loaded
+            autoplay: autoplay && !reduced && direction !== 'reverse',
             ...(animationData ? { animationData } : { path: src }),
           });
           animation.addEventListener('DOMLoaded', () => {
             if (reduced) animation.goToAndStop(animation.totalFrames - 1, true);
+            else if (direction === 'reverse') {
+              animation.setDirection(-1);
+              animation.goToAndStop(animation.totalFrames - 1, true);
+              if (autoplay && !this.paused() && this.onScreen()) animation.play();
+            }
+            this.frames.set(animation.totalFrames - 1);
             this.loaded.emit();
           });
-          animation.addEventListener('complete', () => this.complete.emit());
+          animation.addEventListener('complete', () => {
+            // Bounce turns around at each end (and stops back at the start without loop)
+            if (direction === 'bounce' && (loop || animation.playDirection > 0)) {
+              animation.setDirection(animation.playDirection > 0 ? -1 : 1);
+              animation.play();
+              this.loopComplete.emit();
+            } else this.complete.emit();
+          });
+          animation.addEventListener('loopComplete', () => this.loopComplete.emit());
+          // Only the controls' scrubber needs every frame (the NexLottie grid plays many animations)
+          if (controls)
+            animation.addEventListener('enterFrame', () => this.frame.set(animation.currentFrame));
+          // lottie-web's own play/pause events, which its types leave out
+          animation.addEventListener('_play' as never, () => this.playing.set(true));
+          animation.addEventListener('_pause' as never, () => this.playing.set(false));
           this.animation.set(animation);
         },
         (error: Error) => console.warn(error.message),
@@ -156,7 +197,7 @@ export class LottieComponent {
       });
     });
 
-    effect(() => this.animation()?.setSpeed(this.speed()));
+    effect(() => this.animation()?.setSpeed(this.rate()));
 
     // Pause and resume without recreating the animation (also when it leaves or comes back on screen)
     effect(() => {
@@ -185,5 +226,10 @@ export class LottieComponent {
   /** Stop and go back to the first frame */
   stop() {
     this.animation()?.stop();
+  }
+
+  /** Jump to a frame and hold it */
+  seek(frame: number) {
+    this.animation()?.goToAndStop(frame, true);
   }
 }

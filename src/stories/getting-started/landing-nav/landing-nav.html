@@ -22,15 +22,17 @@
     }
   </div>
   <div class="tools">
-    <a
+    <button
+      type="button"
       class="tool"
-      [href]="href(pages.catalog)"
-      target="_top"
-      aria-label="Search components"
-      title="Search components"
+      aria-label="Search (Ctrl K)"
+      title="Search (Ctrl K)"
+      aria-haspopup="dialog"
+      (click)="search.open()"
     >
       <np-icon name="search" [size]="18" />
-    </a>
+    </button>
+    <np-site-search #search />
     <button
       type="button"
       class="tool"

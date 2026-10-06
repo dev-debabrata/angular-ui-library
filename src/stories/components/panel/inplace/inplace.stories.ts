@@ -3,11 +3,12 @@ import { moduleMetadata } from '@storybook/angular-vite';
 import { fn } from 'storybook/test';
 
 import { TextInputComponent } from '../../form/text-input/text-input.component';
-import { InplaceComponent } from './inplace.component';
+import { INPLACE_VARIANTS, InplaceComponent } from './inplace.component';
+import { appearanceStories } from '../../../utils/appearance-stories';
 
 /** Wraps display + content markup in an <np-inplace> bound to the story args */
 const inplace = (display: string, content: string) => `
-  <np-inplace [(active)]="active" [closable]="closable" [disabled]="disabled"
+  <np-inplace [(active)]="active" [closable]="closable" [disabled]="disabled" [variant]="variant" [icon]="icon"
     (activate)="activate()" (deactivate)="deactivate()">
     <span inplaceDisplay>${display}</span>
     ${content}
@@ -19,7 +20,8 @@ const meta: Meta<InplaceComponent> = {
   component: InplaceComponent,
   tags: ['autodocs'],
   decorators: [moduleMetadata({ imports: [TextInputComponent] })],
-  args: { active: false, activeChange: fn(), activate: fn(), deactivate: fn() },
+  argTypes: { variant: { control: 'select', options: INPLACE_VARIANTS } },
+  args: { active: false, activeChange: fn(), valueChange: fn(), activate: fn(), deactivate: fn() },
   render: (args) => ({
     props: args,
     template: inplace(
@@ -63,3 +65,22 @@ export const Image: Story = {
 export const Closable: Story = { args: { closable: true } };
 
 export const Disabled: Story = { args: { disabled: true } };
+
+/** `editable`: built-in text box with save (Enter) and cancel (Escape), bound with `[(value)]` */
+export const Editable: Story = {
+  args: { editable: true, value: 'Quarterly report', icon: 'pencil', variant: 'underline' },
+  render: (args) => ({ props: args }),
+};
+
+/** Every variant, with a pencil icon */
+export const Variants: Story = {
+  render: () => ({
+    props: { variants: INPLACE_VARIANTS },
+    template: `@for (v of variants; track v) { <np-inplace editable [variant]="v" [value]="v" icon="pencil" /> }`,
+  }),
+};
+
+/** The appearance classes from theme.css (np-color-*, np-shape-*) on the Default example */
+const appearance = appearanceStories(meta, Default);
+export const AppearanceColors = appearance.colors;
+export const AppearanceShapes = appearance.shapes;

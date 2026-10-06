@@ -3,6 +3,7 @@ import { fn } from 'storybook/test';
 
 import { SIZES } from '../../../utils/types';
 import { ButtonToggleComponent, type ToggleOption } from './button-toggle.component';
+import { appearanceStories } from '../../../utils/appearance-stories';
 
 const fonts: ToggleOption<string>[] = [
   { value: 'bold', label: 'Bold' },
@@ -72,3 +73,8 @@ export const DisabledOption: Story = {
 };
 
 export const Disabled: Story = { args: { disabled: true } };
+
+/** The appearance classes from theme.css (np-color-*, np-shape-*) on the Default example */
+const appearance = appearanceStories(meta, Default);
+export const AppearanceColors = appearance.colors;
+export const AppearanceShapes = appearance.shapes;

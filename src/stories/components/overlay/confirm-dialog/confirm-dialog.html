@@ -2,19 +2,45 @@
   width="420px"
   [visible]="!!confirmation()"
   [header]="confirmation()?.header ?? 'Confirmation'"
+  [variant]="variant()"
+  [tone]="confirmation()?.tone ?? ''"
   [dismissableMask]="true"
   (visibleChange)="$event || reject()"
 >
   @if (confirmation(); as c) {
-    <div class="confirm-body">
-      <np-icon
-        class="confirm-icon"
-        [class.confirm-icon--danger]="c.acceptTone === 'danger'"
-        [name]="c.icon ?? 'info'"
-        [size]="28"
-      />
+    <div class="confirm-body" [class.confirm-body--hero]="variant() === 'hero'">
+      @if (c.tone) {
+        <span class="ui-tone-icon confirm-tone" [class]="'tone-' + c.tone">
+          {{ c.icon ? '' : icons[c.tone] }}
+          @if (c.icon) {
+            <np-icon [name]="c.icon" [size]="22" />
+          }
+        </span>
+      } @else {
+        <np-icon
+          class="confirm-icon"
+          [class.confirm-icon--danger]="c.acceptTone === 'danger'"
+          [name]="c.icon ?? 'info'"
+          [size]="28"
+        />
+      }
       <p class="confirm-message">{{ c.message }}</p>
     </div>
+    @if (c.confirmText) {
+      <label class="ui-field confirm-field">
+        <span class="ui-label"
+          >Type <strong>{{ c.confirmText }}</strong> to confirm</span
+        >
+        <input
+          #confirmInput
+          class="ui-control"
+          autocomplete="off"
+          [value]="typed()"
+          (input)="typed.set($any($event.target).value)"
+          (keydown.enter)="typed() === c.confirmText && accept()"
+        />
+      </label>
+    }
   }
   @if (confirmation(); as c) {
     <div dialogFooter>
@@ -25,7 +51,8 @@
         #acceptButton
         type="button"
         class="ui-btn ui-btn--text"
-        [class.ui-btn--danger]="c.acceptTone === 'danger'"
+        [class.ui-btn--danger]="c.acceptTone === 'danger' || c.tone === 'danger'"
+        [disabled]="!!c.confirmText && typed() !== c.confirmText"
         (click)="accept()"
       >
         {{ c.acceptLabel ?? 'Yes' }}

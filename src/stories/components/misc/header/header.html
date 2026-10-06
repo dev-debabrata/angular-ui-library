@@ -1,4 +1,8 @@
-<header class="np-header">
+<header
+  class="np-header"
+  [class]="'np-header--' + variant()"
+  [class.np-header--scrolled]="scrolled()"
+>
   <div>
     <svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
       <g fill="none" fill-rule="evenodd">
@@ -10,11 +14,32 @@
         <path d="M27.2 10.6v11.2l-10.5 6V16.5l10.5-6zM15.7 4.4v11L6 10l9.7-5.5z" fill="#91BAF8" />
       </g>
     </svg>
-    <h1>Acme</h1>
+    <h1>{{ brand() }}</h1>
   </div>
-  <div>
+  @if (links().length) {
+    <nav class="np-header__nav" [class.np-header__nav--open]="menuOpen()" aria-label="Main">
+      @for (link of links(); track link) {
+        <a
+          class="ui-btn"
+          [class]="active() === link.label ? 'ui-btn--primary' : 'ui-btn--text'"
+          [href]="link.url ?? '#'"
+          [attr.aria-current]="active() === link.label ? 'page' : null"
+          (click)="go(link, $event)"
+        >
+          @if (link.icon) {
+            <np-icon [name]="link.icon" [size]="16" />
+          }
+          {{ link.label }}
+        </a>
+      }
+    </nav>
+  }
+  <div class="np-header__actions">
     @if (user(); as user) {
-      <span class="welcome"
+      @if (avatar()) {
+        <np-avatar [name]="user.name" size="small" />
+      }
+      <span class="welcome" [hidden]="avatar()"
         >Welcome, <b>{{ user.name }}</b
         >!</span
       >
@@ -25,8 +50,20 @@
         size="small"
         label="Sign up"
         [primary]="true"
+        [severity]="variant() === 'gradient' ? 'contrast' : ''"
         (clicked)="createAccount.emit($event)"
       />
+    }
+    @if (links().length) {
+      <button
+        type="button"
+        class="ui-btn ui-btn--text ui-btn--icon np-header__toggle"
+        aria-label="Menu"
+        [attr.aria-expanded]="menuOpen()"
+        (click)="menuOpen.set(!menuOpen())"
+      >
+        <np-icon [name]="menuOpen() ? 'x' : 'menu'" [size]="20" />
+      </button>
     }
   </div>
 </header>

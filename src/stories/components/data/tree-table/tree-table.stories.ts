@@ -1,8 +1,9 @@
 import type { Meta, StoryObj } from '@storybook/angular-vite';
 import { fn } from 'storybook/test';
 
-import type { TreeNode } from '../../../utils/types';
-import { TreeTableComponent } from './tree-table.component';
+import { SIZES, type TreeNode } from '../../../utils/types';
+import { TREE_TABLE_VARIANTS, TreeTableComponent } from './tree-table.component';
+import { appearanceStories } from '../../../utils/appearance-stories';
 
 const folder = (
   key: string,
@@ -52,22 +53,34 @@ const fileSystem: TreeNode[] = [
   file('song', 'Song.mp3', '4mb', 'Audio', 'music'),
 ];
 
+/** The same tree with every folder expanded */
+const openAll = (nodes: TreeNode[]): TreeNode[] =>
+  nodes.map((n) => ({ ...n, expanded: !!n.children, children: n.children && openAll(n.children) }));
+const allOpen = openAll(fileSystem);
+
 const meta: Meta<TreeTableComponent> = {
   title: 'Components/Data/Tree Table',
   component: TreeTableComponent,
   tags: ['autodocs'],
   argTypes: {
-    selectionMode: { control: 'select', options: ['none', 'single'], mapping: { none: null } },
+    selectionMode: {
+      control: 'select',
+      options: ['none', 'single', 'checkbox'],
+      mapping: { none: null },
+    },
+    variant: { control: 'select', options: TREE_TABLE_VARIANTS },
+    size: { control: 'inline-radio', options: SIZES },
   },
   args: {
     value: fileSystem,
     columns: [
       { field: 'name', header: 'Name' },
-      { field: 'size', header: 'Size' },
-      { field: 'type', header: 'Type' },
+      { field: 'size', header: 'Size', align: 'right', width: '120px' },
+      { field: 'type', header: 'Type', width: '160px' },
     ],
     selectionChange: fn(),
     nodeSelect: fn(),
+    nodeUnselect: fn(),
     nodeExpand: fn(),
     nodeCollapse: fn(),
   },
@@ -78,3 +91,50 @@ type Story = StoryObj<TreeTableComponent>;
 
 export const Default: Story = {};
 export const Selection: Story = { args: { selectionMode: 'single' } };
+
+/** `checkbox` selection: checking a parent checks its children, partly checked parents show a dash */
+export const CheckboxSelection: Story = { args: { selectionMode: 'checkbox' } };
+
+/** Every look, with every folder open (glass on a gradient so the frosting shows) */
+export const Variants: Story = {
+  render: (args) => ({
+    props: { ...args, value: allOpen, variants: TREE_TABLE_VARIANTS },
+    template: `
+      @for (v of variants; track v) {
+        <div style="display: grid; gap: 8px; padding: 12px; border-radius: 16px"
+          [style.background]="v === 'glass' ? 'var(--ui-gradient)' : null">
+          <code>{{ v }}</code>
+          <np-tree-table [variant]="v" [value]="value" [columns]="columns" selectionMode="single" />
+        </div>
+      }
+    `,
+  }),
+};
+
+/** Small, medium and large row density */
+export const Sizes: Story = {
+  render: (args) => ({
+    props: { ...args, sizes: SIZES },
+    template: `@for (s of sizes; track s) {<np-tree-table [size]="s" [value]="value" [columns]="columns" style="display: block; margin-bottom: 20px" />}`,
+  }),
+};
+
+/** `filter` keeps matching rows and their ancestors; `scrollHeight` keeps the header in view after `expandAll()` */
+export const FilterAndExpandAll: Story = {
+  render: (args) => ({
+    props: args,
+    template: `
+      <div style="display: flex; gap: 8px; margin-bottom: 12px">
+        <button class="ui-btn ui-btn--primary ui-btn--sm" (click)="table.expandAll()">Expand all</button>
+        <button class="ui-btn ui-btn--sm" (click)="table.collapseAll()">Collapse all</button>
+      </div>
+      <np-tree-table #table filter filterPlaceholder="Search files..." [value]="value" [columns]="columns"
+        variant="striped" size="small" scrollHeight="260px" (nodeExpand)="nodeExpand($event)" (nodeCollapse)="nodeCollapse($event)" />
+    `,
+  }),
+};
+
+/** The appearance classes from theme.css (np-color-*, np-shape-*) on the Default example */
+const appearance = appearanceStories(meta, Default);
+export const AppearanceColors = appearance.colors;
+export const AppearanceShapes = appearance.shapes;

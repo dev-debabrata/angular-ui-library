@@ -1,20 +1,144 @@
-<label class="ui-field">
-  @if (label()) {
-    <span class="ui-label">{{ label() }}</span>
+@let current = picked();
+@let single = multiple() ? undefined : current[0];
+
+<!-- Avatar, color swatch or icon before an option's label (in the panel and the trigger) -->
+<ng-template #lead let-o>
+  @if (o.image) {
+    <img class="select-avatar" [src]="o.image" alt="" />
+  } @else if (o.color) {
+    <span class="select-swatch" [style.background]="o.color"></span>
+  } @else if (o.icon) {
+    <np-icon class="select-option-icon" [name]="o.icon" [size]="layout() === 'grid' ? 22 : 16" />
   }
-  <select
-    class="ui-control"
-    [value]="value()"
-    [disabled]="disabled()"
-    (change)="value.set($any($event.target).value)"
-  >
-    @if (placeholder()) {
-      <option value="" disabled [selected]="!value()">{{ placeholder() }}</option>
+</ng-template>
+
+<div
+  class="ui-field"
+  [class]="'ui-field--' + variant()"
+  [class.ui-field--has-value]="current.length > 0"
+  [class.select--icon]="!!icon()"
+  [class.select--open]="open()"
+>
+  @if (label()) {
+    <label class="ui-label" [for]="id">{{ label() }}</label>
+  }
+  <div class="select-box">
+    @if (icon()) {
+      <np-icon class="select-icon" [name]="icon()" [size]="18" />
     }
-    @for (option of options(); track option.value) {
-      <option [value]="option.value" [selected]="option.value === value()">
-        {{ option.label }}
-      </option>
+    <button
+      #trigger
+      type="button"
+      class="ui-control select-trigger"
+      role="combobox"
+      aria-haspopup="listbox"
+      [id]="id"
+      [disabled]="disabled()"
+      [attr.aria-expanded]="open()"
+      [attr.aria-controls]="id + '-list'"
+      [attr.aria-activedescendant]="open() && active() >= 0 ? id + '-' + active() : null"
+      (click)="toggle()"
+      (keydown)="onKeydown($event)"
+    >
+      @if (multiple() && current.length) {
+        <!-- Multiple: the picks as chips, the rest as +N -->
+        <span class="select-chips">
+          @for (o of current.slice(0, 3); track o.value) {
+            <span class="select-chip">
+              <ng-container *ngTemplateOutlet="lead; context: { $implicit: o }" />{{ o.label }}
+            </span>
+          }
+          @if (current.length > 3) {
+            <span class="select-chip select-chip--more">+{{ current.length - 3 }}</span>
+          }
+        </span>
+      } @else {
+        @if (single) {
+          <ng-container *ngTemplateOutlet="lead; context: { $implicit: single }" />
+        }
+        <span class="select-value" [class.select-value--placeholder]="!single">
+          {{ single?.label ?? placeholder() }}
+        </span>
+      }
+      <np-icon class="select-chevron" name="chevron-down" [size]="16" />
+    </button>
+
+    @if (open()) {
+      <div
+        #panel
+        class="select-panel"
+        popover="manual"
+        [class.select-panel--grid]="layout() === 'grid'"
+        [style.top.px]="pos().up ? null : pos().top"
+        [style.bottom.px]="pos().up ? pos().top : null"
+        [style.left.px]="pos().left"
+        [style.min-width.px]="pos().width"
+      >
+        @if (filter()) {
+          <div class="select-search">
+            <np-icon name="search" [size]="16" />
+            <input
+              #search
+              type="text"
+              placeholder="Search…"
+              aria-label="Search options"
+              [attr.aria-controls]="id + '-list'"
+              [attr.aria-activedescendant]="active() >= 0 ? id + '-' + active() : null"
+              [value]="query()"
+              (input)="query.set($any($event.target).value); active.set(0)"
+              (keydown)="onKeydown($event)"
+            />
+          </div>
+        }
+        <!-- pointerdown is cancelled so the trigger keeps focus while picking -->
+        <ul
+          class="select-list"
+          role="listbox"
+          [class]="'select-list--' + layout()"
+          [id]="id + '-list'"
+          [attr.aria-label]="label() || placeholder()"
+          [attr.aria-multiselectable]="multiple() || null"
+          (pointerdown)="$event.preventDefault()"
+        >
+          @for (option of shown(); track option.value; let i = $index) {
+            @let on = isOn(option);
+            @if (option.group && option.group !== shown()[i - 1]?.group) {
+              <li class="select-group" role="presentation">{{ option.group }}</li>
+            }
+            <li
+              class="select-option"
+              role="option"
+              [id]="id + '-' + i"
+              [class.select-option--active]="i === active()"
+              [class.select-option--selected]="on"
+              [attr.aria-selected]="on"
+              [attr.aria-disabled]="option.disabled || null"
+              (pointerenter)="option.disabled || active.set(i)"
+              (click)="pick(option)"
+            >
+              @if (multiple()) {
+                <span class="select-checkbox">
+                  @if (on) {
+                    <np-icon name="check" [size]="12" />
+                  }
+                </span>
+              }
+              <ng-container *ngTemplateOutlet="lead; context: { $implicit: option }" />
+              <span class="select-option-text">
+                {{ option.label }}
+                @if (option.description) {
+                  <small>{{ option.description }}</small>
+                }
+              </span>
+              @if (on && !multiple()) {
+                <np-icon class="select-check" name="check" [size]="16" />
+              }
+            </li>
+          } @empty {
+            <li class="select-empty">No results</li>
+          }
+        </ul>
+      </div>
     }
-  </select>
-</label>
+  </div>
+</div>

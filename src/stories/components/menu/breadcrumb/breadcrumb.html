@@ -1,12 +1,33 @@
-<nav class="breadcrumb" aria-label="Breadcrumb">
+@let sep = separator();
+@let sepIcon =
+  ['chevron', 'arrow'].includes(sep) ? sep + '-right' : ['slash', 'dot'].includes(sep) ? sep : '';
+<nav class="breadcrumb" [class]="'breadcrumb--' + variant()" aria-label="Breadcrumb">
   <ol>
-    @for (item of items(); track $index; let last = $last) {
+    @for (item of shown(); track $index; let first = $first, last = $last) {
       <li>
-        @if (last) {
-          <span aria-current="page">{{ item.label }}</span>
+        @if (item) {
+          @let icon = home() && first ? 'house' : item.icon;
+          <a
+            [attr.href]="last ? null : item.url || '#'"
+            [attr.aria-current]="last ? 'page' : null"
+            (click)="last || onClick($event, item)"
+          >
+            @if (icon) {
+              <np-icon [name]="icon" [size]="15" />
+            }
+            <span [class.ui-visually-hidden]="home() && first">{{ item.label }}</span>
+          </a>
         } @else {
-          <a [href]="item.url || '#'" (click)="onClick($event, item)">{{ item.label }}</a>
-          <span class="separator" aria-hidden="true">{{ separator() }}</span>
+          <button type="button" aria-label="Show all pages" (click)="expanded.set(true)">
+            <np-icon name="ellipsis" [size]="16" />
+          </button>
+        }
+        @if (!last && variant() !== 'steps') {
+          @if (sepIcon) {
+            <np-icon class="separator" [name]="sepIcon" [size]="14" aria-hidden="true" />
+          } @else {
+            <span class="separator" aria-hidden="true">{{ separator() }}</span>
+          }
         }
       </li>
     }

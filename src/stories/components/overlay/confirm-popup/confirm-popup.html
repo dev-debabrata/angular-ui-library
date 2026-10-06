@@ -2,35 +2,48 @@
   <div
     #popup
     class="confirm-popup"
-    [class]="'confirm-popup--' + (position()?.placement ?? 'below')"
+    popover="manual"
+    [class]="'confirm-popup--' + variant()"
+    [class.confirm-popup--above]="position()?.placement === 'above'"
     role="alertdialog"
-    [attr.aria-labelledby]="id + '-message'"
+    [attr.aria-labelledby]="id + (c.header ? '-header' : '-message')"
+    [attr.aria-describedby]="c.header ? id + '-message' : null"
     [style.top.px]="position()?.top"
     [style.left.px]="position()?.left"
     [style.--arrow-left.px]="position()?.arrowLeft"
     [style.visibility]="position() ? null : 'hidden'"
   >
+    @let t = c.tone || tone();
     <div class="confirm-popup-body">
-      <np-icon
-        class="confirm-popup-icon"
-        [class.confirm-popup-icon--danger]="c.acceptTone === 'danger'"
-        [name]="c.icon ?? 'circle-alert'"
-        [size]="22"
-      />
-      <p class="confirm-popup-message" [id]="id + '-message'">{{ c.message }}</p>
+      @if (t) {
+        <span class="ui-tone-icon" [class]="'tone-' + t" aria-hidden="true">{{ icons[t] }}</span>
+      } @else {
+        <np-icon
+          class="confirm-popup-icon"
+          [class.confirm-popup-icon--danger]="c.acceptTone === 'danger'"
+          [name]="c.icon ?? 'circle-alert'"
+          [size]="22"
+        />
+      }
+      <div>
+        @if (c.header) {
+          <strong class="confirm-popup-header" [id]="id + '-header'">{{ c.header }}</strong>
+        }
+        <p class="confirm-popup-message" [id]="id + '-message'">{{ c.message }}</p>
+      </div>
     </div>
     <div class="confirm-popup-footer">
       <button type="button" class="ui-btn ui-btn--text ui-btn--sm" (click)="reject()">
-        {{ c.rejectLabel ?? 'No' }}
+        {{ c.rejectLabel ?? rejectLabel() }}
       </button>
       <button
         #acceptButton
         type="button"
         class="ui-btn ui-btn--sm"
-        [class]="'ui-btn--' + (c.acceptTone ?? 'primary')"
+        [class]="'ui-btn--' + (c.acceptTone ?? (t === 'danger' ? 'danger' : 'primary'))"
         (click)="accept()"
       >
-        {{ c.acceptLabel ?? 'Yes' }}
+        {{ c.acceptLabel ?? acceptLabel() }}
       </button>
     </div>
   </div>

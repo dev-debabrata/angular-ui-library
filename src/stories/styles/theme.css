@@ -10,10 +10,6 @@
   --ui-primary: #6366f1;
   --ui-primary-hover: #4f46e5;
   --ui-accent: #a855f7;
-  --ui-gradient: linear-gradient(135deg, var(--ui-primary) 0%, var(--ui-accent) 100%);
-  /* Derived from --ui-primary, so changing the brand colors (e.g. the Storybook palette menu) updates them too */
-  --ui-primary-soft: color-mix(in srgb, var(--ui-primary) 10%, var(--ui-surface));
-  --ui-primary-ring: color-mix(in srgb, var(--ui-primary) 28%, transparent);
 
   /* Neutrals */
   --ui-text: #0f172a;
@@ -27,11 +23,16 @@
   --ui-success: #10b981;
   --ui-warning: #f59e0b;
   --ui-danger: #f43f5e;
+  /* Info and help colors that stay the same with every theme color (e.g. Button's info and help severities) */
+  --ui-info: #0ea5e9;
+  --ui-help: #8b5cf6;
 
   /* Shape & depth */
   --ui-radius-sm: 6px;
   --ui-radius: 10px;
   --ui-radius-lg: 16px;
+  /* Fully round (pills: buttons, badges, chips, toggle tracks, bars); the np-shape-* classes change it too */
+  --ui-radius-full: 999px;
   --ui-shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.06);
   --ui-shadow: 0 1px 3px rgba(15, 23, 42, 0.08), 0 4px 12px rgba(15, 23, 42, 0.06);
   --ui-shadow-lg: 0 10px 25px rgba(15, 23, 42, 0.12), 0 20px 48px rgba(15, 23, 42, 0.1);
@@ -45,15 +46,12 @@
   --ui-chart-6: #008300;
   --ui-chart-7: #4a3aa7;
   --ui-chart-8: #e34948;
-  --ui-ring: 0 0 0 4px var(--ui-primary-ring);
   --ui-ease: 160ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* Dark mode: set data-theme="dark" on <html>. Same tokens, dark values; brand colors stay as they are */
 :root[data-theme='dark'] {
   color-scheme: dark;
-  --ui-primary-soft: color-mix(in srgb, var(--ui-primary) 18%, var(--ui-surface));
-  --ui-primary-ring: color-mix(in srgb, var(--ui-primary) 40%, transparent);
   --ui-text: #e2e8f0;
   --ui-text-muted: #94a3b8;
   --ui-text-subtle: #64748b;
@@ -145,6 +143,90 @@ body {
   --tone-bg: color-mix(in srgb, var(--tone-solid) 16%, var(--ui-surface));
   --tone-fg: color-mix(in srgb, var(--tone-solid) 60%, #fff);
   --tone-border: color-mix(in srgb, var(--tone-solid) 38%, var(--ui-surface));
+}
+
+/* Derived from the brand colors, so changing them (the Storybook palette menu, an np-color-* class) updates these
+   too. Custom properties are computed where they're declared, so every np-color-* element declares them again */
+:root,
+[class*='np-color-'] {
+  --ui-gradient: linear-gradient(135deg, var(--ui-primary) 0%, var(--ui-accent) 100%);
+  --ui-primary-soft: color-mix(in srgb, var(--ui-primary) 10%, var(--ui-surface));
+  --ui-primary-ring: color-mix(in srgb, var(--ui-primary) 28%, transparent);
+  --ui-ring: 0 0 0 4px var(--ui-primary-ring);
+}
+
+:root[data-theme='dark'],
+:root[data-theme='dark'] [class*='np-color-'] {
+  --ui-primary-soft: color-mix(in srgb, var(--ui-primary) 18%, var(--ui-surface));
+  --ui-primary-ring: color-mix(in srgb, var(--ui-primary) 40%, transparent);
+}
+
+/* Appearance classes: recolor or reshape any NexPrime component (or any element) and everything inside it, in every
+   framework: <np-select class="np-color-success np-shape-rounded">. They override the theme tokens on that element.
+   np-color-primary keeps the theme colors (useful inside another color) */
+:where([class*='np-color-']:not(.np-color-primary)) {
+  --ui-primary-hover: color-mix(in srgb, var(--ui-primary) 85%, #000);
+}
+
+/* One color, so the gradient is solid; the accent is a slightly deeper shade for a little depth */
+.np-color-secondary {
+  --ui-primary: #64748b;
+  --ui-primary-hover: #475569;
+  --ui-accent: #475569;
+}
+
+.np-color-success {
+  --ui-primary: var(--ui-success);
+  --ui-accent: color-mix(in srgb, var(--ui-success) 80%, #0ea5e9);
+}
+
+.np-color-info {
+  --ui-primary: var(--ui-info);
+  --ui-accent: color-mix(in srgb, var(--ui-info) 75%, #6366f1);
+}
+
+.np-color-warning {
+  --ui-primary: var(--ui-warning);
+  --ui-accent: color-mix(in srgb, var(--ui-warning) 75%, #f97316);
+}
+
+.np-color-danger {
+  --ui-primary: var(--ui-danger);
+  --ui-accent: color-mix(in srgb, var(--ui-danger) 75%, #ec4899);
+}
+
+.np-color-help {
+  --ui-primary: var(--ui-help);
+  --ui-accent: color-mix(in srgb, var(--ui-help) 70%, #d946ef);
+}
+
+/* Contrast: the text color (near-black, or near-white in dark mode) */
+.np-color-contrast {
+  --ui-primary: var(--ui-text);
+  --ui-primary-hover: color-mix(in srgb, var(--ui-text) 85%, var(--ui-surface));
+  --ui-accent: var(--ui-text);
+}
+
+/* Shapes scale the three radius tokens; pill keeps big containers (cards, dialogs) at a large but sane radius */
+.np-shape-pill {
+  --ui-radius-sm: 999px;
+  --ui-radius-full: 999px;
+  --ui-radius: 999px;
+  --ui-radius-lg: 28px;
+}
+
+.np-shape-rounded {
+  --ui-radius-sm: 4px;
+  --ui-radius-full: 6px;
+  --ui-radius: 6px;
+  --ui-radius-lg: 10px;
+}
+
+.np-shape-square {
+  --ui-radius-sm: 0;
+  --ui-radius-full: 0;
+  --ui-radius: 0;
+  --ui-radius-lg: 0;
 }
 
 /* Round tone icon used by Alert and Toast */
@@ -245,6 +327,76 @@ select.ui-control {
   font-weight: 500;
 }
 
+/* Field styles, as a class on .ui-field (outlined is the default above): ui-field--filled, ui-field--underline and
+   ui-field--floating (the label sits inside the control and floats up on focus, or when the component adds
+   ui-field--has-value). background-color only, so the select arrow image stays */
+.ui-field--filled .ui-control {
+  border-color: transparent;
+  background-color: var(--ui-surface-sunken);
+  box-shadow: none;
+}
+
+.ui-field--filled .ui-control:hover:not(:disabled) {
+  border-color: transparent;
+  background-color: color-mix(in srgb, var(--ui-surface-sunken) 70%, var(--ui-border-strong));
+}
+
+.ui-field--filled .ui-control:focus {
+  border-color: var(--ui-primary);
+  background-color: var(--ui-surface);
+}
+
+.ui-field--underline .ui-control {
+  padding-inline: 2px;
+  border-width: 0 0 2px;
+  border-radius: 0;
+  background-color: transparent;
+  box-shadow: none;
+}
+
+.ui-field--underline .ui-control:focus {
+  box-shadow: none;
+}
+
+.ui-field--floating {
+  position: relative;
+}
+
+.ui-field--floating > .ui-label {
+  position: absolute;
+  top: 21px;
+  left: 11px;
+  z-index: 1;
+  padding: 0 4px;
+  border-radius: 4px;
+  background: var(--ui-surface);
+  color: var(--ui-text-subtle);
+  font-size: 14px;
+  font-weight: 400;
+  pointer-events: none;
+  translate: 0 -50%;
+  transition:
+    top var(--ui-ease),
+    font-size var(--ui-ease),
+    color var(--ui-ease);
+}
+
+.ui-field--floating:is(:focus-within, .ui-field--has-value) > .ui-label {
+  top: 0;
+  color: var(--ui-text-muted);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.ui-field--floating:focus-within > .ui-label {
+  color: var(--ui-primary);
+}
+
+/* The placeholder only shows once the label has moved out of the way */
+.ui-field--floating:not(:focus-within) .ui-control::placeholder {
+  color: transparent;
+}
+
 /* Close (×) button used by Alert, Modal and Toast */
 .ui-close {
   display: inline-grid;
@@ -272,6 +424,7 @@ select.ui-control {
 
 /* Dialog/Card footer slots: the wrapper steps aside so its buttons are laid out (with gap) by the footer */
 [dialogFooter],
+[modalFooter],
 [cardFooter] {
   display: contents;
 }
@@ -285,7 +438,7 @@ select.ui-control {
   gap: 6px;
   padding: 9px 16px;
   border: none;
-  border-radius: 999px;
+  border-radius: var(--ui-radius-full);
   background: var(--ui-surface);
   box-shadow:
     inset 0 0 0 1px var(--ui-border-strong),

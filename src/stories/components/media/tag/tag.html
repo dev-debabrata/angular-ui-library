@@ -1,6 +1,27 @@
-<span class="tag" [class]="'tone-' + severity()" [class.tag--rounded]="rounded()">
-  @if (icon()) {
-    <np-icon [name]="icon()" [size]="12" [strokeWidth]="2.5" />
-  }
-  {{ value() }}
-</span>
+@if (visible()) {
+  <span
+    class="tag"
+    [class]="'tone-' + severity() + ' tag--' + variant() + ' tag--' + size()"
+    [class.tag--rounded]="rounded()"
+  >
+    @if (variant() === 'dot') {
+      <span class="tag__dot" aria-hidden="true"></span>
+    } @else if (icon()) {
+      <np-icon [name]="icon()" [size]="size() === 'large' ? 14 : 12" [strokeWidth]="2.5" />
+    }
+    {{ value() }}
+    @if (count() !== '') {
+      <span class="tag__count">{{ count() }}</span>
+    }
+    @if (removable()) {
+      <button
+        type="button"
+        class="tag__remove"
+        [attr.aria-label]="'Remove ' + value()"
+        (click)="visible.set(false); remove.emit($event)"
+      >
+        <np-icon name="x" [size]="10" [strokeWidth]="3" />
+      </button>
+    }
+  </span>
+}

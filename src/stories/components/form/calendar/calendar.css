@@ -28,7 +28,8 @@
 .calendar-nav,
 .calendar-title-btn,
 .calendar-day,
-.calendar-picker-item {
+.calendar-picker-item,
+.calendar-preset {
   padding: 0;
   border: none;
   background: none;
@@ -67,7 +68,7 @@
   place-items: center;
   width: 32px;
   height: 32px;
-  border-radius: 50%;
+  border-radius: var(--ui-radius-full);
   color: var(--ui-text-muted);
 }
 
@@ -169,7 +170,7 @@
 .calendar-day {
   width: 36px;
   height: 36px;
-  border-radius: 50%;
+  border-radius: var(--ui-radius-full);
   font-variant-numeric: tabular-nums;
 }
 
@@ -215,7 +216,7 @@
 
 .calendar-picker-item {
   height: 48px;
-  border-radius: 999px;
+  border-radius: var(--ui-radius-full);
   font-weight: 500;
 
   &:disabled {
@@ -242,4 +243,157 @@
     opacity: 0;
     transform: scale(0.96);
   }
+}
+
+/* Quick picks beside the calendar */
+.calendar-panel--presets {
+  display: flex;
+  gap: 12px;
+}
+
+.calendar-presets {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 128px;
+  padding-right: 12px;
+  border-right: 1px solid var(--ui-border);
+}
+
+/* Base, hover and focus come from the shared button rule above */
+.calendar-preset {
+  padding: 8px 12px;
+  border-radius: var(--ui-radius-sm);
+  color: var(--ui-text-muted);
+  font-weight: 500;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.calendar-preset--active,
+.calendar-preset--active:hover {
+  background: var(--ui-primary-soft);
+  color: var(--ui-primary);
+  font-weight: 600;
+}
+
+/* Week numbers */
+.calendar-grid .calendar-week {
+  width: 32px;
+  color: var(--ui-text-subtle);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+/* Event dots under the day number */
+.calendar-day {
+  position: relative;
+}
+
+.calendar-day__marks {
+  position: absolute;
+  bottom: 3px;
+  left: 50%;
+  display: flex;
+  gap: 2px;
+  transform: translateX(-50%);
+
+  i {
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--ui-primary);
+  }
+}
+
+.calendar-day--selected .calendar-day__marks i {
+  background: #fff;
+}
+
+/* ---- gradient: the header row sits on a band of the brand gradient */
+.calendar-panel--gradient {
+  background:
+    var(--ui-gradient) top / 100% 58px no-repeat,
+    var(--ui-surface);
+
+  .calendar-header {
+    min-height: 34px;
+    margin-bottom: 14px;
+  }
+
+  .calendar-header :is(.calendar-nav, .calendar-title-btn, .calendar-title-text) {
+    color: #fff;
+
+    &:hover:not(:disabled) {
+      background: rgb(255 255 255 / 0.18);
+      color: #fff;
+    }
+  }
+}
+
+/* With presets the band only covers the calendar column */
+.calendar-panel--gradient.calendar-panel--presets {
+  background: var(--ui-surface);
+
+  .calendar-main {
+    margin: -12px -12px 0 0;
+    padding: 12px 12px 0 0;
+    border-radius: 0 var(--ui-radius-lg) 0 0;
+    background: var(--ui-gradient) top / 100% 58px no-repeat;
+  }
+}
+
+/* ---- glass: frosted and translucent, for colorful backgrounds */
+.calendar-panel--glass {
+  border-color: rgb(255 255 255 / 0.45);
+  background: rgb(255 255 255 / 0.55);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.6),
+    var(--ui-shadow-lg);
+  backdrop-filter: blur(18px) saturate(1.4);
+}
+
+:host-context([data-theme='dark']) .calendar-panel--glass {
+  border-color: rgb(255 255 255 / 0.12);
+  background: rgb(15 23 42 / 0.55);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.08),
+    var(--ui-shadow-lg);
+}
+
+/* ---- minimal: no card, flat selection, today as a dot */
+.calendar-panel--minimal {
+  padding: 4px;
+  border-color: transparent;
+  background: transparent;
+  box-shadow: none;
+
+  .calendar-day--selected,
+  .calendar-picker-item--selected {
+    background: var(--ui-primary);
+    box-shadow: none;
+  }
+
+  .calendar-day--today:not(.calendar-day--selected) {
+    box-shadow: none;
+  }
+
+  .calendar-day--today:not(.calendar-day--selected)::after {
+    content: '';
+    position: absolute;
+    bottom: 4px;
+    left: 50%;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--ui-primary);
+    transform: translateX(-50%);
+  }
+}
+
+/* A popup still needs its card to stand out from the page */
+.calendar-panel--minimal.calendar-panel--popup {
+  border-color: var(--ui-border);
+  background: var(--ui-surface);
+  box-shadow: var(--ui-shadow-lg);
 }

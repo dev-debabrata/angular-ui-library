@@ -1,4 +1,15 @@
-import { Component, booleanAttribute, input, model, numberAttribute } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  afterNextRender,
+  booleanAttribute,
+  input,
+  model,
+  numberAttribute,
+  viewChild,
+} from '@angular/core';
+
+import type { FieldVariant } from '../../../utils/types';
 
 @Component({
   selector: 'np-textarea',
@@ -23,4 +34,30 @@ export class TextareaComponent {
 
   /** Is the textarea disabled? */
   readonly disabled = input(false, { transform: booleanAttribute });
+
+  /** Field style: outlined, filled, underline or floating (label inside the field) */
+  readonly variant = input<FieldVariant>('outlined');
+
+  /** Grow with the content instead of scrolling (`rows` is the minimum height) */
+  readonly autoResize = input(false, { transform: booleanAttribute });
+
+  private readonly control = viewChild.required<ElementRef<HTMLTextAreaElement>>('control');
+
+  constructor() {
+    // Fit a starting value (browser only)
+    afterNextRender(() => this.resize());
+  }
+
+  protected onInput(event: Event) {
+    this.value.set((event.target as HTMLTextAreaElement).value);
+    this.resize();
+  }
+
+  /** Auto-resize: set the height to the content's (plus borders), never below `rows` */
+  private resize() {
+    if (!this.autoResize()) return;
+    const el = this.control().nativeElement;
+    el.style.height = 'auto';
+    el.style.height = `${el.scrollHeight + el.offsetHeight - el.clientHeight}px`;
+  }
 }

@@ -1,5 +1,14 @@
 import { NgTemplateOutlet } from '@angular/common';
-import { Component, ViewEncapsulation, booleanAttribute, input } from '@angular/core';
+import {
+  Component,
+  Directive,
+  ElementRef,
+  ViewEncapsulation,
+  afterNextRender,
+  booleanAttribute,
+  inject,
+  input,
+} from '@angular/core';
 
 import type { MenuItem } from '../../../utils/types';
 import { IconComponent } from '../../media/icon/icon.component';
@@ -26,4 +35,21 @@ export class MenuItemComponent {
 
   /** Tree row (PanelMenu): no menuitem role and no highlight while open */
   readonly tree = input(false, { transform: booleanAttribute });
+
+  /** Selected row: highlighted like a hovered row, with aria-current */
+  readonly active = input(false, { transform: booleanAttribute });
+}
+
+/** Opens a popup panel in the top layer (unaffected by ancestor transforms/overflow) before PopupMenu measures it */
+@Directive({
+  selector: '[npMenuPopover]',
+  host: { '[attr.popover]': "on() ? 'manual' : null" },
+})
+export class MenuPopoverDirective {
+  /** Show the element as a manual popover */
+  readonly on = input(false, { alias: 'npMenuPopover' });
+  constructor() {
+    const el: HTMLElement = inject(ElementRef).nativeElement;
+    afterNextRender({ write: () => this.on() && el.showPopover?.() });
+  }
 }

@@ -1,5 +1,5 @@
 /**
- * Public API of the nexprime-ui npm package (npm run build:lib -> dist/nexprime-lib).
+ * Public API of the nexprime npm package (npm run build:lib -> dist/nexprime-lib).
  * Exports every component that src/elements/nexprime.ts registers, plus the shared types and services.
  */
 export * from './stories/utils/types';

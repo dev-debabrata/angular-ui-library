@@ -14,12 +14,12 @@ npm start                 # Angular app (src/app) on http://localhost:4200
 npm run build             # Production app build with SSR -> dist/nexprime-ui/{browser,server}
 npm run serve:ssr:nexprime-ui          # Run the built SSR server (node, port 4000)
 npm run build:elements    # Web Components for React/Vue/HTML -> dist/nexprime-elements/browser/ (nexprime.js, styles.css, icons/)
-npm run build:lib         # npm package "nexprime-ui" (ng build nexprime-lib, ng-packagr) -> dist/nexprime-lib/ (entry src/public-api.ts,
+npm run build:lib         # npm package "nexprime" (ng build nexprime-lib, ng-packagr) -> dist/nexprime-lib/ (entry src/public-api.ts,
                           # config src/ng-package.json + src/package.json, README src/README.md, tsconfig.lib.json),
-                          # then build:elements; packaging/package-lib.mjs adds elements/ (nexprime-ui/elements, for
-                          # React/Vue/HTML) and react/ (nexprime-ui/react: <NexPrime> wrapper, JSX types) from packaging/.
+                          # then build:elements; packaging/package-lib.mjs adds elements/ (nexprime/elements, for
+                          # React/Vue/HTML) and react/ (nexprime/react: <NexPrime> wrapper, JSX types) from packaging/.
                           # packaging/ is outside src/ so the app's tsconfigs don't type-check its React typings
-npm run pack:lib          # build:lib + npm pack -> dist/nexprime-lib/nexprime-ui-<version>.tgz; publish with
+npm run pack:lib          # build:lib + npm pack -> dist/nexprime-lib/nexprime-<version>.tgz. npm run publish:lib builds and publishes; or
                           # `cd dist/nexprime-lib && npm publish`. New components: export them in src/public-api.ts
 npm test                  # Vitest unit tests (*.spec.ts)
 npx ngc -p .storybook/tsconfig.json --noEmit   # Type-check all components + stories (incl. templates)
@@ -35,7 +35,10 @@ src/stories/         One folder per top-level sidebar section, plus shared utils
                      page built from NexPrime components and effects), components-catalog/ ("View Components": every
                      component grouped like the sidebar, read at runtime from Storybook's index.json; story
                      Components/Overview, hidden from the sidebar), landing-nav/ (the site's top bar), landing.ts (PAGES,
-                     SECTIONS, VERSION, SITE_PAGES, clickedPage() shared by the site's pages), Frameworks.mdx,
+                     SECTIONS, VERSION, SITE_PAGES, clickedPage() shared by the site's pages), Installation.mdx (npm install
+                     nexprime per framework), Configuration.mdx (theme, dark mode, tokens, icons, Lottie, animations),
+                     playground/ (Getting Started ▸ Playground: pick a component from playground-data.ts, edit its
+                     inputs, live preview via NgComponentOutlet, code from elementCode() in np-framework-code),
                      framework-code/ (np-framework-code: Angular | React | Next.js | Vue | HTML tabs over copyable code
                      with a setup note; used by the Icons panel, Animations panel and NexLottie's Asset & Embed tab)
   components/        "Components": library components only, grouped like the sidebar (Components ▸ <Group> ▸ <Name>):
@@ -80,7 +83,9 @@ src/styles.css       Imports stories/styles/theme.css for the app
 public/favicon.svg   NexPrime icon: the "prism" NP mark (blue stem, blue→violet connector, violet P, glass edges, two
                      glowing nodes) on a midnight tile; the favicon of the app and Storybook (staticDirs). Also
                      nexprime-logo{,-dark,-mono}.svg (mark + wordmark), nexprime-icon-mono.svg, nexprime-brand-{light,dark}.svg
-                     (Storybook sidebar: the same lockup as the site's top bar, tile icon + "Nex" regular + "Prime" bold) and nexprime-hero.svg (1600×900 banner / social card). Wordmark and tagline are
+                     (Storybook sidebar: the same lockup as the site's top bar, tile icon + "Nex" regular + "Prime" bold), nexprime-hero.svg (1600×900 banner / social card; also
+                     the Welcome hero's background, dimmed, zoomed onto the NP mark on phones) and nexprime-mark.svg (the NP
+                     mark without a tile). Wordmark and tagline are
                      Manrope (OFL) converted to outlines, so the files need no font
 .storybook/          Storybook config; preview.ts imports src/stories/styles/theme.css
                      preview-head.html adds a plain-JS "back to top" button to every page (docs scroll in the preview frame),
@@ -105,9 +110,14 @@ public/favicon.svg   NexPrime icon: the "prism" NP mark (blue stem, blue→viole
                      Landing-page links (`managerHref(PAGES.x)`) are short URLs that preview.ts opens in place
                      (SELECT_STORY), without reloading Storybook
                      docs-page.ts is every component's docs page (parameters.docs.page in preview.ts): Storybook's layout,
-                     but "Show code" has Angular | React | Next.js | Vue | HTML tabs. Angular is Storybook's snippet; the
-                     others come from framework-snippets.ts (story args + template → Web Component code; Angular-only
-                     templates fall back to the args). Plain .ts with createElement: the builder doesn't serve .tsx
+                     but "Show code" has Angular | React | Next.js | Vue | HTML tabs, all from framework-snippets.ts.
+                     Angular (angularSnippet): a standalone component importing from 'nexprime', with the story's
+                     template as written (or the component with its args) and the values it uses as fields (signals
+                     as signal()). The others: story args + template → Web Component code; @for/@if/@switch/@let are
+                     expanded with the story's values, #refs become ids (Vue refs), `(clicked)="menu.toggle($event)"`
+                     and `(clicked)="visible = true"` (set on the element bound to `visible`) become real handlers,
+                     and a Carousel <ng-template> becomes one child per item. Left as a "Simplified" note: other
+                     <ng-template>s and element refs passed as inputs. Plain .ts with createElement: the builder doesn't serve .tsx
                      manager-head.html styles the Storybook sidebar like PrimeNG's docs: top-level entries get a boxed
                      icon (set per `data-item-id`, Lucide SVG data URIs) and groups a chevron (restart Storybook after editing)
                      Toolbar: Storybook's own tools are off (`features` in main.ts, `toolbar` in manager.ts); theme-tools.ts
@@ -147,6 +157,12 @@ The look is an indigo → violet gradient accent (`--ui-gradient`) on slate neut
 - Selected/active states use `background: var(--ui-gradient)` with white text. Hover changes color, background, border or shadow only (e.g. `--ui-primary-soft`). Never move elements on hover (no `translateY` lift). `:focus-visible` uses `box-shadow: var(--ui-ring)`.
 - Alert and Toast show a round tone icon: `<span class="ui-tone-icon">{{ icons[type()] }}</span>` with `TONE_ICONS`.
 - Color variants: add the class `tone-<tone>` and read `--tone-bg`, `--tone-fg`, `--tone-border`, `--tone-solid`. Type the input as `Tone` from `utils/types.ts` (`info | success | warning | danger | neutral`).
+- Appearance classes (theme.css) work on every component: `np-color-<primary|secondary|success|info|warning|danger|help|contrast>`
+  overrides `--ui-primary`/`--ui-accent` (and re-declares `--ui-gradient`, `--ui-primary-soft`, the ring, which are
+  computed where declared) and `np-shape-<pill|rounded|square>` overrides `--ui-radius-sm/-/-lg/-full`. So components
+  must take colors and radii from the tokens: fully round parts use `var(--ui-radius-full)`, never `999px`.
+- Button (`np-button`) has `severity` (BUTTON_SEVERITIES), `variant` solid | outlined | text | soft, `shape` pill |
+  rounded | square, `icon` + `iconPos`, `loading`, `disabled`; each severity sets `--btn`/`--btn-fg` in button.css.
 - Form fields: wrap in `.ui-field`, with `.ui-label`, `.ui-control` (on input/select/textarea), `.ui-hint` and `.ui-error`. `aria-invalid="true"` on a `.ui-control` gives it a red border.
 - Buttons inside components use the shared `.ui-btn` classes: `.ui-btn--primary` (gradient), `--danger`, `--text` (combine with `--danger` for red text), `--sm`, `--icon`. Don't write component-local button CSS.
 - Close buttons use `.ui-close`. Screen-reader-only text uses `.ui-visually-hidden`.
@@ -172,7 +188,9 @@ The look is an indigo → violet gradient accent (`--ui-gradient`) on slate neut
 - `npm run build:elements` builds `src/elements/nexprime.ts` with Angular Elements. Every component is registered under its Angular selector (`np-<name>`). Components render `np-*` tags inside themselves too; Angular creates those (they carry `__ngContext__`), so the registered element skips its own start-up for them (`ownedByAngular()` in nexprime.ts) and nothing runs twice.
 - Outputs are DOM events (`event.detail`). camelCase outputs are also dispatched in kebab-case (`valueChange` and `value-change`) for Vue. Arrays, objects and functions must be set as properties.
 - Features that need `<ng-template>` or services have Web Component alternatives: Carousel uses its child elements as slides when there's no template, and `window.NexPrime.confirm()` wraps ConfirmationService. Icons load from `window.NEXPRIME_ICONS_URL` (default `icons/`).
-- The docs page is `src/stories/getting-started/Frameworks.mdx` (Getting Started). Storybook MDX has no GitHub table syntax, so write tables as HTML.
+- The docs pages are `src/stories/getting-started/Installation.mdx` and `Configuration.mdx` (Getting Started). Storybook MDX has no GitHub table syntax, so write tables as HTML.
+- Docs code blocks (MDX and "Show code") are dark (`#1e293b`) with a copy icon that shows on hover (docs-theme.css);
+  preview-head.html turns it into a check after copying.
 
 ## Lottie
 
@@ -194,6 +212,10 @@ The look is an indigo → violet gradient accent (`--ui-gradient`) on slate neut
   history. Its TitleStrategy emits `SITE_ROUTE` ({ page, title }); manager.ts shows that page's short URL and title.
 - Page links stay `managerHref()` anchors with `target="_top"`: the site routes its own pages (`SITE_PAGES`), and
   preview.ts opens the others in Storybook (SELECT_STORY). Both use `clickedPage()`, so new-tab clicks keep the link.
+- Site search (`getting-started/site-search/`, in the landing nav; Ctrl/⌘ K or /): a modal `<dialog>` over pages,
+  components and their stories (index.json, sidebar entries only), icons (with tags.json keywords), animations and
+  Lottie files, loaded on first open. Site pages open in the router with `?q=` (the galleries' `q` input pre-fills
+  their search via withComponentInputBinding; the URL sent to the manager drops the query); other pages via SELECT_STORY.
 - The galleries' data is in `icons/icons-data.ts`, `animations/animations-data.ts` and `nexlottie/lottie-data.ts`,
   given to the pages by route resolvers. preview.ts preloads it after the first page renders (`preloadSiteData()`).
 - Long grids (Icons, NexLottie) render in batches as they're scrolled with `renderInBatches()` (`utils/render-in-batches.ts`).
@@ -205,18 +227,95 @@ The look is an indigo → violet gradient accent (`--ui-gradient`) on slate neut
 - Menus (Menu, Menubar, MegaMenu, PanelMenu, TieredMenu) take `[model]="MenuItem[]"` from `utils/types.ts`: `icon` is an icon file name, `command` runs on click, plus `url`, `items`, `separator`, `disabled`, `badge`. Popup menus expose `toggle(event)`, `show(event)`, `hide()`.
 - Drag and drop uses `@angular/cdk/drag-drop` (PickList). Style CDK states (`.cdk-drag-preview`, `.cdk-drag-placeholder`, `.cdk-drop-list-dragging`) in the component CSS. The preview is a clone of the item, so component styles still apply.
 - Badge is a standalone label; Overlay Badge (`<np-overlay-badge [value]="6">…</np-overlay-badge>`) wraps content and puts a count or dot on its corner.
-- Footer slots (`<div dialogFooter>`, `<div cardFooter>`) get `display: contents` from theme.css, so the component's footer lays out the buttons with its gap. Card's `footerAlign="stretch"` uses a grid to make them equal width.
-- Tree and TreeTable take `TreeNode[]` from `utils/types.ts` (`key` is required and must be unique).
+- Footer slots (`<div dialogFooter>`, `<div modalFooter>`, `<div cardFooter>`) get `display: contents` from theme.css, so the component's footer lays out the buttons with its gap. Card's `footerAlign="stretch"` uses a grid to make them equal width.
+- Tree and TreeTable take `TreeNode[]` from `utils/types.ts` (`key` is required and must be unique). Both have
+  `selectionMode` single | checkbox (tri-state; `[(selection)]` is `TreeNode | TreeNode[] | null`), a filter and
+  `expandAll()`/`collapseAll()`. Tree: `variant` (TREE_VARIANTS: default | lines | soft | cards | compact | glass),
+  `highlight`, `showCounts`, `controls`; per-node `data.badge` and `data.description`; indent from `--level`.
+  TreeTable: `variant` (TREE_TABLE_VARIANTS: default | striped | bordered | lines | minimal | glass), `size`,
+  `scrollHeight` (sticky header), columns with `align` and `width`.
+- Table (`np-table`): `variant` (TABLE_VARIANTS: default | striped | bordered | minimal | cards | glass), `size`,
+  `scrollHeight` (sticky header), `selectable` + `[(selection)]` (rows matched by reference), `loading` (skeleton
+  rows), `rows` (pages with an internal np-pagination; the page resets when the filtered rows change); columns take
+  `align`, `tones` (value → Tone status pill) and `image` (avatar). Variants only set `--tbl-*` variables.
+- Pagination (`np-pagination`): `variant` (PAGINATION_VARIANTS: default | outlined | soft | glass | minimal | dots),
+  `size`, `totalRecords` + `[(rows)]`, `rowsOptions`, `showSummary`, `showFirstLast`, `showJump`, arrow keys.
+- Pick List: `variant` (PICK_LIST_VARIANTS: default | cards | compact | glass | minimal), `optionIcon`,
+  `optionDescription`, `targetLimit`. Timeline: `variant` (TIMELINE_VARIANTS: default | cards | outlined | gradient |
+  compact), `activeIndex` (done / active with a pulse / pending), `dateOpposite`, event `tag`, `lineColor` (a
+  tone or any CSS color, as `--tl-c` on the root; line and markers fall back to the border / brand gradient).
 - ConfirmDialog and ConfirmPopup share `ConfirmationService` (`components/overlay/confirm-dialog/confirmation.service.ts`, `providedIn: 'root'`). Call `confirm({ message, header, accept, reject })`. Pass `target: event.currentTarget` for the popup; confirms without a target open the dialog.
 - Anchored overlays (OverlayPanel, ConfirmPopup) and popup menus share `src/stories/utils/anchor-position.ts`.
+  Floating panels (Select, OverlayPanel, ConfirmPopup, popup Menu / TieredMenu) render as `popover="manual"` and call
+  `showPopover()` before measuring (menus: `[npMenuPopover]` in menu-item.component.ts): the top layer can't be moved
+  by Storybook's transformed docs blocks or clipped by `overflow: hidden`. Their CSS undoes the popover defaults
+  (`inset: auto; margin: 0; overflow: visible; color`).
+- Panel / overlay / menu looks (each a `*_VARIANTS` const): Accordion (`[(expanded)]`, `toggleIcon`, `iconPos`, item
+  `icon`/`subtitle`/`disabled`, height animates via grid rows), Card (`horizontal`, `overlay`, `badge`, `href` /
+  `clickable` + `cardClick`, `loading`), Inplace (`editable` + `[(value)]`, `icon`), Dialog (`tone`, `icon`, `subtitle`,
+  `draggable`, `blockScroll`), Modal (`size`, `closeOnBackdrop`, `closeOnEscape`, `[modalFooter]`), ConfirmDialog
+  (`variant`; confirm options `tone`, `confirmText` = type to confirm), OverlayPanel (`header`, `icon`, `[panelFooter]`,
+  `width`, `closeOnEscape`), ConfirmPopup (`tone`, `acceptLabel`, `rejectLabel`), Tooltip (`tone`, `heading`,
+  `shortcut`, `arrow`, `showDelay`/`hideDelay` in CSS), Breadcrumb (`separator` chevron|arrow|slash|dot, `home`,
+  `maxItems`), Menubar (`sticky`, `[(current)]`), MegaMenu (`stretch`, item `featured` promo card), Menu and TieredMenu
+  (shared MENU_VARIANTS via `.mi-look-*` in menu-item.css, `shortcuts` shows badges as kbd, Menu `[menuHeader]` /
+  `[menuFooter]`, TieredMenu `trigger` hover | click), PanelMenu (`[(collapsed)]` icon rail, `[(selected)]`).
 - All menus render rows with the internal `np-menu-item` (`components/menu/menu-item/`, global CSS, tuned per menu via `--mi-*` variables). Its story is hidden from the sidebar with `tags: ['!dev']`.
 - ConfirmDialog renders `<np-dialog>` internally; its No/Yes are `.ui-btn--text` (Yes turns red with `acceptTone: 'danger'`).
 - `*-demo.component.ts` files (confirm-dialog, overlay-panel) are story-only helpers for examples that need injected services or icon buttons. They are not part of the library.
 - Chart (`np-chart`) is dependency-free SVG: `type` line | area | bar (`stacked`) | pie | doughnut, `labels` + `datasets: ChartDataset[]`. Series colors are the theme's `--ui-chart-1…8` (validated for color-blind separation; keep that order, don't add a 9th). It follows the data-viz rules: bars ≤ 24px with 2px gaps and 4px rounded tops, 2px lines, a legend only for 2+ series, a hover tooltip, and a visually hidden data table. SVG colors are set with `[style.fill]`/`[style.stroke]` because presentation attributes can't use `var()`.
-- Carousel (`np-carousel`) renders a projected `<ng-template let-item let-i="index">` per item; `numVisible`, `numScroll`, `circular`, `autoplayInterval` (pauses on hover/focus), `[(page)]`, arrow keys and swipe.
+  More types: radar, radial (progress rings), gauge (first value; both use `max`) and sparkline (no axes, own range);
+  `gradient` (fades fills), `showValues` (bar labels; stacked shows totals), `animate` (draw-in, off with reduced motion).
+  New types reuse the scales, tooltip, legend and hidden table.
+- Carousel (`np-carousel`) renders a projected `<ng-template let-item let-i="index">` per item; `numVisible`, `numScroll`, `circular`, `autoplayInterval` (pauses on hover/focus; the countdown restarts on every page change), `[(page)]`, arrow keys and swipe.
+  `variant` (CAROUSEL_VARIANTS: default | peek | coverflow (each slide gets `--offset`) | fade | glass), `indicator`
+  (CAROUSEL_INDICATORS: dots | bars (fills over the autoplay interval) | numbers | progress), `vertical` + `height`.
+  Slides are sized by `.carousel__track > ::ng-deep *` so the Web Component's child-element slides get the variants too.
 - Form (`np-form`) builds a validated form from `fields: FormField[]` (or multi-step `steps: FormStep[]`) and reuses the input components. Extra field types (rating, chips, multichips, cards, segmented, choice, color) render as `.option` buttons. It has an optional header (`title`, `subtitle`, `icon`, `tone`), `card`, `layout="inline"`, `loading`, and a success view (`successTitle`). Extra content goes in `[formBeforeActions]` (above the buttons) or the default slot (below the form). A field's `match` names another field it must equal (confirm password). The Form stories double as ready-made templates, with the account forms first in flow order (Login, Sign up, Forgot password, Reset password, then Contact, Feedback, Survey, Newsletter, Bug report, Feature request, Onboarding).
 - Chat (`np-chat`) appends what the user sends to `[(messages)]` (`ChatMessage[]`) and emits `send`; the consumer appends the replies. Voice Chat (`np-voice-chat`) reuses `ChatMessage`: its mic goes idle → listening → processing → speaking with the Web Speech API (a text box when recognition isn't available), emits `utterance`, and speaks the next `them` message.
-- Helpful (`np-helpful`) is the "Was this helpful?" vote widget.
+- Helpful (`np-helpful`) is the "Was this helpful?" vote widget: `variant`, `mode` thumbs | emoji | stars with
+  `[(rating)]` + `rated`, `followUp` comment box (`commented`), `thanks`.
+- Feedback / media / misc looks (each a `*_VARIANTS` const): Alert (`icon`, `compact`, `closable`, `[alertActions]`),
+  Toast (TOAST_POSITIONS adds top-/bottom-center, `title`, `action` + `actionClick`, `pauseOnHover`, `swipeable`),
+  Progress Bar (looks are `look` / PROGRESS_BAR_VARIANTS because `variant` was already its tone; `circular` ring,
+  `indeterminate`, `buffer`, `segments`, `labelPosition`, `size`), Skeleton (`preset` text | avatar | list | card |
+  table, `lines`, `columns`, `duration`), Tag (`size`, `count`, `removable` + `remove`), Avatar (`icon`, `more` +N,
+  `stacked` overlap, status `busy`), Overlay Badge (`pulse`, `icon`, `circular`), Lottie (`direction` forward | reverse
+  | bounce, `controls` bar, `seek()`, `loopComplete`; the per-frame listener exists only with `controls`), Chat
+  (`suggestions`, `reactions` + `react` via a popover="auto" picker, `dateSeparators`), Voice Chat (`mode` toggle |
+  push, `caption`, `muteButton` + `[(muted)]`), Animate On Scroll (blur-in, blur-up, tilt, `stagger`, `scrub` via
+  animation-timeline: view()), Header (`brand`, `links`, `[(active)]`, `sticky`, `avatar`), Scroll Top (`label`,
+  `percent`, `smart`).
+- Calendar (`np-calendar`) styles and extras: `variant` default | gradient (header on a gradient band) | glass (frosted)
+  | minimal (CALENDAR_VARIANTS); `presets` (`CalendarPreset[]`, values or functions evaluated on click; RANGE_PRESETS
+  ships Today … Last month) in a side list, the matching one highlighted; `marks` (`CalendarMark[]`: event dots, up
+  to 3 per day, labels added to the day's aria-label); `showWeekNumbers` (ISO week from each row's Thursday).
+- Stepper (`np-stepper`): `steps` are labels or `StepItem` ({ label, description, icon, error }); `variant` circles
+  (default) | progress | dots | arrows | cards (STEPPER_VARIANTS), `vertical` (circles, dots, cards), `clickable` +
+  `linear` (only finished steps) with `stepClick` and `[(activeStep)]` (a linkedSignal follows the input). Connectors
+  fill via `--fill` (the gradient's background-size), so one rule covers horizontal and vertical.
+- Tabs (`np-tabs`): `variant` pill (default) | underline | boxed | solid | minimal (TAB_VARIANTS), `vertical`, `stretch`;
+  a `Tab` can have `icon`, `badge` and `disabled`. Arrow keys (Up/Down when vertical), Home and End move between the
+  enabled tabs (roving tabindex, aria-controls/labelledby ids).
+- Select (`np-select`) is a custom listbox, not a native `<select>`: a `.ui-control` button (role combobox) opens a
+  `position: fixed` panel measured from the trigger (opens upwards without room; closes on outside click, scroll and
+  resize). The panel is a `popover="manual"` (top layer, so
+  Storybook's transformed docs blocks and overflow: hidden can't clip it). Options take `icon`, `image` (avatar), `color`
+  (swatch), `group` (heading), `description`, `disabled`; `filter` adds a search box; `multiple` + `[(values)]`
+  (checkboxes, chips in the trigger); `layout` list | grid (SELECT_LAYOUTS). Keys: arrows, Home/End,
+  Enter/Space, Escape, type-ahead.
+- Chip (`np-chip`): `variant` default | soft | outlined | solid | gradient | glass | dot (CHIP_VARIANTS), `tone`, `size`,
+  `count`, `selectable` + `[(selected)]` (a transparent toggle button laid over the chip; the remove button sits above it).
+- Checkbox (`np-checkbox`): `variant` default | circle | card | chip | todo (CHECKBOX_VARIANTS), `[(indeterminate)]`,
+  `description`, `icon` (card, chip), `size`, `invalid`. The check is an SVG path drawn in with `pathLength="1"`.
+- Rating (`np-rating`): `variant` star | heart | emoji | number | bar (RATING_VARIANTS); star/heart are SVG shapes with
+  a clipped filled copy, so `allowHalf` can fill half. `labels`, `showValue`, `clearable`, arrow keys (roving tabindex).
+- Input OTP: `variant` box | underline | filled | circle | connected (OTP_VARIANTS), `placeholder`, `success`,
+  `resendSeconds` + `resend` (countdown started in afterNextRender). Input Number: `buttonLayout` stacked | inline |
+  horizontal | split | vertical (INPUT_NUMBER_LAYOUTS), field `variant`, `icon`, `meter` (needs min and max).
+- Form: `variant` default | glass | gradient | accent | glow (FORM_VARIANTS; all but default are cards), `fieldVariant`
+  (passed to text, select, textarea, number), `progress` bars | stepper (np-stepper), field `icon`, option `icon`, and the
+  field types `number` (min/max/step), `otp` (length) and `emoji` (option labels name the faces).
 - Onboarding lives in its own sidebar group (titles `Onboarding/Tour`, `Onboarding/Checklist`) instead of `Components/`. `np-onboarding` is a tour over `steps` (CSS selectors) with `mode` spotlight | beacon | welcome and `theme` light | dark | gradient | glass. Use `start(step?)`, or `autoStart` + `storageKey` to show it once. `np-onboarding-checklist` emits `showMe(task)` so the app can start a tour step. Tour stories use `docs.story.inline: false`, so each auto-starting tour runs in its own frame.
 - Scroll Top (`np-scroll-top`) is fixed to the page corner by default. With `[target]` set to a scrolling element, place it as that element's last child: it sticks to the element's bottom edge.
 - Effects (`src/stories/effects/`, sidebar Effects ▸ …) wrap projected content and paint behind it (Confetti and Cursor Trail paint over it, with `.np-effect__canvas--front`, and Grain lays its texture over it); give them a height and a background. Hosts use the global `.np-effect` and `.np-effect__content` classes from theme.css.
@@ -247,10 +346,16 @@ export const Disabled: Story = { args: { disabled: true } };      // keep short 
 - Use a `render` template when the component needs projected content, a trigger button (Modal, Toast), or several instances in one story (`AllTypes`/`AllVariants`).
 - Overlays (Modal, Toast) set `parameters.docs.story = { inline: false, height }` so they render inside the docs page.
 - To reuse another component in a story template, add `decorators: [moduleMetadata({ imports: [ButtonComponent] })]`.
+- Every component's docs page shows its examples first and the API table (Controls) last (`.storybook/docs-page.ts`).
+- Each component's stories end with the appearance examples, built from its main (or a checked/filled) story:
+  `const appearance = appearanceStories(meta, Default); export const AppearanceColors = appearance.colors;
+  export const AppearanceShapes = appearance.shapes;` (`utils/appearance-stories.ts`: one copy per `np-color-*` /
+  `np-shape-*` class). Left out where copies would stack: fixed overlays (Toast, Dialog, Modal, Bottom Sheet, Scroll
+  Top), Page, Lottie, the hidden Menu Item, and Button (it has its own Severities/Variants/Shapes stories).
 
 ## Adding a component
 
 1. Pick a group and create `src/stories/components/<group>/<name>/` with `<name>.component.ts`, `<name>.html`, `<name>.css` and `<name>.stories.ts`, following the conventions above.
-2. Add it to the `components` list in `src/elements/nexprime.ts` (and the element list in `getting-started/Frameworks.mdx`),
+2. Add it to the `components` list in `src/elements/nexprime.ts` (and the element list in `getting-started/Installation.mdx`),
    and export it from `src/public-api.ts` (the npm package).
 3. Run `npx ngc -p .storybook/tsconfig.json --noEmit`, then `npm run build-storybook` and `npm run build:elements`.

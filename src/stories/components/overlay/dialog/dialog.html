@@ -13,12 +13,30 @@
       tabindex="-1"
       [attr.aria-modal]="modal()"
       [attr.aria-labelledby]="headerId"
+      [class]="'dialog--' + variant() + (tone() ? ' tone-' + tone() : '')"
       [class.dialog--maximized]="maximized()"
       [style.width]="width()"
+      [style.translate]="maximized() ? null : offset()[0] + 'px ' + offset()[1] + 'px'"
       (click)="$event.stopPropagation()"
     >
-      <div class="dialog-header">
-        <h3 class="dialog-title" [id]="headerId">{{ header() }}</h3>
+      <div
+        class="dialog-header"
+        [class.dialog-header--drag]="draggable() && !maximized()"
+        (pointerdown)="draggable() && !maximized() && dragStart($event)"
+        (pointermove)="grab && offset.set([$event.clientX - grab[0], $event.clientY - grab[1]])"
+        (lostpointercapture)="grab = null"
+      >
+        @if (icon()) {
+          <span class="dialog-icon"
+            ><np-icon [name]="icon()" [size]="variant() === 'hero' ? 28 : 18"
+          /></span>
+        }
+        <div class="dialog-heading">
+          <h3 class="dialog-title" [id]="headerId">{{ header() }}</h3>
+          @if (subtitle()) {
+            <p class="dialog-subtitle">{{ subtitle() }}</p>
+          }
+        </div>
         @if (maximizable()) {
           <button
             type="button"

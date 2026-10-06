@@ -1,46 +1,84 @@
-/* Hidden start state per animation; .aos--visible transitions back to the natural position */
+/* Hidden start state per animation; .aos--visible goes back. With stagger each child animates, --aos-i steps apart */
 :host {
   display: block;
-  opacity: 0;
-  transition:
-    opacity var(--aos-duration) cubic-bezier(0.22, 1, 0.36, 1) var(--aos-delay),
-    transform var(--aos-duration) cubic-bezier(0.22, 1, 0.36, 1) var(--aos-delay);
+}
+
+:host(.aos--visible:not(.aos--stagger)),
+:host(.aos--visible.aos--stagger) ::ng-deep > * {
+  opacity: 1;
+  transform: none;
+  filter: none;
 }
 
 :host(.aos--fade-up) {
-  transform: translateY(32px);
+  --aos-from: translateY(32px);
 }
 
 :host(.aos--fade-down) {
-  transform: translateY(-32px);
+  --aos-from: translateY(-32px);
 }
 
 :host(.aos--fade-left) {
-  transform: translateX(40px);
+  --aos-from: translateX(40px);
 }
 
 :host(.aos--fade-right) {
-  transform: translateX(-40px);
+  --aos-from: translateX(-40px);
 }
 
 :host(.aos--zoom-in) {
-  transform: scale(0.85);
+  --aos-from: scale(0.85);
 }
 
 :host(.aos--flip) {
-  transform: perspective(800px) rotateX(-70deg);
-  transform-origin: top center;
+  --aos-from: perspective(800px) rotateX(-70deg);
+  --aos-origin: top center;
 }
 
-:host(.aos--visible) {
-  opacity: 1;
-  transform: none;
+:host(.aos--blur-in) {
+  --aos-from: scale(0.96);
+  --aos-filter: blur(12px);
 }
 
-@media (prefers-reduced-motion: reduce) {
-  :host {
+:host(.aos--blur-up) {
+  --aos-from: translateY(40px);
+  --aos-filter: blur(10px);
+}
+
+:host(.aos--tilt) {
+  --aos-from: perspective(900px) rotateY(-24deg) translateX(-32px);
+  --aos-origin: left center;
+}
+
+@keyframes aos-scrub {
+  to {
     opacity: 1;
-    transform: none !important;
-    transition: none;
+    transform: none;
+    filter: none;
+  }
+}
+
+/* Only with motion: the hidden start state and scrub (with reduced motion the content just shows) */
+@media (prefers-reduced-motion: no-preference) {
+  :host(:not(.aos--stagger)),
+  :host(.aos--stagger) ::ng-deep > * {
+    opacity: 0;
+    transform: var(--aos-from);
+    transform-origin: var(--aos-origin, center);
+    filter: var(--aos-filter, none);
+    transition: var(--aos-duration) cubic-bezier(0.22, 1, 0.36, 1);
+    transition-property: opacity, transform, filter;
+    transition-delay: calc(var(--aos-delay) + var(--aos-i, 0) * var(--aos-stagger));
+  }
+
+  /* Scrub: the reveal follows the scroll position, both ways, from entering the view to 40% across it */
+  @supports (animation-timeline: view()) {
+    :host(.aos--scrub:not(.aos--stagger)),
+    :host(.aos--scrub.aos--stagger) ::ng-deep > * {
+      transition: none;
+      animation: aos-scrub linear both;
+      animation-timeline: view();
+      animation-range: entry 10% cover 40%;
+    }
   }
 }

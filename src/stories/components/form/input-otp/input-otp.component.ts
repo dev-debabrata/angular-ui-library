@@ -1,8 +1,10 @@
 import {
   Component,
+  DestroyRef,
   ElementRef,
   afterNextRender,
   booleanAttribute,
+  inject,
   input,
   linkedSignal,
   model,
@@ -12,6 +14,10 @@ import {
 } from '@angular/core';
 
 import { Size } from '../../../utils/types';
+
+/** Looks of the boxes */
+export const OTP_VARIANTS = ['box', 'underline', 'filled', 'circle', 'connected'] as const;
+export type OtpVariant = (typeof OTP_VARIANTS)[number];
 
 let nextId = 0;
 
@@ -36,8 +42,17 @@ export class InputOtpComponent {
   /** Box size */
   readonly size = input<Size>('medium');
 
-  /** 'box': bordered squares. 'underline': a line under each character */
-  readonly variant = input<'box' | 'underline'>('box');
+  /**
+   * box: bordered squares, underline: a line under each character, filled: tinted boxes without a border,
+   * circle: round boxes, connected: one joined row of boxes
+   */
+  readonly variant = input<OtpVariant>('box');
+
+  /** Character shown in empty boxes, e.g. '•' or '0' */
+  readonly placeholder = input('');
+
+  /** Show the code as accepted: green boxes (e.g. after the server verified it) */
+  readonly success = input(false, { transform: booleanAttribute });
 
   /** Is the input disabled? */
   readonly disabled = input(false, { transform: booleanAttribute });
@@ -57,8 +72,18 @@ export class InputOtpComponent {
   /** Helper text shown under the boxes */
   readonly hint = input('');
 
+  /** Seconds before the "Resend code" link is enabled; 0 hides the resend row */
+  readonly resendSeconds = input(0, { transform: numberAttribute });
+
   /** Emits the full code when every box is filled */
   readonly complete = output<string>();
+
+  /** Emitted when "Resend code" is clicked; the countdown starts again */
+  readonly resend = output<void>();
+
+  /** Seconds left before resending is allowed */
+  protected readonly countdown = linkedSignal(() => this.resendSeconds());
+  private timer?: ReturnType<typeof setInterval>;
 
   protected readonly id = `input-otp-${nextId++}`;
   protected readonly boxes = viewChildren<ElementRef<HTMLInputElement>>('box');
@@ -73,7 +98,31 @@ export class InputOtpComponent {
   });
 
   constructor() {
-    afterNextRender(() => this.autofocus() && this.focus(0));
+    afterNextRender(() => {
+      if (this.autofocus()) this.focus(0);
+      this.startCountdown();
+    });
+    inject(DestroyRef).onDestroy(() => clearInterval(this.timer));
+  }
+
+  protected onResend(): void {
+    this.resend.emit();
+    this.startCountdown();
+  }
+
+  /** "0:30" */
+  protected clock(seconds: number): string {
+    return `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')}`;
+  }
+
+  /** Runs in the browser only (afterNextRender and clicks) */
+  private startCountdown(): void {
+    clearInterval(this.timer);
+    this.countdown.set(this.resendSeconds());
+    this.timer = setInterval(() => {
+      if (this.countdown() <= 1) clearInterval(this.timer);
+      this.countdown.update((s) => Math.max(0, s - 1));
+    }, 1000);
   }
 
   protected onKeydown(e: KeyboardEvent, i: number): void {

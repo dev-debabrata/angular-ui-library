@@ -1,41 +1,99 @@
+/* Each severity sets --btn (its color) and --btn-fg (text on the solid fill); the variants build on those, and
+   --btn-text mixes the color with the theme's text color, so colored text reads in light and dark mode */
 .np-button {
+  --btn-fg: #fff;
+  --btn-text: color-mix(in srgb, var(--btn) 80%, var(--ui-text));
+
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  gap: 8px;
   border: 0;
-  border-radius: 999px;
+  border-radius: var(--ui-radius-full);
   font-family: var(--ui-font);
   font-weight: 600;
   line-height: 1;
   letter-spacing: 0.01em;
+  white-space: nowrap;
   cursor: pointer;
   transition:
     transform var(--ui-ease),
+    background var(--ui-ease),
+    color var(--ui-ease),
     box-shadow var(--ui-ease),
     filter var(--ui-ease);
 }
 
-.np-button:active {
+.np-button:active:not(:disabled) {
   transform: scale(0.97);
 }
 
-.np-button:focus-visible {
-  outline: none;
-  box-shadow: var(--ui-ring);
+.np-button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
 }
 
+/* ---- severities */
 .np-button--primary {
-  background: var(--ui-gradient);
-  color: #fff;
-  box-shadow: 0 4px 14px rgba(99, 102, 241, 0.35);
-}
-
-.np-button--primary:hover {
-  box-shadow: 0 6px 20px rgba(99, 102, 241, 0.45);
-  filter: brightness(1.05);
+  --btn: var(--ui-primary);
 }
 
 .np-button--secondary {
+  --btn: var(--ui-text-muted);
+}
+
+.np-button--success {
+  --btn: var(--ui-success);
+}
+
+.np-button--info {
+  --btn: var(--ui-info);
+}
+
+.np-button--warning {
+  --btn: var(--ui-warning);
+  /* White doesn't read on amber */
+  --btn-fg: color-mix(in srgb, var(--ui-warning) 18%, #000);
+}
+
+.np-button--danger {
+  --btn: var(--ui-danger);
+}
+
+.np-button--help {
+  --btn: var(--ui-help);
+}
+
+.np-button--contrast {
+  --btn: var(--ui-text);
+  --btn-fg: var(--ui-surface);
+  --btn-text: var(--ui-text);
+}
+
+/* ---- variants */
+.np-button--solid {
+  background: var(--btn);
+  color: var(--btn-fg);
+  box-shadow: 0 4px 14px color-mix(in srgb, var(--btn) 32%, transparent);
+}
+
+.np-button--solid:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--btn) 86%, #000);
+  box-shadow: 0 6px 20px color-mix(in srgb, var(--btn) 42%, transparent);
+}
+
+/* Primary keeps the brand gradient */
+.np-button--solid.np-button--primary {
+  background: var(--ui-gradient);
+}
+
+.np-button--solid.np-button--primary:hover:not(:disabled) {
+  background: var(--ui-gradient);
+  filter: brightness(1.05);
+}
+
+/* Secondary solid is the neutral surface button */
+.np-button--solid.np-button--secondary {
   background: var(--ui-surface);
   color: var(--ui-text);
   box-shadow:
@@ -43,13 +101,55 @@
     var(--ui-shadow-sm);
 }
 
-.np-button--secondary:hover {
+.np-button--solid.np-button--secondary:hover:not(:disabled) {
+  background: var(--ui-surface);
+  color: var(--ui-primary);
   box-shadow:
     inset 0 0 0 1px var(--ui-primary),
     var(--ui-shadow);
-  color: var(--ui-primary);
 }
 
+.np-button--outlined {
+  background: transparent;
+  color: var(--btn-text);
+  box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--btn) 70%, transparent);
+}
+
+.np-button--text {
+  background: transparent;
+  color: var(--btn-text);
+}
+
+.np-button--outlined:hover:not(:disabled),
+.np-button--text:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--btn) 10%, transparent);
+}
+
+.np-button--soft {
+  background: color-mix(in srgb, var(--btn) 14%, var(--ui-surface));
+  color: var(--btn-text);
+}
+
+.np-button--soft:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--btn) 22%, var(--ui-surface));
+}
+
+/* After the variants, so keyboard focus shows the ring over their shadows */
+.np-button:focus-visible {
+  outline: none;
+  box-shadow: var(--ui-ring);
+}
+
+/* ---- shapes */
+.np-button--rounded {
+  border-radius: var(--ui-radius-sm);
+}
+
+.np-button--square {
+  border-radius: 0;
+}
+
+/* ---- sizes */
 .np-button--small {
   padding: 8px 16px;
   font-size: 12px;
@@ -63,4 +163,35 @@
 .np-button--large {
   padding: 14px 28px;
   font-size: 16px;
+}
+
+/* Icon-only: square, as wide as it is tall */
+.np-button--icon-only.np-button--small {
+  padding: 8px;
+}
+
+.np-button--icon-only.np-button--medium {
+  padding: 10px;
+}
+
+.np-button--icon-only.np-button--large {
+  padding: 13px;
+}
+
+/* ---- loading spinner, in the icon's place */
+.np-button__spinner {
+  width: 1em;
+  height: 1em;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  /* np-spin: the global keyframes in animations.css */
+  animation: np-spin 0.7s linear infinite;
+}
+
+
+@media (prefers-reduced-motion: reduce) {
+  .np-button__spinner {
+    animation-duration: 2s;
+  }
 }

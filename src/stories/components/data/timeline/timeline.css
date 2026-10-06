@@ -1,6 +1,11 @@
 .timeline {
   margin: 0;
   padding: 0;
+  --marker: 32px;
+  --dot: 14px;
+  --space: 28px;
+  /* --tl-c: the lineColor input (line and markers); unset, the line is a border and markers use the brand gradient */
+  --line: var(--tl-c, var(--ui-border));
   list-style: none;
   font-size: 14px;
 }
@@ -21,12 +26,12 @@
   display: grid;
   flex-shrink: 0;
   place-items: center;
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  background: var(--ui-gradient);
+  width: var(--marker);
+  height: var(--marker);
+  border-radius: var(--ui-radius-full);
+  background: var(--tl-c, var(--ui-gradient));
   color: #fff;
-  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.35);
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--tl-c, var(--ui-primary)) 35%, transparent);
 }
 
 .timeline-marker--tone {
@@ -34,12 +39,12 @@
   box-shadow: 0 0 0 4px var(--tone-bg);
 }
 
-/* Events without an icon get a small dot, centered on the 32px marker track */
+/* Events without an icon get a small dot, centered on the marker track */
 .timeline-marker--dot {
-  width: 14px;
-  height: 14px;
-  margin: 9px;
-  box-shadow: var(--ui-ring);
+  width: var(--dot);
+  height: var(--dot);
+  margin: calc((var(--marker) - var(--dot)) / 2);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--tl-c, var(--ui-primary)) 28%, transparent);
 
   &.timeline-marker--tone {
     box-shadow: 0 0 0 4px var(--tone-border);
@@ -51,14 +56,14 @@
   width: 2px;
   min-height: 24px;
   margin: 6px 0;
-  border-radius: 999px;
-  background: var(--ui-border);
+  border-radius: var(--ui-radius-full);
+  background: var(--line);
 }
 
 .timeline-content {
   flex: 1;
   min-width: 0;
-  padding: 4px 16px 28px;
+  padding: var(--pad-top, 4px) 16px var(--space);
 }
 
 .timeline-status {
@@ -74,7 +79,7 @@
 }
 
 .timeline-description {
-  margin: 8px 0 0;
+  margin: var(--desc-gap, 8px) 0 0;
   color: var(--ui-text-muted);
   line-height: 1.5;
 }
@@ -82,15 +87,22 @@
 .timeline--vertical {
   .timeline-opposite {
     display: none;
+    padding: 4px 16px;
+    text-align: right;
   }
 
   &.timeline--right .timeline-event,
   .timeline-event--flip {
     flex-direction: row-reverse;
     text-align: right;
+
+    .timeline-opposite {
+      text-align: left;
+    }
   }
 
-  &.timeline--alternate .timeline-opposite {
+  &.timeline--alternate .timeline-opposite,
+  &.timeline--opposite .timeline-opposite {
     display: block;
     flex: 1;
   }
@@ -121,27 +133,117 @@
     margin: 0 8px;
   }
 
-  .timeline-opposite {
+  /* Row 1 (above the line) and row 3 (below). align="right" swaps them; alternate swaps every second event */
+  .timeline-opposite,
+  &.timeline--right .timeline-content,
+  .timeline-event--flip .timeline-content {
     grid-row: 1;
+    align-self: end;
+    padding: 0 16px 12px 0;
   }
 
-  .timeline-content {
+  .timeline-content,
+  &.timeline--right .timeline-opposite,
+  .timeline-event--flip .timeline-opposite {
     grid-row: 3;
+    align-self: start;
     padding: 12px 16px 0 0;
   }
+}
 
-  /* align="right" puts content above the line; alternate flips every second event */
-  &.timeline--right,
-  .timeline-event--flip {
-    .timeline-content {
-      grid-row: 1;
-      align-self: end;
-      padding: 0 16px 12px 0;
-    }
+.timeline-tag {
+  margin-inline-start: 6px;
+  padding: 1px 8px;
+  border-radius: var(--ui-radius-full);
+  background: var(--tone-bg);
+  color: var(--tone-fg);
+  font-size: 11px;
+  vertical-align: 1px;
+}
 
-    .timeline-opposite {
-      grid-row: 3;
+.timeline--compact {
+  --marker: 22px;
+  --dot: 10px;
+  --space: 14px;
+  --pad-top: 1px;
+  --desc-gap: 4px;
+  font-size: 13px;
+}
+
+.timeline--gradient {
+  --line: var(--tl-c, var(--ui-gradient));
+
+  .timeline-marker {
+    box-shadow:
+      0 0 0 4px var(--ui-primary-soft),
+      0 6px 16px var(--ui-primary-ring);
+  }
+}
+
+/* Hollow markers: outlined, and pending events (--hollow and --ring set the colors) */
+.timeline--outlined .timeline-marker,
+.timeline-event--pending .timeline-marker {
+  background: var(--ui-surface);
+  color: var(--hollow, var(--tone-solid, var(--tl-c, var(--ui-primary))));
+  box-shadow: inset 0 0 0 2px var(--ring, currentColor);
+}
+
+.timeline--cards {
+  --pad-top: 0;
+
+  .timeline-body {
+    display: inline-block;
+    max-width: 100%;
+    padding: 12px 16px;
+    border: 1px solid var(--ui-border);
+    border-radius: var(--ui-radius-lg);
+    background: var(--ui-surface);
+    box-shadow: var(--ui-shadow-sm);
+    transition: var(--ui-ease);
+    transition-property: box-shadow, border-color;
+
+    &:hover {
+      border-color: var(--ui-border-strong);
+      box-shadow: var(--ui-shadow);
     }
+  }
+}
+
+/* activeIndex: the line is filled up to the current event, which pulses; later events are pending */
+.timeline-event--done {
+  --line: var(--tl-c, var(--ui-gradient));
+}
+
+.timeline-event--active .timeline-marker {
+  animation: timeline-pulse 2s ease-out infinite;
+}
+
+.timeline-event--pending {
+  --line: var(--ui-border);
+  --hollow: var(--ui-text-subtle);
+  --ring: var(--ui-border-strong);
+
+  .timeline-status {
+    color: var(--ui-text-muted);
+  }
+}
+
+@keyframes timeline-pulse {
+  from {
+    box-shadow: 0 0 0 0
+      color-mix(in srgb, var(--tone-solid, var(--tl-c, var(--ui-primary))) 55%, transparent);
+  }
+
+  70%,
+  to {
+    box-shadow: 0 0 0 12px transparent;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .timeline-event,
+  .timeline-marker {
+    animation: none !important;
   }
 }
 

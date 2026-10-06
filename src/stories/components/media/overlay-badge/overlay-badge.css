@@ -13,10 +13,12 @@
   min-width: var(--badge-size);
   height: var(--badge-size);
   padding: 0 5px;
-  border-radius: 999px;
+  border-radius: var(--ui-radius-full);
   background: var(--tone-solid);
-  /* Ring in the surface color separates the badge from the content under it */
-  box-shadow: 0 0 0 2px var(--ui-surface);
+  /* Ring in the surface color separates the badge from the content under it; --glow adds to it */
+  box-shadow:
+    0 0 0 2px var(--ui-surface),
+    var(--glow, 0 0 transparent);
   color: #fff;
   font-size: 11px;
   font-weight: 700;
@@ -27,7 +29,7 @@
   animation: badge-pop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-.tone-info.overlay-badge {
+.tone-info.overlay-badge--default {
   background: var(--ui-gradient);
 }
 
@@ -54,8 +56,8 @@
 .overlay-badge {
   --x: 50%;
   --y: -50%;
-  top: 0;
-  right: 0;
+  top: var(--inset, 0);
+  right: var(--inset, 0);
   transform: translate(var(--x), var(--y));
 }
 
@@ -63,14 +65,72 @@
 .overlay-badge--bottom-left {
   --x: -50%;
   right: auto;
-  left: 0;
+  left: var(--inset, 0);
 }
 
 .overlay-badge--bottom-right,
 .overlay-badge--bottom-left {
   --y: 50%;
   top: auto;
-  bottom: 0;
+  bottom: var(--inset, 0);
+}
+
+/* Round content: the corner of the circle, not of its box (1 - 1/√2) / 2 */
+.overlay-badge--circular {
+  --inset: 14.6%;
+}
+
+.overlay-badge--gradient {
+  --glow: 0 3px 10px color-mix(in srgb, var(--tone-solid) 55%, transparent);
+  background: linear-gradient(135deg, rgb(255 255 255 / 0.45), transparent) var(--tone-solid);
+}
+
+.overlay-badge--soft {
+  background: var(--tone-bg);
+  color: var(--tone-fg);
+}
+
+.overlay-badge--outlined {
+  --glow: inset 0 0 0 1.5px var(--tone-solid);
+  background: var(--ui-surface);
+  color: var(--tone-solid);
+}
+
+.overlay-badge--glass {
+  background: color-mix(in srgb, var(--tone-solid) 60%, transparent);
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, #fff 45%, transparent),
+    inset 0 1px 0 color-mix(in srgb, #fff 50%, transparent);
+  backdrop-filter: blur(8px) saturate(1.6);
+}
+
+/* Pulse: a ping behind the value */
+.overlay-badge--pulse {
+  isolation: isolate;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    background: var(--tone-solid);
+    animation: badge-ping 1.6s cubic-bezier(0, 0, 0.2, 1) infinite;
+  }
+}
+
+@keyframes badge-ping {
+  75%,
+  to {
+    opacity: 0;
+    scale: 2;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .overlay-badge--pulse::after {
+    animation: none;
+  }
 }
 
 @keyframes badge-pop {

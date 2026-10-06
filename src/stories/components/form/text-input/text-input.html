@@ -1,4 +1,9 @@
-<label class="ui-field">
+<label
+  class="ui-field"
+  [class]="'ui-field--' + variant()"
+  [class.ui-field--has-value]="!!value()"
+  [class.text-input--icon]="!!icon()"
+>
   @if (label()) {
     <span class="ui-label">
       {{ label() }}
@@ -7,17 +12,51 @@
       }
     </span>
   }
-  <input
-    class="ui-control"
-    [type]="type()"
-    [placeholder]="placeholder()"
-    [value]="value()"
-    [disabled]="disabled()"
-    [required]="required()"
-    [attr.aria-invalid]="!!error()"
-    [attr.aria-label]="ariaLabel() || null"
-    (input)="value.set($any($event.target).value)"
-  />
+  <span class="text-input-box">
+    @if (icon()) {
+      <np-icon class="text-input-icon" [name]="icon()" [size]="18" />
+    }
+    <input
+      #control
+      class="ui-control"
+      [type]="inputType()"
+      [placeholder]="placeholder()"
+      [value]="value()"
+      [disabled]="disabled()"
+      [required]="required()"
+      [style.--text-input-actions]="actions() || null"
+      [class.text-input-control--actions]="actions() > 0"
+      [attr.aria-invalid]="!!error()"
+      [attr.aria-label]="ariaLabel() || null"
+      (input)="value.set($any($event.target).value)"
+    />
+    @if (actions()) {
+      <span class="text-input-actions">
+        @if (showClear()) {
+          <button
+            type="button"
+            class="text-input-action"
+            aria-label="Clear"
+            (click)="clear($event)"
+          >
+            <np-icon name="x" [size]="16" />
+          </button>
+        }
+        @if (isPassword()) {
+          <button
+            type="button"
+            class="text-input-action"
+            [attr.aria-label]="revealed() ? 'Hide password' : 'Show password'"
+            [attr.aria-pressed]="revealed()"
+            [disabled]="disabled()"
+            (click)="toggleReveal($event)"
+          >
+            <np-icon [name]="revealed() ? 'eye-off' : 'eye'" [size]="16" />
+          </button>
+        }
+      </span>
+    }
+  </span>
   @if (error()) {
     <span class="ui-error">{{ error() }}</span>
   } @else if (hint()) {

@@ -1,3 +1,4 @@
+/* Variants (bottom of the file) set --pl-* properties; the fallbacks are the default look */
 .pick-list {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
@@ -11,15 +12,15 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  border: 1px solid var(--ui-border);
+  border: 1px solid var(--pl-border, var(--ui-border));
   border-radius: var(--ui-radius-lg);
-  background: var(--ui-surface);
-  box-shadow: var(--ui-shadow);
+  background: var(--pl-bg, var(--ui-surface));
+  box-shadow: var(--pl-shadow, var(--ui-shadow));
 
   /* Gradient accent along the top of each list */
   &::before {
     content: '';
-    height: 3px;
+    height: var(--pl-bar, 3px);
     background: var(--ui-gradient);
   }
 }
@@ -32,9 +33,12 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 12px 16px;
+  padding: var(--pl-header-pad, 12px 16px);
   border-bottom: 1px solid var(--ui-border);
-  background: linear-gradient(180deg, var(--ui-primary-soft), var(--ui-surface));
+  background: var(
+    --pl-header-bg,
+    linear-gradient(180deg, var(--ui-primary-soft), var(--ui-surface))
+  );
   color: var(--ui-text);
   font-size: 12px;
   font-weight: 700;
@@ -62,7 +66,7 @@
 .pick-list-count {
   min-width: 24px;
   padding: 3px 9px;
-  border-radius: 999px;
+  border-radius: var(--ui-radius-full);
   background: var(--ui-surface);
   box-shadow: inset 0 0 0 1px var(--ui-border);
   color: var(--ui-primary);
@@ -71,13 +75,25 @@
   letter-spacing: 0;
 }
 
+/* Target list at its targetLimit */
+.pick-list-count--full {
+  color: var(--ui-warning);
+}
+
+.pick-list-selected {
+  color: var(--ui-text-muted);
+  font-weight: 500;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
 .pick-list-filter {
   padding: 10px 10px 0;
 }
 
 .pick-list-items {
   flex: 1;
-  min-height: 240px;
+  min-height: var(--pl-min-height, 240px);
   max-height: 320px;
   margin: 0;
   padding: 8px;
@@ -86,9 +102,14 @@
 }
 
 .pick-list-item {
-  margin-bottom: 2px;
-  padding: 10px 12px;
-  border-radius: var(--ui-radius);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: var(--pl-item-gap, 2px);
+  padding: var(--pl-item-pad, 10px 12px);
+  border-radius: var(--pl-item-radius, var(--ui-radius));
+  background: var(--pl-item-bg, transparent);
+  box-shadow: var(--pl-item-shadow, none);
   outline: none;
   cursor: pointer;
   user-select: none;
@@ -98,12 +119,40 @@
     box-shadow var(--ui-ease);
 
   &:hover {
-    background: var(--ui-surface-muted);
+    background: var(--pl-item-hover, var(--ui-surface-muted));
     box-shadow: inset 0 0 0 1px var(--ui-border);
   }
 
   &:focus-visible {
     box-shadow: var(--ui-ring);
+  }
+
+  /* The label text, or the projected template's root */
+  > :last-child {
+    flex: 1;
+    min-width: 0;
+  }
+}
+
+.pick-list-item-icon {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: var(--ui-radius-sm);
+  background: var(--ui-primary-soft);
+  color: var(--ui-primary);
+}
+
+.pick-list-item-text {
+  display: grid;
+  gap: 2px;
+
+  small {
+    color: var(--ui-text-muted);
+    font-size: 12px;
+    font-weight: 400;
   }
 }
 
@@ -176,6 +225,49 @@
     box-shadow: none;
     cursor: not-allowed;
   }
+}
+
+/* Variants */
+.pick-list--cards {
+  --pl-bg: var(--ui-surface-muted);
+  --pl-header-bg: var(--ui-surface);
+  --pl-item-gap: 8px;
+  --pl-item-bg: var(--ui-surface);
+  --pl-item-hover: var(--ui-surface);
+  --pl-item-shadow: inset 0 0 0 1px var(--ui-border), var(--ui-shadow-sm);
+  --pl-item-radius: var(--ui-radius-lg);
+}
+
+.pick-list--compact {
+  --pl-header-pad: 8px 12px;
+  --pl-item-pad: 6px 10px;
+  --pl-item-gap: 0;
+  --pl-min-height: 180px;
+
+  font-size: 13px;
+}
+
+.pick-list--glass {
+  --pl-bg: color-mix(in srgb, var(--ui-surface) 55%, transparent);
+  --pl-border: color-mix(in srgb, var(--ui-surface) 70%, transparent);
+  --pl-shadow: var(--ui-shadow-lg);
+  --pl-header-bg: transparent;
+  --pl-item-hover: color-mix(in srgb, var(--ui-surface) 70%, transparent);
+
+  .pick-list-panel {
+    backdrop-filter: blur(16px) saturate(1.4);
+  }
+}
+
+.pick-list--minimal {
+  --pl-bg: transparent;
+  --pl-border: transparent;
+  --pl-shadow: none;
+  --pl-bar: 0;
+  --pl-header-bg: transparent;
+  --pl-item-gap: 0;
+  --pl-item-shadow: inset 0 -1px 0 var(--ui-border);
+  --pl-item-radius: 0;
 }
 
 /* Drag and drop (CDK). The preview is a clone of the item, so these component styles still apply to it */

@@ -1,27 +1,120 @@
 :host {
+  --sk-bg: color-mix(in srgb, var(--ui-border) 80%, var(--ui-surface-sunken));
+  --sk-shine: color-mix(in srgb, var(--ui-surface) 65%, transparent);
   position: relative;
   display: block;
   flex-shrink: 0;
   overflow: hidden;
   border-radius: var(--ui-radius-sm);
-  background: color-mix(in srgb, var(--ui-border) 80%, var(--ui-surface-sunken));
 }
 
-.skeleton__wave {
+/* The block itself, or each bone of a preset */
+:host(:not(.skeleton--preset)),
+.bone {
+  background: var(--sk-bg);
+  box-shadow: var(--sk-edge);
+  backdrop-filter: var(--sk-blur);
+}
+
+.skeleton__wave,
+:host(.skeleton--wave) .bone::after {
+  content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    color-mix(in srgb, var(--ui-surface) 65%, transparent) 50%,
-    transparent 100%
-  );
+  background: linear-gradient(90deg, transparent 0%, var(--sk-shine) 50%, transparent 100%);
   transform: translateX(-100%);
-  animation: skeleton-wave 1.4s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  animation: skeleton-wave var(--sk-duration, 1.4s) cubic-bezier(0.4, 0, 0.2, 1) infinite;
 }
 
 :host(.skeleton--pulse) {
-  animation: skeleton-pulse 1.5s ease-in-out infinite;
+  animation: skeleton-pulse var(--sk-duration, 1.5s) ease-in-out infinite;
+}
+
+:host(.skeleton--soft) {
+  --sk-bg: color-mix(in srgb, var(--ui-primary) 14%, var(--ui-surface-sunken));
+}
+:host(.skeleton--gradient) {
+  --sk-bg: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--ui-primary) 22%, var(--ui-surface-sunken)),
+    color-mix(in srgb, var(--ui-accent) 22%, var(--ui-surface-sunken))
+  );
+}
+:host(.skeleton--glass) {
+  --sk-bg: color-mix(in srgb, var(--ui-surface) 40%, transparent);
+  --sk-shine: color-mix(in srgb, var(--ui-surface) 55%, transparent);
+  --sk-edge: inset 0 0 0 1px color-mix(in srgb, #fff 40%, transparent);
+  --sk-blur: blur(10px) saturate(1.5);
+}
+
+/* Presets: the host is a transparent layout of bones */
+:host(.skeleton--preset) {
+  display: grid;
+  gap: 16px;
+  overflow: visible;
+}
+:host(.skeleton--card) {
+  padding: 16px;
+  border: 1px solid var(--ui-border);
+  border-radius: var(--ui-radius-lg);
+}
+:host(.skeleton--table) {
+  gap: 0;
+}
+
+.bone {
+  position: relative;
+  height: 0.75rem;
+  overflow: hidden;
+  border-radius: var(--ui-radius-sm);
+}
+.bone--avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--ui-radius-full);
+}
+.bone--title {
+  width: 40%;
+  height: 1rem;
+}
+.bone--media {
+  height: 140px;
+  border-radius: var(--ui-radius);
+}
+.bone--button {
+  width: 80px;
+  height: 32px;
+  border-radius: var(--ui-radius);
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.stack + .row /* card buttons */ {
+  justify-content: flex-end;
+}
+.stack {
+  flex: 1;
+  display: grid;
+  gap: 10px;
+  & > :last-child:not(:first-child) {
+    width: 60%;
+  }
+}
+.table-row {
+  display: grid;
+  grid-template-columns: repeat(var(--cols), 1fr);
+  gap: 16px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--ui-border);
+  &:first-child {
+    border-bottom-color: var(--ui-border-strong);
+    & .bone {
+      width: 60%;
+    }
+  }
 }
 
 @keyframes skeleton-wave {
@@ -37,7 +130,8 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .skeleton__wave {
+  .skeleton__wave,
+  .bone::after {
     display: none;
   }
 

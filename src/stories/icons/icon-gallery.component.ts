@@ -7,6 +7,7 @@ import {
   input,
   signal,
   viewChild,
+  linkedSignal,
 } from '@angular/core';
 
 import { ButtonComponent } from '../components/form/button/button.component';
@@ -64,7 +65,9 @@ export class IconGalleryComponent {
   /** Extra search keywords per icon name */
   readonly tags = input<Record<string, string[]>>({});
 
-  protected readonly query = signal('');
+  /** Search text to start with (the site search opens the page with ?q=…) */
+  readonly q = input<string | undefined>('');
+  protected readonly query = linkedSignal(() => this.q() ?? '');
   protected readonly settings = signal(DEFAULTS);
   protected readonly selected = signal<PreparedIcon | null>(null);
   /** Which button last copied, for the "Copied!" label */

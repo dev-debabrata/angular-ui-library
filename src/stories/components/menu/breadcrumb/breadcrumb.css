@@ -1,11 +1,16 @@
+/* Variants set the bar (--bc-*), crumb (--crumb-*) and current page (--current-*) variables */
 .breadcrumb ol {
   display: inline-flex;
   flex-wrap: wrap;
   align-items: center;
+  gap: var(--bc-gap, 0);
   margin: 0;
-  padding: 8px 16px;
-  border-radius: 999px;
-  background: var(--ui-surface-muted);
+  padding: var(--bc-pad, 8px 16px);
+  border: 1px solid var(--bc-border, transparent);
+  border-radius: var(--ui-radius-full);
+  background: var(--bc-bg, var(--ui-surface-muted));
+  box-shadow: var(--bc-shadow, none);
+  backdrop-filter: var(--bc-blur, none);
   list-style: none;
   font-size: 14px;
 }
@@ -15,33 +20,96 @@
   align-items: center;
 }
 
-.breadcrumb a {
-  padding: 2px 6px;
-  border-radius: var(--ui-radius-sm);
+.breadcrumb :is(a, button) {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: var(--crumb-pad, 2px 6px);
+  border: 1px solid var(--crumb-border, transparent);
+  border-radius: var(--crumb-radius, var(--ui-radius-sm));
+  background: var(--crumb-bg, transparent);
   color: var(--ui-text-muted);
+  font: inherit;
   text-decoration: none;
+  cursor: pointer;
   transition:
     background var(--ui-ease),
+    border-color var(--ui-ease),
     color var(--ui-ease);
 }
 
-.breadcrumb a:hover {
+.breadcrumb :is([href], button):hover {
+  border-color: var(--crumb-hover-border, transparent);
   background: var(--ui-primary-soft);
   color: var(--ui-primary);
 }
 
-.breadcrumb a:focus-visible {
+.breadcrumb :focus-visible {
   outline: none;
-  box-shadow: var(--ui-ring);
+  box-shadow: var(--crumb-ring, var(--ui-ring));
 }
 
 .breadcrumb [aria-current='page'] {
-  padding: 2px 6px;
-  color: var(--ui-text);
+  background: var(--current-bg, transparent);
+  color: var(--current-fg, var(--ui-text));
   font-weight: 600;
+  cursor: default;
 }
 
 .separator {
   margin: 0 4px;
   color: var(--ui-text-subtle);
+}
+
+.breadcrumb--pills,
+.breadcrumb--steps,
+.breadcrumb--minimal {
+  --bc-bg: transparent;
+  --bc-pad: 0;
+}
+
+.breadcrumb--pills,
+.breadcrumb--steps {
+  --current-bg: var(--ui-gradient);
+  --current-fg: #fff;
+}
+
+.breadcrumb--pills {
+  --bc-gap: 6px;
+  --crumb-pad: 5px 14px;
+  --crumb-bg: var(--ui-surface);
+  --crumb-border: var(--ui-border);
+  --crumb-hover-border: var(--ui-primary);
+  --crumb-radius: var(--ui-radius-full);
+}
+
+/* Steps: overlapping arrow segments without separators (the ring is inset: clip-path cuts outer shadows) */
+.breadcrumb--steps {
+  --crumb-pad: 7px 18px 7px 22px;
+  --crumb-bg: var(--ui-surface-muted);
+  --crumb-radius: 0;
+  --crumb-ring: inset 0 0 0 2px var(--ui-primary);
+  --tip: calc(100% - 12px);
+
+  & :is(a, button) {
+    margin-left: -6px;
+    clip-path: polygon(0 0, var(--tip) 0, 100% 50%, var(--tip) 100%, 0 100%, var(--tail, 12px) 50%);
+  }
+
+  & li:first-child a {
+    --tail: 0;
+    margin-left: 0;
+    padding-left: 14px;
+  }
+}
+
+.breadcrumb--glass {
+  --bc-bg: color-mix(in srgb, var(--ui-surface) 60%, transparent);
+  --bc-border: color-mix(in srgb, var(--ui-border) 70%, transparent);
+  --bc-shadow: var(--ui-shadow);
+  --bc-blur: blur(12px) saturate(1.6);
+}
+
+.breadcrumb--minimal {
+  --current-fg: var(--ui-primary);
 }

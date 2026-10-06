@@ -1,15 +1,17 @@
-<label class="ui-field">
+<label class="ui-field" [class]="'ui-field--' + variant()" [class.ui-field--has-value]="!!value()">
   @if (label()) {
     <span class="ui-label">{{ label() }}</span>
   }
   <textarea
+    #control
     class="ui-control"
+    [class.textarea--auto]="autoResize()"
     [rows]="rows()"
     [placeholder]="placeholder()"
     [value]="value()"
     [disabled]="disabled()"
     [attr.maxlength]="maxLength() || null"
-    (input)="value.set($any($event.target).value)"
+    (input)="onInput($event)"
   ></textarea>
   @if (maxLength()) {
     <span class="ui-hint count">{{ value().length }} / {{ maxLength() }}</span>

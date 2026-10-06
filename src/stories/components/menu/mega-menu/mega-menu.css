@@ -1,15 +1,22 @@
+/* Variants set the bar (--mm-*) and panel (--mi-panel-bg) variables */
 .mega {
   --mi-pad: 8px 12px;
   position: relative;
   display: flex;
   padding: 8px;
-  border: 1px solid var(--ui-border);
+  border: 1px solid var(--mm-border, var(--ui-border));
   border-radius: var(--ui-radius-lg);
-  background: var(--ui-surface);
-  box-shadow: var(--ui-shadow);
+  background: var(--mm-bg, var(--ui-surface));
+  box-shadow: var(--mm-shadow, var(--ui-shadow));
+  backdrop-filter: var(--mm-blur, none);
   font-family: var(--ui-font);
   font-size: 14px;
   white-space: nowrap;
+
+  /* An open panel must sit above the content after the bar (glass's backdrop-filter traps its z-index otherwise) */
+  &:has(.mega-panel) {
+    z-index: 10;
+  }
 }
 
 .mega--vertical {
@@ -46,6 +53,7 @@
   gap: 8px;
   padding: 14px;
   border-radius: var(--ui-radius-lg);
+  backdrop-filter: var(--mm-blur, none);
 
   .mega--horizontal & {
     top: calc(100% + 14px);
@@ -82,6 +90,9 @@
 }
 
 .mega-heading {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   padding: 4px 12px 6px;
   background: var(--ui-gradient);
   -webkit-background-clip: text;
@@ -91,4 +102,94 @@
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
+
+  /* The text is transparent (gradient clip); the icon needs its own color */
+  & np-icon {
+    color: var(--ui-primary);
+  }
+}
+
+/* Promo card after the columns */
+.mega-feature {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 220px;
+  padding: 16px;
+  border-radius: var(--ui-radius);
+  background: var(--ui-gradient);
+  color: #fff;
+  text-decoration: none;
+  white-space: normal;
+  transition: box-shadow var(--ui-ease);
+
+  &:hover {
+    box-shadow: var(--ui-shadow-lg);
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: var(--ui-ring);
+  }
+
+  & img {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    border-radius: var(--ui-radius-sm);
+    object-fit: cover;
+  }
+
+  & p {
+    margin: 0;
+    font-size: 13px;
+    opacity: 0.85;
+  }
+
+  & > span {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: auto;
+    font-weight: 600;
+  }
+}
+
+.mega--horizontal.mega--stretch {
+  & .mega-top {
+    position: static;
+  }
+
+  & .mega-panel {
+    top: calc(100% + 6px);
+    right: 0;
+  }
+
+  & .mega-column {
+    flex: 1;
+  }
+}
+
+.mega--glass {
+  --mm-bg: color-mix(in srgb, var(--ui-surface) 65%, transparent);
+  --mi-panel-bg: color-mix(in srgb, var(--ui-surface) 80%, transparent);
+  --mm-border: color-mix(in srgb, var(--ui-border) 70%, transparent);
+  --mm-blur: blur(14px) saturate(1.6);
+}
+
+.mega--cards {
+  --mi-panel-bg: var(--ui-surface-muted);
+
+  & .mega-column {
+    padding: 10px 8px;
+    border-left-color: transparent;
+    border-radius: var(--ui-radius);
+    background: var(--ui-surface);
+    box-shadow: var(--ui-shadow-sm);
+  }
+}
+
+.mega--minimal {
+  --mm-bg: transparent;
+  --mm-border: transparent;
+  --mm-shadow: none;
 }

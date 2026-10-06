@@ -1,3 +1,10 @@
+:host(.header--sticky) {
+  position: sticky;
+  top: 0;
+  z-index: 800;
+  display: block;
+}
+
 .np-header {
   display: flex;
   justify-content: space-between;
@@ -6,6 +13,8 @@
   border-bottom: 1px solid var(--ui-border);
   background: rgba(255, 255, 255, 0.85);
   backdrop-filter: blur(8px);
+  transition: var(--ui-ease);
+  transition-property: padding, box-shadow, background;
 }
 
 .np-header svg,
@@ -32,4 +41,87 @@
   margin-right: 12px;
   color: var(--ui-text-muted);
   font-size: 14px;
+}
+
+.np-header np-avatar {
+  margin-right: 10px;
+  vertical-align: middle;
+}
+
+.np-header--scrolled {
+  padding-block: 8px;
+  box-shadow: var(--ui-shadow);
+}
+
+.np-header--glass,
+.np-header--floating {
+  background: color-mix(in srgb, var(--ui-surface) 55%, transparent);
+  backdrop-filter: blur(18px) saturate(1.8);
+}
+
+.np-header--floating {
+  margin: 12px;
+  border: 1px solid var(--ui-border);
+  border-radius: var(--ui-radius-full);
+  box-shadow: var(--ui-shadow-lg);
+}
+
+.np-header--minimal:not(.np-header--scrolled) {
+  border-bottom-color: transparent;
+  background: transparent;
+  backdrop-filter: none;
+}
+
+/* Gradient: the actions' tokens make Log in translucent and Sign up (contrast) white */
+.np-header--gradient {
+  border-bottom-color: transparent;
+  background: var(--ui-gradient);
+
+  &,
+  & :is(h1, .welcome, .ui-btn--text) {
+    color: #fff;
+  }
+
+  & :is(.ui-btn--text:hover, .ui-btn--primary) {
+    background: color-mix(in srgb, #fff 22%, transparent);
+  }
+
+  & .np-header__actions {
+    --ui-text: #fff;
+    --ui-text-muted: color-mix(in srgb, #fff 22%, transparent);
+    --ui-surface: var(--ui-primary);
+  }
+}
+
+.np-header__nav {
+  display: flex;
+  flex: 1;
+  justify-content: center;
+  gap: 4px;
+}
+
+.np-header__toggle {
+  display: none;
+  margin-left: 6px;
+  vertical-align: middle;
+}
+
+@media (max-width: 640px) {
+  .np-header:has(.np-header__nav--open) {
+    flex-wrap: wrap;
+  }
+
+  .np-header__toggle {
+    display: inline-flex;
+  }
+
+  .np-header__nav {
+    order: 1;
+    flex-basis: 100%;
+    flex-direction: column;
+
+    &:not(.np-header__nav--open) {
+      display: none;
+    }
+  }
 }

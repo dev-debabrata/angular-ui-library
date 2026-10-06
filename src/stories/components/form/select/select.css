@@ -2,3 +2,308 @@
   display: inline-block;
   min-width: 200px;
 }
+
+.select-box {
+  position: relative;
+}
+
+/* Trigger: a button styled as the field (.ui-control), with the value and a chevron */
+.select-trigger {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 42px;
+  text-align: left;
+  cursor: pointer;
+
+  .select--open & {
+    border-color: var(--ui-primary);
+    box-shadow: var(--ui-ring);
+  }
+}
+
+.select-value {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.select-value--placeholder {
+  color: var(--ui-text-subtle);
+}
+
+.select-chevron {
+  color: var(--ui-text-subtle);
+  transition:
+    rotate var(--ui-ease),
+    color var(--ui-ease);
+
+  .select--open & {
+    rotate: 180deg;
+    color: var(--ui-primary);
+  }
+}
+
+.select-icon {
+  position: absolute;
+  top: 50%;
+  left: 14px;
+  z-index: 1;
+  color: var(--ui-text-subtle);
+  pointer-events: none;
+  translate: 0 -50%;
+  transition: color var(--ui-ease);
+
+  .select-box:focus-within & {
+    color: var(--ui-primary);
+  }
+}
+
+.select--icon .select-trigger {
+  padding-left: 42px;
+}
+
+/* Panel: a popover (top layer) at the trigger's viewport position; inset/margin/color undo the popover defaults */
+.select-panel {
+  inset: auto;
+  margin: 0;
+  color: var(--ui-text);
+  max-width: calc(100vw - 16px);
+  padding: 6px;
+  border: 1px solid var(--ui-border);
+  border-radius: var(--ui-radius-lg);
+  background: var(--ui-surface);
+  box-shadow: var(--ui-shadow-lg);
+  box-sizing: border-box;
+  animation: select-in 140ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.select-search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+  padding: 0 10px;
+  border-radius: var(--ui-radius);
+  background: var(--ui-surface-sunken);
+  color: var(--ui-text-subtle);
+
+  input {
+    flex: 1;
+    min-width: 0;
+    padding: 9px 0;
+    border: none;
+    background: none;
+    color: var(--ui-text);
+    font: inherit;
+    outline: none;
+  }
+}
+
+.select-list {
+  max-height: 280px;
+  margin: 0;
+  padding: 0;
+  overflow-y: auto;
+  list-style: none;
+}
+
+.select-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 10px;
+  border-radius: var(--ui-radius);
+  color: var(--ui-text);
+  cursor: pointer;
+  transition: background var(--ui-ease);
+}
+
+.select-option--active {
+  background: var(--ui-primary-soft);
+}
+
+.select-option--selected {
+  color: var(--ui-primary);
+  font-weight: 600;
+}
+
+.select-option[aria-disabled] {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.select-option-icon {
+  color: var(--ui-text-muted);
+
+  .select-option--selected & {
+    color: var(--ui-primary);
+  }
+}
+
+.select-option-text {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+
+  small {
+    color: var(--ui-text-muted);
+    font-size: 12px;
+    font-weight: 400;
+  }
+}
+
+/* Leading visuals: avatar and color swatch (icons use .select-option-icon); --lead is their size */
+.select-avatar,
+.select-swatch {
+  flex: none;
+  width: var(--lead, 22px);
+  height: var(--lead, 22px);
+  border-radius: var(--ui-radius-full);
+  object-fit: cover;
+}
+
+.select-swatch {
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--ui-text) 15%, transparent);
+}
+
+.select-group {
+  padding: 10px 10px 4px;
+  color: var(--ui-text-subtle);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+/* Multiple: a checkbox per option, and the picks as chips in the trigger */
+.select-checkbox {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  border: 1.5px solid var(--ui-border-strong);
+  border-radius: var(--ui-radius-sm);
+  color: #fff;
+
+  .select-option--selected & {
+    border-color: transparent;
+    background: var(--ui-gradient);
+  }
+}
+
+.select-chips {
+  display: flex;
+  flex: 1;
+  flex-wrap: wrap;
+  gap: 4px;
+  min-width: 0;
+  margin-block: -4px;
+}
+
+.select-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 2px 8px;
+  border-radius: var(--ui-radius-full);
+  background: var(--ui-primary-soft);
+  color: var(--ui-primary);
+  font-size: 12px;
+  font-weight: 600;
+  --lead: 14px;
+}
+
+.select-chip--more {
+  background: var(--ui-surface-sunken);
+  color: var(--ui-text-muted);
+}
+
+/* Grid: options as centered tiles */
+.select-panel--grid {
+  width: 320px;
+}
+
+.select-list--grid {
+  --lead: 32px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(88px, 1fr));
+  gap: 6px;
+
+  .select-group {
+    grid-column: 1 / -1;
+  }
+
+  .select-option {
+    flex-direction: column;
+    justify-content: center;
+    gap: 6px;
+    padding: 12px 6px;
+    border: 1px solid var(--ui-border);
+    text-align: center;
+  }
+
+  .select-option--selected {
+    border-color: var(--ui-primary);
+    box-shadow: 0 0 0 1px var(--ui-primary);
+  }
+
+  .select-option-text {
+    align-items: center;
+  }
+
+  .select-check {
+    display: none;
+  }
+}
+
+.select-empty {
+  padding: 14px 10px;
+  color: var(--ui-text-subtle);
+  text-align: center;
+}
+
+/* Underline: no side padding, so the icon and chevron hug the line's ends */
+.ui-field--underline {
+  .select-icon {
+    left: 2px;
+  }
+
+  &.select--icon .select-trigger {
+    padding-left: 30px;
+  }
+
+  &.select--open .select-trigger {
+    box-shadow: none;
+  }
+}
+
+/* Floating: the label stands in for the placeholder until the field is focused or has a value */
+.ui-field--floating:not(:focus-within, .ui-field--has-value) .select-value {
+  color: transparent;
+}
+
+.ui-field--floating.select--icon > .ui-label {
+  left: 38px;
+  transition-property: top, left, font-size, color;
+}
+
+.ui-field--floating.select--icon:is(:focus-within, .ui-field--has-value) > .ui-label {
+  left: 11px;
+}
+
+@keyframes select-in {
+  from {
+    opacity: 0;
+    scale: 0.96;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .select-panel {
+    animation: none;
+  }
+}

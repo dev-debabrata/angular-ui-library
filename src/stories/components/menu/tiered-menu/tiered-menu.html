@@ -10,18 +10,22 @@
   <ul
     class="tiered-list mi-panel"
     role="menu"
+    [class]="'mi-look-' + variant()"
     [class.mi-float]="!depth && popup()"
     [class.mi-flyout]="depth"
+    [class.mi-kbd]="shortcuts()"
+    [npMenuPopover]="!depth && popup()"
     [style.top.px]="depth ? null : position()?.top"
     [style.left.px]="depth ? null : position()?.left"
   >
     @for (item of items; track $index) {
-      <li role="none" (mouseenter)="path.open(item, depth)">
+      <li role="none" (mouseenter)="trigger() === 'hover' && path.open(item, depth)">
         <np-menu-item
           [item]="item"
           chevron="chevron-right"
           [open]="path.isOpen(item, depth)"
           (click)="select($event, item, depth)"
+          (keydown)="key($event, item, depth)"
         />
         @if (path.isOpen(item, depth)) {
           <ng-container

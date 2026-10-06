@@ -10,10 +10,16 @@ import {
   signal,
 } from '@angular/core';
 
+import { NgTemplateOutlet } from '@angular/common';
+
 import type { Tone } from '../../../utils/types';
 import { BadgeComponent } from '../../media/badge/badge.component';
 import { IconComponent } from '../../media/icon/icon.component';
 import { ProgressBarComponent } from '../../feedback/progress-bar/progress-bar.component';
+
+/** Looks of the advanced mode: today's toolbar + list, a big drop area, a one-line row, or a grid of file cards */
+export const FILE_UPLOAD_VARIANTS = ['default', 'dropzone', 'compact', 'cards'] as const;
+export type FileUploadVariant = (typeof FILE_UPLOAD_VARIANTS)[number];
 
 export type UploadStatus = 'pending' | 'uploading' | 'completed' | 'error';
 
@@ -49,6 +55,34 @@ function matchesAccept({ name, type }: File, accept: string): boolean {
   );
 }
 
+const EXTENSION_ICONS: [RegExp, string][] = [
+  [/\.(png|jpe?g|gif|webp|avif|svg|bmp|ico|heic)$/, 'file-image'],
+  [/\.(mp4|mov|webm|mkv|avi|m4v)$/, 'file-video'],
+  [/\.(mp3|wav|ogg|flac|m4a|aac)$/, 'file-audio'],
+  [/\.(xlsx?|csv|ods|numbers|tsv)$/, 'file-spreadsheet'],
+  [/\.(zip|rar|7z|tar|gz|tgz|bz2)$/, 'file-archive'],
+  [/\.json$/, 'file-json'],
+  [/\.(js|mjs|ts|tsx|jsx|html?|css|scss|py|java|go|rs|php|rb|sh|xml|ya?ml)$/, 'file-code'],
+  [/\.(pptx?|key|odp)$/, 'presentation'],
+  [/\.(pdf|docx?|odt|rtf|txt|md)$/, 'file-text'],
+];
+
+/** A Lucide icon name for the file, from its MIME type or extension */
+export function fileTypeIcon({ name, type }: File): string {
+  const [major] = type.split('/');
+  if (major === 'image') return 'file-image';
+  if (major === 'video') return 'file-video';
+  if (major === 'audio') return 'file-audio';
+  const lower = name.toLowerCase();
+  return EXTENSION_ICONS.find(([re]) => re.test(lower))?.[1] ?? 'file';
+}
+
+/** "report.final.PDF" -> "PDF" ("" without an extension) */
+function fileExtension(name: string): string {
+  const dot = name.lastIndexOf('.');
+  return dot > 0 ? name.slice(dot + 1, dot + 6).toUpperCase() : '';
+}
+
 const STATUS_TONES: Record<UploadStatus, Tone> = {
   pending: 'neutral',
   uploading: 'info',
@@ -60,13 +94,17 @@ let nextId = 0;
 
 @Component({
   selector: 'np-file-upload',
-  imports: [BadgeComponent, IconComponent, ProgressBarComponent],
+  imports: [BadgeComponent, IconComponent, NgTemplateOutlet, ProgressBarComponent],
   templateUrl: './file-upload.html',
   styleUrl: './file-upload.css',
 })
 export class FileUploadComponent {
   /** "advanced" shows a toolbar, drop zone and file list. "basic" is a single button */
   readonly mode = input<'advanced' | 'basic'>('advanced');
+  /** Look of the advanced mode: default | dropzone (big drop area) | compact (one line) | cards (file grid) */
+  readonly variant = input<FileUploadVariant>('default');
+  /** Helper text under the drop area. Defaults to the accepted types and the size limit */
+  readonly hint = input('');
   /** Allow choosing more than one file? */
   readonly multiple = input(false, { transform: booleanAttribute });
   /** Accepted file types, like the native accept attribute (".pdf,image/*") */
@@ -105,6 +143,8 @@ export class FileUploadComponent {
   protected readonly progress = signal(0);
   protected readonly statusTones = STATUS_TONES;
   protected readonly formatSize = formatFileSize;
+  protected readonly typeIcon = fileTypeIcon;
+  protected readonly extension = fileExtension;
 
   protected readonly uploading = computed(() => this.items().some((i) => i.status === 'uploading'));
   protected readonly pending = computed(() => this.items().filter((i) => i.status === 'pending'));
@@ -114,6 +154,25 @@ export class FileUploadComponent {
         .map((i) => i.file.name)
         .join(', ') || this.chooseLabel(),
   );
+
+  /** "PDF, images · up to 1 MB · max 3 files" */
+  protected readonly hintText = computed(() => {
+    if (this.hint()) return this.hint();
+    const accept = this.accept()
+      .split(',')
+      .map((t) => t.trim())
+      .filter(Boolean)
+      .map((t) => (t.endsWith('/*') ? t.slice(0, -2) + 's' : t.replace(/^\./, '').toUpperCase()));
+    const max = this.maxFileSize();
+    const limit = this.fileLimit();
+    return [
+      accept.length ? accept.join(', ') : 'Any file type',
+      max ? `up to ${formatFileSize(max)}` : '',
+      limit ? `max ${limit} file${limit === 1 ? '' : 's'}` : '',
+    ]
+      .filter(Boolean)
+      .join(' · ');
+  });
 
   private readonly timers = new Set<ReturnType<typeof setInterval>>();
   private dragDepth = 0;
@@ -206,6 +265,11 @@ export class FileUploadComponent {
       files.forEach((file) => this.error.emit({ file, message }));
       this.messages.set([message]);
     }
+  }
+
+  /** Upload progress of one file: the batch's progress while it uploads */
+  protected itemProgress(item: UploadItem): number {
+    return item.status === 'completed' ? 100 : item.status === 'uploading' ? Math.round(this.progress()) : 0;
   }
 
   protected removeItem(item: UploadItem): void {

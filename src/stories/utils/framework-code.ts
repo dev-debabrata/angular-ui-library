@@ -2,6 +2,9 @@ import { signal } from '@angular/core';
 
 import type { ToggleOption } from '../components/form/button-toggle/button-toggle.component';
 
+/** The npm package on jsDelivr, for plain HTML pages (no install) */
+export const CDN = 'https://cdn.jsdelivr.net/npm/nexprime';
+
 /** Frameworks the Icons, Animations and NexLottie pages show copyable code for */
 export type Framework = 'angular' | 'react' | 'next' | 'vue' | 'html';
 
@@ -16,48 +19,54 @@ export const FRAMEWORKS: ToggleOption<Framework>[] = [
 /** The framework picked last, shared by every page, so the choice carries over */
 export const FRAMEWORK = signal<Framework>('angular');
 
-/** One-line setup note under the code (the Getting Started page has the details) */
+/** One-line setup note under the code (Getting Started ▸ Installation has the details) */
 export function setupNote(framework: Framework, angularImport = '') {
   return {
     angular: angularImport
-      ? `Add ${angularImport} to your component’s imports.`
-      : 'The classes come with theme.css.',
-    react: 'React 19+. Load nexprime.js and styles.css once.',
-    next: 'Server or client component. Load nexprime.js once in app/layout.tsx.',
-    vue: 'Mark np-* tags as custom elements in vite.config.',
-    html: 'Load nexprime.js and styles.css once.',
+      ? `Add ${angularImport} (from 'nexprime') to your component’s imports.`
+      : 'The classes come with nexprime/styles/theme.css.',
+    react: 'npm install nexprime, then load the theme and the elements once (main.tsx).',
+    next: 'npm install nexprime, then load the elements once from a client component.',
+    vue: 'npm install nexprime, load it once in main.ts and mark np-* tags as custom elements.',
+    html: 'No install: load the theme and nexprime.js from the CDN once.',
   }[framework];
 }
 
 export interface ElementCode {
   /** Name without a prefix: "icon" renders <np-icon> / <np-icon> */
   tag: string;
-  /** Inputs that are set; false, null and undefined are left out. Numbers are bound in Angular */
-  inputs: Record<string, string | number | false | null | undefined>;
+  /** Inputs that are set; false, null and undefined are left out, true is a bare attribute. Numbers are bound in Angular */
+  inputs: Record<string, string | number | boolean | null | undefined>;
   /** Inline styles, e.g. { color: '#f43f5e' } */
   style?: Record<string, string>;
+  /** CSS classes, e.g. the appearance classes 'np-color-success np-shape-rounded' (className in JSX) */
+  classes?: string;
 }
 
 export const kebab = (name: string) => name.replace(/[A-Z]/g, (c) => '-' + c.toLowerCase());
 export const camel = (name: string) => name.replace(/-([a-z])/g, (_, c: string) => c.toUpperCase());
 
 /** A NexPrime component as Angular markup or as its Web Component (React, Next.js, Vue, HTML) */
-export function elementCode(framework: Framework, { tag, inputs, style = {} }: ElementCode) {
+export function elementCode(framework: Framework, { tag, inputs, style = {}, classes = '' }: ElementCode) {
   const element = `np-${tag}`;
+  const jsx = framework === 'react' || framework === 'next';
+  const classAttr = classes ? [`${jsx ? 'className' : 'class'}="${classes}"`] : [];
   const set = Object.entries(inputs).filter(
-    (entry): entry is [string, string | number] => entry[1] !== false && entry[1] != null,
+    (entry): entry is [string, string | number | true] => entry[1] !== false && entry[1] != null,
   );
   if (framework === 'angular') {
-    const attrs = set.map(([k, v]) => (typeof v === 'number' ? `[${k}]="${v}"` : `${k}="${v}"`));
-    return `<${element} ${[...attrs, ...cssAttribute(style)].join(' ')} />`;
+    const attrs = set.map(([k, v]) =>
+      v === true ? k : typeof v === 'number' ? `[${k}]="${v}"` : `${k}="${v}"`,
+    );
+    return `<${[element, ...classAttr, ...attrs, ...cssAttribute(style)].join(' ')} />`;
   }
-  const attrs = set.map(([k, v]) => `${kebab(k)}="${v}"`);
-  if (framework === 'react' || framework === 'next') {
-    return `<${element} ${[...attrs, jsxStyle(style)].filter(Boolean).join(' ')} />`;
+  const attrs = set.map(([k, v]) => (v === true ? kebab(k) : `${kebab(k)}="${v}"`));
+  if (jsx) {
+    return `<${[element, ...classAttr, ...attrs, jsxStyle(style)].filter(Boolean).join(' ')} />`;
   }
   // Custom elements can't self-close in HTML; Vue templates allow it
-  const all = [...attrs, ...cssAttribute(style)].join(' ');
-  return framework === 'vue' ? `<${element} ${all} />` : `<${element} ${all}></${element}>`;
+  const open = [element, ...classAttr, ...attrs, ...cssAttribute(style)].join(' ');
+  return framework === 'vue' ? `<${open} />` : `<${open}></${element}>`;
 }
 
 /** Plain markup with classes (the np-anim-* animations): class="" vs. className and a style object in JSX */
@@ -76,12 +85,13 @@ export function markupCode(
 export function setupCode(framework: Framework) {
   switch (framework) {
     case 'react':
-    case 'html':
-      return `<link rel="stylesheet" href="/nexprime/styles.css" />\n<script type="module" src="/nexprime/nexprime.js"></script>`;
+      return `import 'nexprime/styles/theme.css';\nimport 'nexprime/elements';`;
     case 'next':
-      return `<Script src="/nexprime/nexprime.js" type="module" crossOrigin="anonymous" strategy="afterInteractive" />`;
+      return `import 'nexprime/styles/theme.css'; // app/layout.tsx\nimport { loadNexPrime } from 'nexprime/react'; // useEffect(() => { loadNexPrime(); }, [])`;
     case 'vue':
-      return `vue({ template: { compilerOptions: { isCustomElement: (tag) => tag.startsWith('np-') } } })`;
+      return `import 'nexprime/styles/theme.css';\nimport 'nexprime/elements';\n// vite.config: vue({ template: { compilerOptions: { isCustomElement: (tag) => tag.startsWith('np-') } } })`;
+    case 'html':
+      return `<link rel="stylesheet" href="${CDN}/styles/theme.css" />\n<script type="module" src="${CDN}/elements/nexprime.js"></script>`;
     default:
       return '';
   }

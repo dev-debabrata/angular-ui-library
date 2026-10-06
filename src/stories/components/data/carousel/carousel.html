@@ -1,5 +1,9 @@
 <section
   class="carousel"
+  [class]="'carousel--' + variant()"
+  [class.carousel--vertical]="vertical()"
+  [class.carousel--playing]="playing()"
+  [style.--interval]="autoplayInterval() + 'ms'"
   role="region"
   aria-roledescription="carousel"
   tabindex="0"
@@ -15,12 +19,13 @@
         [disabled]="!canPrev()"
         (click)="go(page() - 1)"
       >
-        <np-icon name="chevron-left" [size]="18" />
+        <np-icon [name]="vertical() ? 'chevron-up' : 'chevron-left'" [size]="18" />
       </button>
     }
 
     <div
       class="carousel__viewport"
+      [style.height]="vertical() ? height() : null"
       (pointerdown)="onPointerDown($event)"
       (pointerup)="onPointerUp($event)"
       (pointercancel)="onPointerUp($event)"
@@ -29,19 +34,19 @@
         #track
         class="carousel__track"
         aria-live="polite"
-        [style.--visible]="numVisible()"
+        [style.--visible]="visible()"
         [style.--gap]="gap()"
-        [style.transform]="'translateX(calc(' + -first() + ' * (100% + var(--gap)) / var(--visible)))'"
+        [style.--first]="first()"
       >
         @if (template(); as template) {
           @for (item of items(); track $index) {
             <div
-              class="carousel__item"
               role="group"
               aria-roledescription="slide"
               [attr.aria-label]="$index + 1 + ' of ' + items().length"
               [attr.aria-hidden]="!isVisible($index)"
               [attr.inert]="isVisible($index) ? null : ''"
+              [style.--offset]="$index - center()"
             >
               <ng-container
                 *ngTemplateOutlet="template; context: { $implicit: item, index: $index }"
@@ -62,22 +67,38 @@
         [disabled]="!canNext()"
         (click)="go(page() + 1)"
       >
-        <np-icon name="chevron-right" [size]="18" />
+        <np-icon [name]="vertical() ? 'chevron-down' : 'chevron-right'" [size]="18" />
       </button>
     }
   </div>
 
   @if (showIndicators() && pages() > 1) {
-    <div class="carousel__dots">
-      @for (p of pageList(); track p) {
-        <button
-          type="button"
-          class="carousel__dot"
-          [class.carousel__dot--active]="p === page()"
-          [attr.aria-label]="'Go to page ' + (p + 1)"
-          [attr.aria-current]="p === page() || null"
-          (click)="go(p)"
-        ></button>
+    <div class="carousel__dots" [class]="'carousel__dots--' + indicator()">
+      @switch (indicator()) {
+        @case ('numbers') {
+          <span class="carousel__count"
+            ><b>{{ page() + 1 }}</b> / {{ pages() }}</span
+          >
+        }
+        @case ('progress') {
+          <span
+            class="carousel__progress"
+            aria-hidden="true"
+            [style.--fill]="((page() + 1) / pages()) * 100 + '%'"
+          ></span>
+        }
+        @default {
+          @for (p of pageList(); track p) {
+            <button
+              type="button"
+              class="carousel__dot"
+              [class.carousel__dot--active]="p === page()"
+              [attr.aria-label]="'Go to page ' + (p + 1)"
+              [attr.aria-current]="p === page() || null"
+              (click)="go(p)"
+            ></button>
+          }
+        }
       }
     </div>
   }

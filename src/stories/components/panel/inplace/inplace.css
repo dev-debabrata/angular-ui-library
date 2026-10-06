@@ -5,8 +5,11 @@
 }
 
 .display {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   padding: 6px 10px;
+  border: 1px dashed transparent;
   border-radius: var(--ui-radius-sm);
   cursor: pointer;
   text-decoration: underline dashed transparent;
@@ -14,6 +17,7 @@
   transition:
     background var(--ui-ease),
     color var(--ui-ease),
+    border-color var(--ui-ease),
     text-decoration-color var(--ui-ease),
     box-shadow var(--ui-ease);
 }
@@ -22,9 +26,43 @@
   background: var(--ui-primary-soft);
   color: var(--ui-primary);
   text-decoration-color: currentColor;
+
+  & .display__icon {
+    opacity: 1;
+  }
 }
 
-.display:focus-visible,
+.display:focus-visible {
+  outline: none;
+  box-shadow: var(--ui-ring);
+}
+
+.display__icon {
+  opacity: 0.4;
+  transition: opacity var(--ui-ease);
+}
+
+.display--underline {
+  text-decoration-color: var(--ui-border-strong);
+}
+
+.display--outlined {
+  border-color: var(--ui-border-strong);
+}
+
+.display--outlined:hover:not(.display--disabled) {
+  border-color: var(--ui-primary);
+}
+
+.display--soft {
+  background: var(--ui-surface-sunken);
+}
+
+.display--empty {
+  color: var(--ui-text-subtle);
+  font-style: italic;
+}
+
 .display--disabled {
   color: var(--ui-text-subtle);
   cursor: not-allowed;

@@ -18,6 +18,10 @@ import { SearchInputComponent } from '../../form/search-input/search-input.compo
 
 export type TreeSelectionMode = 'single' | 'multiple' | 'checkbox' | null;
 
+/** Looks of the tree */
+export const TREE_VARIANTS = ['default', 'lines', 'soft', 'cards', 'compact', 'glass'] as const;
+export type TreeVariant = (typeof TREE_VARIANTS)[number];
+
 /** Node and all of its descendants, depth first */
 const flatten = (nodes: TreeNode[]): TreeNode[] =>
   nodes.flatMap((node) => [node, ...flatten(node.children ?? [])]);
@@ -37,33 +41,32 @@ const keysWhere = (nodes: TreeNode[], test: (n: TreeNode) => unknown) =>
   styleUrl: './tree.css',
 })
 export class TreeComponent {
-  /** Root nodes of the tree */
+  /** Root nodes. Optional `data.badge` shows a pill after the label and `data.description` a second line */
   readonly value = input<TreeNode[]>([]);
-
+  /** Look: default, lines (indent guides), soft (tinted selection), cards (top-level cards), compact (dense) or glass */
+  readonly variant = input<TreeVariant>('default');
   /** How nodes are selected: one node, several nodes (click toggles), checkboxes, or not at all */
   readonly selectionMode = input<TreeSelectionMode>(null);
-
   /** Selected node (single) or nodes (multiple/checkbox). Supports [(selection)] two-way binding */
   readonly selection = model<TreeNode | TreeNode[] | null>(null);
-
   /** Show a search box that filters nodes by label? */
   readonly filter = input(false, { transform: booleanAttribute });
-
   /** Placeholder text for the search box */
   readonly filterPlaceholder = input('Search...');
-
+  /** Mark the filter text inside matching labels */
+  readonly highlight = input(false, { transform: booleanAttribute });
+  /** Show each parent's child count (`data.badge` takes precedence) */
+  readonly showCounts = input(false, { transform: booleanAttribute });
+  /** Show Expand all / Collapse all buttons above the tree */
+  readonly controls = input(false, { transform: booleanAttribute });
   /** Text shown when there are no nodes, or the filter matches none */
   readonly emptyMessage = input('No results found');
-
   /** Emits the node that was selected or checked */
   readonly nodeSelect = output<TreeNode>();
-
   /** Emits the node that was unselected or unchecked */
   readonly nodeUnselect = output<TreeNode>();
-
   /** Emits the node that was expanded */
   readonly nodeExpand = output<TreeNode>();
-
   /** Emits the node that was collapsed */
   readonly nodeCollapse = output<TreeNode>();
 
@@ -124,6 +127,15 @@ export class TreeComponent {
     // Auto-expand the ancestors kept by the filter so matches are visible
     const parents = keysWhere(this.visibleNodes(), (n) => n.children?.length);
     this.expandedKeys.update((keys) => new Set([...keys, ...parents]));
+  }
+
+  /** The label split around the first filter match (odd parts are matches) */
+  protected parts(label = '') {
+    const query = this.highlight() ? this.filterText().trim() : '';
+    const i = query ? label.toLowerCase().indexOf(query.toLowerCase()) : -1;
+    return i < 0
+      ? [label]
+      : [label.slice(0, i), label.slice(i, i + query.length), label.slice(i + query.length)];
   }
 
   protected isExpanded(node: TreeNode) {

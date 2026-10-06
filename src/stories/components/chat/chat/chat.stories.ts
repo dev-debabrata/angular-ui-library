@@ -7,7 +7,8 @@ import {
 } from '@storybook/angular-vite';
 import { fn } from 'storybook/test';
 
-import { ChatComponent, type ChatMessage } from './chat.component';
+import { CHAT_VARIANTS, ChatComponent, type ChatMessage } from './chat.component';
+import { appearanceStories } from '../../../utils/appearance-stories';
 
 const at = (minutesAgo: number) => new Date(Date.now() - minutesAgo * 60_000);
 
@@ -39,12 +40,14 @@ const meta: Meta<ChatComponent> = {
   title: 'Components/Chat/Chat',
   component: ChatComponent,
   tags: ['autodocs'],
+  argTypes: { variant: { control: 'select', options: CHAT_VARIANTS } },
   args: {
     messages: conversation,
     title: 'Ava from NexPrime',
     subtitle: 'Online',
     avatar: 'https://i.pravatar.cc/80?img=47',
     send: fn(),
+    react: fn(),
     messagesChange: fn(),
   },
   decorators: [
@@ -57,8 +60,9 @@ type Story = StoryObj<ChatComponent>;
 
 export const Default: Story = {};
 
-/** Send a message: the other side types for a moment, then replies */
+/** Send a message (or tap a quick reply): the other side types for a moment, then replies */
 export const LiveReply: Story = {
+  args: { suggestions: ['Show me an example', 'Where are the docs?', 'Thanks, all good!'] },
   render: (args) => {
     const messages = signal(args.messages as ChatMessage[]);
     const typing = signal(false);
@@ -103,3 +107,38 @@ export const Group: Story = {
 export const Typing: Story = { args: { typing: true } };
 
 export const Empty: Story = { args: { messages: [], height: '320px' } };
+
+/** Hover a message and pick an emoji (the picker floats above the list); click a reaction to remove it */
+export const Reactions: Story = {
+  args: {
+    reactions: ['👍', '❤️', '😂', '🎉', '😮', '🙏'],
+    messages: conversation.map((m, i) => (i === 3 ? { ...m, reactions: ['👍', '🎉'] } : m)),
+  },
+};
+
+/** Day lines where the date changes, and sent / delivered / read ticks */
+export const DateSeparators: Story = {
+  args: {
+    dateSeparators: true,
+    messages: [
+      ...conversation.slice(0, 3).map((m) => ({ ...m, time: at(60 * 26) })),
+      ...conversation.slice(3),
+      { from: 'me', text: 'One more thing…', time: at(1), status: 'delivered' },
+    ],
+  },
+};
+
+/** Every look: default, bubbles (iMessage tails), minimal (Slack-like rows), glass (over a colorful backdrop) and gradient */
+export const Variants: Story = {
+  render: (args) => ({
+    props: { ...args, variants: CHAT_VARIANTS },
+    template: `<div style="display: grid; gap: 16px; padding: 16px; border-radius: 16px; background: radial-gradient(circle at 15% 20%, color-mix(in srgb, var(--ui-primary) 28%, transparent), transparent 55%), radial-gradient(circle at 85% 80%, color-mix(in srgb, var(--ui-accent) 28%, transparent), transparent 55%), var(--ui-surface-muted)">
+      @for (v of variants; track v) { <code>{{ v }}</code> <np-chat [variant]="v" [messages]="messages" [title]="title" [subtitle]="subtitle" [avatar]="avatar" height="360px" /> }
+    </div>`,
+  }),
+};
+
+/** The appearance classes from theme.css (np-color-*, np-shape-*) on the Default example */
+const appearance = appearanceStories(meta, Default);
+export const AppearanceColors = appearance.colors;
+export const AppearanceShapes = appearance.shapes;

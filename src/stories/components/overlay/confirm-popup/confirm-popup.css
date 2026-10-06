@@ -1,29 +1,38 @@
 .confirm-popup {
+  --cp-bg: var(--ui-surface);
+  --cp-border: var(--ui-border);
   position: fixed;
+  inset: auto;
+  display: grid;
+  gap: 14px;
   z-index: 1050;
   box-sizing: border-box;
   width: max-content;
   max-width: min(320px, calc(100vw - 16px));
+  margin: 0;
   padding: 16px;
-  border: 1px solid var(--ui-border);
+  overflow: visible;
+  border: 1px solid var(--cp-border);
   border-radius: var(--ui-radius);
-  background: var(--ui-surface);
+  background: var(--cp-bg);
   box-shadow: var(--ui-shadow-lg);
+  color: var(--ui-text);
+  font-size: 14px;
   transform-origin: top left;
   animation: popup-in 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
 
   /* Arrow: a rotated square pointing at the target */
   &::before {
-    content: '';
+    content: var(--cp-arrow-content, '');
     position: absolute;
     top: -6px;
     left: var(--arrow-left, 20px);
     width: 10px;
     height: 10px;
-    border: 1px solid var(--ui-border);
+    border: 1px solid var(--cp-border);
     border-right: none;
     border-bottom: none;
-    background: var(--ui-surface);
+    background: var(--cp-bg);
     transform: translateX(-50%) rotate(45deg);
   }
 }
@@ -35,6 +44,44 @@
     top: auto;
     bottom: -6px;
     transform: translateX(-50%) rotate(225deg);
+  }
+}
+
+.confirm-popup--glass {
+  --cp-bg: color-mix(in srgb, var(--ui-surface) 72%, transparent);
+  --cp-border: color-mix(in srgb, #fff 45%, transparent);
+  backdrop-filter: blur(16px) saturate(1.6);
+}
+
+.confirm-popup--glow {
+  --cp-border: var(--ui-primary);
+  border-color: transparent;
+  background:
+    linear-gradient(var(--cp-bg), var(--cp-bg)) padding-box,
+    var(--ui-gradient) border-box;
+  box-shadow:
+    var(--ui-shadow-lg),
+    0 12px 40px -12px color-mix(in srgb, var(--ui-primary) 55%, transparent);
+}
+
+.confirm-popup--minimal {
+  --cp-border: transparent;
+  --cp-arrow-content: none;
+}
+
+.confirm-popup--compact {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  max-width: calc(100vw - 16px);
+  padding: 8px 8px 8px 14px;
+  border-radius: var(--ui-radius-full);
+
+  .confirm-popup-body {
+    gap: 8px;
+  }
+  .confirm-popup-message {
+    font-size: 13px;
   }
 }
 
@@ -52,10 +99,13 @@
   color: var(--ui-danger);
 }
 
+.confirm-popup-header {
+  display: block;
+  margin-bottom: 2px;
+}
+
 .confirm-popup-message {
   margin: 0;
-  color: var(--ui-text);
-  font-size: 14px;
   line-height: 1.5;
 }
 
@@ -63,12 +113,17 @@
   display: flex;
   justify-content: flex-end;
   gap: 8px;
-  margin-top: 14px;
 }
 
 @keyframes popup-in {
   from {
     opacity: 0;
     transform: scale(0.94);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .confirm-popup {
+    animation: none;
   }
 }

@@ -1,7 +1,29 @@
 @if (open()) {
-  <div class="toast" [class]="['tone-' + type(), 'toast--' + position()]" role="status">
+  <div
+    class="toast"
+    [class]="['tone-' + type(), 'toast--' + position(), 'toast--' + variant()]"
+    [class.toast--paused]="paused()"
+    [class.toast--swipeable]="swipeable()"
+    [style.--dx]="dragX()"
+    role="status"
+    (pointerenter)="paused.set(pauseOnHover())"
+    (pointerleave)="paused.set(false); endSwipe()"
+    (pointerdown)="dragFrom = swipeable() ? $event.clientX : null"
+    (pointermove)="dragFrom !== null && dragX.set($event.clientX - dragFrom)"
+    (pointerup)="endSwipe()"
+  >
     <span class="ui-tone-icon" aria-hidden="true">{{ icons[type()] }}</span>
-    <span class="toast-message">{{ message() }}</span>
+    <span class="toast-message">
+      @if (title()) {
+        <b>{{ title() }}</b>
+      }
+      {{ message() }}
+    </span>
+    @if (action()) {
+      <button type="button" class="ui-btn ui-btn--sm" (click)="actionClick.emit(); open.set(false)">
+        {{ action() }}
+      </button>
+    }
     <button type="button" class="ui-close" aria-label="Close" (click)="open.set(false)">×</button>
     @if (duration()) {
       <span class="toast-countdown" [style.animation-duration.ms]="duration()"></span>

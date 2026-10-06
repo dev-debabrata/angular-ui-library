@@ -1,8 +1,10 @@
 import { argsToTemplate, type Meta, type StoryObj } from '@storybook/angular-vite';
 import { moduleMetadata } from '@storybook/angular-vite';
+import { fn } from 'storybook/test';
 
 import { IconComponent } from '../../media/icon/icon.component';
-import { CardComponent } from './card.component';
+import { CARD_VARIANTS, CardComponent } from './card.component';
+import { appearanceStories } from '../../../utils/appearance-stories';
 
 const text =
   'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Inventore sed consequuntur error repudiandae ' +
@@ -24,7 +26,9 @@ const meta: Meta<CardComponent> = {
   argTypes: {
     imagePosition: { control: 'inline-radio', options: ['top', 'below-header'] },
     footerAlign: { control: 'inline-radio', options: ['start', 'end', 'stretch'] },
+    variant: { control: 'select', options: CARD_VARIANTS },
   },
+  args: { cardClick: fn() },
   render: (args) => ({ props: args, template: card(args, 'This is the card content.') }),
 };
 
@@ -97,3 +101,33 @@ export const ImageOnly: Story = {
   args: { image: 'https://picsum.photos/seed/aurora-mountains/760/400', imageAlt: 'Mountains' },
   render: (args) => ({ props: args, template: card(args, 'A quiet morning in the mountains.') }),
 };
+
+/** `horizontal` (image left) and `clickable`: the whole card is a button (`cardClick`; `href` makes it a link) */
+export const HorizontalClickable: Story = {
+  args: { ...AdvancedCard.args, horizontal: true, clickable: true, variant: 'glow' },
+  render: AdvancedCard.render,
+};
+
+/** `overlay` puts the title on the image; `badge` adds a corner label */
+export const OverlayAndBadge: Story = {
+  args: { ...ImageOnly.args, title: 'Northern Lights', overlay: true, badge: 'New' },
+  render: ImageOnly.render,
+};
+
+/** `loading` shows a shimmering skeleton */
+export const Loading: Story = { args: { ...AdvancedCard.args, loading: true } };
+
+/** Every variant */
+export const Variants: Story = {
+  render: () => ({
+    props: { variants: CARD_VARIANTS },
+    template: `<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 24px">
+      @for (v of variants; track v) { <np-card [variant]="v" [title]="v">This is the card content.</np-card> }
+    </div>`,
+  }),
+};
+
+/** The appearance classes from theme.css (np-color-*, np-shape-*) on the Default example */
+const appearance = appearanceStories(meta, Default);
+export const AppearanceColors = appearance.colors;
+export const AppearanceShapes = appearance.shapes;

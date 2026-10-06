@@ -1,0 +1,59 @@
+<dialog
+  #dlg
+  class="search"
+  aria-label="Search NexPrime"
+  (click)="$event.target === dlg && dlg.close()"
+  (close)="query.set(''); active.set(0)"
+>
+  <div class="search__box">
+    <np-icon name="search" [size]="18" />
+    <input
+      type="text"
+      autofocus
+      role="combobox"
+      aria-expanded="true"
+      aria-controls="np-search-list"
+      aria-label="Search"
+      placeholder="Search components, examples, icons, animations…"
+      [attr.aria-activedescendant]="groups().length ? 'np-search-' + active() : null"
+      [value]="query()"
+      (input)="query.set($any($event.target).value); active.set(0)"
+      (keydown)="onKeydown($event)"
+    />
+    <kbd>Esc</kbd>
+  </div>
+
+  <div class="search__list" id="np-search-list" role="listbox" aria-label="Results">
+    @for (group of groups(); track group.name) {
+      <div class="search__group" role="presentation">{{ group.name }}</div>
+      @for (h of group.hits; track h.i) {
+        <div
+          class="search__hit"
+          role="option"
+          [id]="'np-search-' + h.i"
+          [class.search__hit--active]="h.i === active()"
+          [attr.aria-selected]="h.i === active()"
+          (pointermove)="active.set(h.i)"
+          (click)="go(h)"
+        >
+          <span class="search__icon"><np-icon [name]="h.icon" [size]="18" /></span>
+          <span class="search__text">
+            <b>{{ h.label }}</b>
+            <small>{{ h.detail }}</small>
+          </span>
+          <np-icon class="search__enter" name="corner-down-left" [size]="14" />
+        </div>
+      }
+    } @empty {
+      <p class="search__empty">
+        {{ loading() ? 'Loading…' : 'No results for “' + query() + '”' }}
+      </p>
+    }
+  </div>
+
+  <footer class="search__foot">
+    <span><kbd>↑</kbd><kbd>↓</kbd> move</span>
+    <span><kbd>↵</kbd> open</span>
+    <span><kbd>Ctrl</kbd><kbd>K</kbd> or <kbd>/</kbd> anywhere</span>
+  </footer>
+</dialog>

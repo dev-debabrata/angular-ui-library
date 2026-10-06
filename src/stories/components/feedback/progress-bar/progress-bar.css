@@ -1,20 +1,25 @@
 .progress {
+  --h: 10px;
+  --d: 64px;
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  gap: 12px;
+  gap: 6px 12px;
 }
 
 .track {
+  position: relative;
   flex: 1;
-  height: 10px;
+  height: var(--h);
   overflow: hidden;
-  border-radius: 999px;
+  border-radius: var(--ui-radius-full);
   background: var(--ui-surface-sunken);
   box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.08);
 }
 
 .fill {
   position: relative;
+  width: calc(var(--p) * 1%);
   height: 100%;
   overflow: hidden;
   border-radius: inherit;
@@ -52,5 +57,134 @@
 @keyframes shimmer {
   to {
     transform: translateX(100%);
+  }
+}
+
+.progress--small {
+  --h: 6px;
+  --d: 44px;
+}
+.progress--large {
+  --h: 14px;
+  --d: 88px;
+}
+.progress--thin {
+  --h: 4px;
+  --sw: 1.5;
+}
+
+/* Looks. Gradient: the tone flows into the accent along the whole track */
+.progress--gradient .fill {
+  background: linear-gradient(90deg, var(--tone-solid), var(--ui-accent)) 0 /
+    calc(10000% / max(var(--p), 1)) 100%;
+}
+.progress--striped .fill::after {
+  --s: rgb(255 255 255 / 25%);
+  background: repeating-linear-gradient(-45deg, var(--s) 0 5.66px, transparent 0 11.31px);
+  transform: none;
+  animation: stripes 0.6s linear infinite;
+}
+.progress--glow {
+  &:not(.progress--indeterminate) .track {
+    overflow: visible;
+  }
+  & :is(.fill, .ring__fill) {
+    filter: drop-shadow(0 0 5px color-mix(in srgb, var(--tone-solid) 75%, transparent));
+  }
+}
+.progress--segmented .track {
+  mask: linear-gradient(90deg, #fff calc(100% - 3px), transparent 0) 0 /
+    calc(100% / var(--segments)) 100%;
+}
+.progress--indeterminate {
+  --dash: 25 100;
+  & .fill {
+    width: 40%;
+    animation: slide 1.4s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+  }
+  & svg {
+    animation: spin 1s linear infinite;
+  }
+}
+
+.buffer {
+  position: absolute;
+  inset: 0 auto 0 0;
+  border-radius: inherit;
+  background: color-mix(in srgb, var(--tone-solid) 25%, transparent);
+  transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.track:has(.fill__label) {
+  height: 18px;
+}
+.fill__label {
+  position: absolute;
+  z-index: 1;
+  right: 8px;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 18px;
+}
+.caption {
+  display: flex;
+  flex-basis: 100%;
+  justify-content: space-between;
+  color: var(--ui-text-muted);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.progress:has(> .ring) {
+  display: grid;
+  place-items: center;
+  width: var(--d);
+  & > * {
+    grid-area: 1 / 1;
+  }
+  & .label {
+    min-width: 0;
+    font-size: calc(var(--d) * 0.22);
+  }
+}
+.ring {
+  width: 100%;
+  overflow: visible;
+  rotate: -90deg;
+  & circle {
+    fill: none;
+    stroke: var(--ui-surface-sunken);
+    stroke-width: var(--sw, 3);
+  }
+  & .ring__fill {
+    stroke: var(--tone-solid);
+    stroke-linecap: round;
+    stroke-dasharray: var(--dash, var(--p) 100);
+    transition: stroke-dasharray 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+}
+
+@keyframes stripes {
+  to {
+    background-position: 16px 0;
+  }
+}
+@keyframes slide {
+  from {
+    translate: -100%;
+  }
+  to {
+    translate: 250%;
+  }
+}
+@keyframes spin {
+  to {
+    rotate: 270deg;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .progress *,
+  .progress ::after {
+    animation: none !important;
   }
 }

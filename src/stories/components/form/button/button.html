@@ -1,12 +1,22 @@
 <button
   type="button"
   class="np-button"
-  [class]="[
-    'np-button--' + size(),
-    primary() ? 'np-button--primary' : 'np-button--secondary',
-  ]"
+  [class]="classes()"
   [style.background]="backgroundColor()"
+  [disabled]="disabled() || loading()"
+  [attr.aria-busy]="loading() || null"
+  [attr.aria-label]="ariaLabel() || null"
   (click)="clicked.emit($event)"
 >
-  {{ label() }}
+  @if (loading()) {
+    <span class="np-button__spinner" aria-hidden="true"></span>
+  } @else if (icon() && iconPos() === 'left') {
+    <np-icon [name]="icon()" [size]="iconSize()" />
+  }
+  @if (label()) {
+    <span>{{ label() }}</span>
+  }
+  @if (!loading() && icon() && iconPos() === 'right') {
+    <np-icon [name]="icon()" [size]="iconSize()" />
+  }
 </button>

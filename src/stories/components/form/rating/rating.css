@@ -1,37 +1,186 @@
 .rating {
+  /* Item size and the color of filled stars (hearts are red) */
+  --rating-size: 28px;
+  --rating-c: var(--ui-warning);
   display: inline-flex;
-  gap: 4px;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
 }
 
-.star {
+.rating--small {
+  --rating-size: 20px;
+}
+
+.rating--large {
+  --rating-size: 38px;
+}
+
+.rating--heart {
+  --rating-c: var(--ui-danger);
+}
+
+.rating__items {
+  display: inline-flex;
+  gap: calc(var(--rating-size) * 0.14);
+}
+
+.rating__item {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
   padding: 0;
   border: none;
   background: none;
   color: var(--ui-border-strong);
-  font-size: 28px;
+  font: inherit;
   line-height: 1;
   cursor: pointer;
   transition:
     color var(--ui-ease),
+    background var(--ui-ease),
+    border-color var(--ui-ease),
     transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1),
     filter var(--ui-ease);
 }
 
-.star:hover:not(:disabled) {
-  transform: scale(1.2) rotate(-8deg);
-}
-
-.star:focus-visible {
+.rating__item:focus-visible {
   outline: none;
   border-radius: 4px;
   box-shadow: var(--ui-ring);
 }
 
-.star--filled {
-  color: var(--ui-warning);
-  filter: drop-shadow(0 2px 4px rgba(245, 158, 11, 0.45));
+.rating--readonly .rating__item {
+  cursor: default;
 }
 
-.rating--readonly .star {
-  cursor: default;
+/* Star and heart: base shape plus a clipped filled copy */
+.rating__shape {
+  display: block;
+  width: var(--rating-size);
+  height: var(--rating-size);
+  fill: currentColor;
+}
+
+.rating__fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  overflow: hidden;
+  color: var(--rating-c);
+  filter: drop-shadow(0 2px 4px color-mix(in srgb, var(--rating-c) 45%, transparent));
+  transition: width 0.15s ease;
+}
+
+.rating--star .rating__item:hover:not(:disabled),
+.rating--heart .rating__item:hover:not(:disabled) {
+  transform: scale(1.2) rotate(-8deg);
+}
+
+.rating--heart .rating__item--current:not(:disabled) .rating__fill {
+  animation: rating-beat 0.5s ease;
+}
+
+/* Emoji: faces are grey until one is picked; the picked face is full color and bigger */
+.rating__face {
+  font-size: var(--rating-size);
+  filter: grayscale(1);
+  opacity: 0.45;
+  transition:
+    filter var(--ui-ease),
+    opacity var(--ui-ease),
+    transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.rating--emoji .rating__items {
+  gap: calc(var(--rating-size) * 0.3);
+}
+
+.rating--emoji .rating__item:hover:not(:disabled) .rating__face {
+  filter: none;
+  opacity: 0.9;
+}
+
+.rating--emoji .rating__item--current .rating__face {
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.18));
+  opacity: 1;
+  transform: scale(1.3);
+}
+
+/* Number: a 1…max scale of boxes; values up to the current one are tinted, the current one has the gradient */
+.rating--number .rating__items {
+  gap: 6px;
+}
+
+.rating--number .rating__item {
+  min-width: calc(var(--rating-size) * 1.3);
+  height: calc(var(--rating-size) * 1.3);
+  border: 1px solid var(--ui-border);
+  border-radius: var(--ui-radius);
+  background: var(--ui-surface);
+  color: var(--ui-text-muted);
+  font-size: calc(var(--rating-size) * 0.5);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.rating--number .rating__item:hover:not(:disabled) {
+  border-color: var(--ui-primary);
+  color: var(--ui-primary);
+}
+
+.rating--number .rating__item--on {
+  border-color: transparent;
+  background: var(--ui-primary-soft);
+  color: var(--ui-primary);
+}
+
+.rating--number .rating__item--current,
+.rating--number .rating__item--current:hover:not(:disabled) {
+  background: var(--ui-gradient);
+  color: #fff;
+  box-shadow: 0 4px 12px -2px color-mix(in srgb, var(--ui-primary) 50%, transparent);
+}
+
+/* Bar: segments that fill with one continuous gradient, like a meter */
+.rating--bar .rating__items {
+  gap: 4px;
+}
+
+.rating--bar .rating__item {
+  width: calc(var(--rating-size) * 1.4);
+  height: calc(var(--rating-size) * 0.4);
+  border-radius: var(--ui-radius-full);
+  background: var(--ui-surface-sunken);
+}
+
+.rating--bar .rating__item:hover:not(:disabled) {
+  background: var(--ui-border-strong);
+}
+
+.rating--bar .rating__item--on,
+.rating--bar .rating__item--on:hover:not(:disabled) {
+  background: var(--ui-gradient);
+  background-position: calc(var(--i) / max(var(--n) - 1, 1) * 100%) 0;
+  background-size: calc(var(--n) * 100%) 100%;
+}
+
+/* Value and label next to the items */
+.rating__caption {
+  color: var(--ui-text-muted);
+  font-size: 14px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+@keyframes rating-beat {
+  40% {
+    scale: 1.25;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rating * {
+    transition: none !important;
+    animation: none !important;
+  }
 }

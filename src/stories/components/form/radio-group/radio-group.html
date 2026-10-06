@@ -1,18 +1,40 @@
-<fieldset class="radio-group" [class.radio-group--horizontal]="horizontal()">
+<fieldset
+  class="radio-group"
+  [class]="'radio-group--' + variant()"
+  [class.radio-group--horizontal]="horizontal()"
+>
   @if (label()) {
     <legend>{{ label() }}</legend>
   }
-  @for (option of options(); track option.value) {
-    <label class="radio" [class.radio--disabled]="disabled()">
-      <input
-        type="radio"
-        [name]="name"
-        [value]="option.value"
-        [checked]="option.value === value()"
-        [disabled]="disabled()"
-        (change)="value.set(option.value)"
-      />
-      <span>{{ option.label }}</span>
-    </label>
-  }
+  <div class="radio-group__list">
+    @for (option of options(); track option.value) {
+      @let off = disabled() || !!option.disabled;
+      @let on = option.value === value();
+      <label class="radio" [class.radio--disabled]="off" [class.radio--checked]="on">
+        <input
+          type="radio"
+          [name]="name"
+          [value]="option.value"
+          [checked]="on"
+          [disabled]="off"
+          (change)="value.set(option.value)"
+        />
+        @if (variant() !== 'default') {
+          @if (option.icon) {
+            <span class="radio__icon" aria-hidden="true">
+              <np-icon [name]="option.icon" [size]="variant() === 'cards' ? 20 : 16" />
+            </span>
+          } @else if (variant() === 'chips' && on) {
+            <span class="radio__icon" aria-hidden="true"><np-icon name="check" [size]="14" /></span>
+          }
+        }
+        <span class="radio__body">
+          <span class="radio__label">{{ option.label }}</span>
+          @if (option.description && (variant() === 'default' || variant() === 'cards')) {
+            <span class="radio__desc">{{ option.description }}</span>
+          }
+        </span>
+      </label>
+    }
+  </div>
 </fieldset>

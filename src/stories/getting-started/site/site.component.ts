@@ -25,7 +25,7 @@ export class SiteComponent {
   private readonly url = toSignal(
     this.router.events.pipe(
       filter((event) => event instanceof NavigationEnd),
-      map((event) => event.urlAfterRedirects.slice(1)),
+      map((event) => event.urlAfterRedirects.slice(1).split('?')[0]),
     ),
     { initialValue: '' },
   );

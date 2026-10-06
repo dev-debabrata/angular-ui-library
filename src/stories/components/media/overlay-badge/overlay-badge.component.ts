@@ -1,12 +1,18 @@
 import { Component, booleanAttribute, computed, input, numberAttribute } from '@angular/core';
 
 import type { Size, Tone } from '../../../utils/types';
+import { IconComponent } from '../icon/icon.component';
+
+/** Looks of the badge */
+export const OVERLAY_BADGE_VARIANTS = ['default', 'gradient', 'soft', 'outlined', 'glass'] as const;
+export type OverlayBadgeVariant = (typeof OVERLAY_BADGE_VARIANTS)[number];
 
 export type BadgePosition = 'top-right' | 'top-left' | 'bottom-right' | 'bottom-left';
 
 /** Small count or dot overlaid on the corner of its content (icon, avatar, button) */
 @Component({
   selector: 'np-overlay-badge',
+  imports: [IconComponent],
   templateUrl: './overlay-badge.html',
   styleUrl: './overlay-badge.css',
 })
@@ -37,6 +43,14 @@ export class OverlayBadgeComponent {
 
   /** Accessible description, e.g. "6 unread messages" */
   readonly ariaLabel = input('');
+  /** Look: default (solid), gradient (glowing), soft (tinted), outlined or glass (frosted) */
+  readonly variant = input<OverlayBadgeVariant>('default');
+  /** Animated ping around the badge, to draw attention (live, new) */
+  readonly pulse = input(false, { transform: booleanAttribute });
+  /** Icon file name from src/stories/icons/svg shown instead of the value (e.g. a verified check) */
+  readonly icon = input('');
+  /** The content is round (avatar): sit on the circle's edge instead of the box corner */
+  readonly circular = input(false, { transform: booleanAttribute });
 
   protected readonly text = computed(() => {
     const value = this.value();
@@ -46,6 +60,8 @@ export class OverlayBadgeComponent {
   protected readonly visible = computed(
     () =>
       !this.hidden() &&
-      (this.dot() || (this.text() !== '' && (this.showZero() || this.value() !== 0))),
+      (this.dot() ||
+        this.icon() ||
+        (this.text() !== '' && (this.showZero() || this.value() !== 0))),
   );
 }

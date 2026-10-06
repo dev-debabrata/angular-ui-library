@@ -3,101 +3,144 @@
   display: inline-block;
 }
 
+/* Variants only set --tt-bg, --tt-fg and --tt-border */
 .tooltip {
   --gap: 10px;
+  --tt-bg: var(--tone-solid, var(--ui-text));
+  --tt-fg: var(--ui-surface);
+  --tt-border: transparent;
   position: absolute;
   z-index: 10;
+  box-sizing: border-box;
+  width: max-content;
+  max-width: 260px;
   padding: 7px 12px;
+  border: 1px solid var(--tt-border);
   border-radius: var(--ui-radius-sm);
-  background: var(--ui-text);
-  color: #fff;
+  background: var(--tt-bg);
+  color: var(--tt-fg);
   box-shadow: var(--ui-shadow-lg);
   font-size: 12px;
   font-weight: 500;
-  white-space: nowrap;
+  line-height: 1.45;
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
+  transform: var(--tt-center, translateX(-50%));
+  translate: var(--tt-from);
   transition:
     opacity var(--ui-ease),
-    transform var(--ui-ease),
+    translate var(--ui-ease),
     visibility var(--ui-ease);
-}
+  transition-delay: var(--tt-hide, 0ms);
 
-/* Arrow */
-.tooltip::after {
-  content: '';
-  position: absolute;
-  width: 8px;
-  height: 8px;
-  background: inherit;
-  transform: rotate(45deg);
+  /* Arrow: its two outer edges carry the border */
+  &::after {
+    content: '';
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    inset: var(--tt-arrow);
+    margin: -5px;
+    border: 1px solid;
+    border-color: transparent var(--tt-border) var(--tt-border) transparent;
+    background: inherit;
+    rotate: var(--tt-rot);
+  }
 }
 
 .tooltip-wrapper:hover .tooltip,
 .tooltip-wrapper:focus-within .tooltip {
   opacity: 1;
   visibility: visible;
+  translate: none;
+  transition-delay: var(--tt-show, 0ms);
 }
 
 .tooltip--top {
-  bottom: calc(100% + var(--gap));
-  left: 50%;
-  transform: translate(-50%, 4px);
+  --tt-arrow: 100% auto auto 50%;
+  --tt-from: 0 4px;
+  --tt-rot: 45deg;
+  inset: auto auto calc(100% + var(--gap)) 50%;
 }
 
 .tooltip--bottom {
-  top: calc(100% + var(--gap));
-  left: 50%;
-  transform: translate(-50%, -4px);
+  --tt-arrow: auto auto 100% 50%;
+  --tt-from: 0 -4px;
+  --tt-rot: 225deg;
+  inset: calc(100% + var(--gap)) auto auto 50%;
 }
 
 .tooltip--left {
-  right: calc(100% + var(--gap));
-  top: 50%;
-  transform: translate(4px, -50%);
+  --tt-arrow: 50% auto auto 100%;
+  --tt-from: 4px 0;
+  --tt-rot: -45deg;
+  --tt-center: translateY(-50%);
+  inset: 50% calc(100% + var(--gap)) auto auto;
 }
 
 .tooltip--right {
-  left: calc(100% + var(--gap));
-  top: 50%;
-  transform: translate(-4px, -50%);
+  --tt-arrow: 50% 100% auto auto;
+  --tt-from: -4px 0;
+  --tt-rot: 135deg;
+  --tt-center: translateY(-50%);
+  inset: 50% auto auto calc(100% + var(--gap));
 }
 
-.tooltip-wrapper:hover .tooltip--top,
-.tooltip-wrapper:focus-within .tooltip--top,
-.tooltip-wrapper:hover .tooltip--bottom,
-.tooltip-wrapper:focus-within .tooltip--bottom {
-  transform: translate(-50%, 0);
+.tooltip--no-arrow::after {
+  display: none;
 }
 
-.tooltip-wrapper:hover .tooltip--left,
-.tooltip-wrapper:focus-within .tooltip--left,
-.tooltip-wrapper:hover .tooltip--right,
-.tooltip-wrapper:focus-within .tooltip--right {
-  transform: translate(0, -50%);
+.tooltip--default[class*='tone-'] {
+  --tt-fg: #fff;
 }
 
-.tooltip--top::after {
-  top: 100%;
-  left: 50%;
-  margin: -4px 0 0 -4px;
+.tooltip--light {
+  --tt-bg: var(--ui-surface);
+  --tt-fg: var(--ui-text);
+  --tt-border: var(--ui-border);
 }
 
-.tooltip--bottom::after {
-  bottom: 100%;
-  left: 50%;
-  margin: 0 0 -4px -4px;
+.tooltip--soft {
+  --tt-bg: var(--tone-bg, var(--ui-primary-soft));
+  --tt-fg: var(--tone-fg, var(--ui-primary));
+  --tt-border: var(--tone-border, color-mix(in srgb, var(--ui-primary) 30%, var(--ui-surface)));
 }
 
-.tooltip--left::after {
-  left: 100%;
-  top: 50%;
-  margin: -4px 0 0 -4px;
+.tooltip--gradient {
+  --tt-bg: var(--ui-gradient);
+  --tt-fg: #fff;
 }
 
-.tooltip--right::after {
-  right: 100%;
-  top: 50%;
-  margin: -4px -4px 0 0;
+.tooltip--glass {
+  --tt-bg: color-mix(in srgb, var(--ui-surface) 65%, transparent);
+  --tt-fg: var(--ui-text);
+  --tt-border: color-mix(in srgb, #fff 45%, transparent);
+  backdrop-filter: blur(12px) saturate(1.6);
+}
+
+.tooltip-heading {
+  display: block;
+  margin-bottom: 2px;
+  font-size: 13px;
+}
+
+kbd {
+  display: inline-block;
+  margin-left: 3px;
+  padding: 0 6px;
+  border-radius: var(--ui-radius-sm);
+  background: color-mix(in srgb, currentColor 16%, transparent);
+  font: inherit;
+  font-size: 11px;
+
+  &:first-of-type {
+    margin-left: 8px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tooltip {
+    translate: none;
+  }
 }

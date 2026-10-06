@@ -6,6 +6,7 @@ import {
   contentChild,
   input,
   model,
+  numberAttribute,
   output,
   signal,
 } from '@angular/core';
@@ -22,6 +23,10 @@ import { IconComponent } from '../../media/icon/icon.component';
 import { SearchInputComponent } from '../../form/search-input/search-input.component';
 
 export type ListSide = 'source' | 'target';
+
+/** Looks of the pick list */
+export const PICK_LIST_VARIANTS = ['default', 'cards', 'compact', 'glass', 'minimal'] as const;
+export type PickListVariant = (typeof PICK_LIST_VARIANTS)[number];
 
 @Component({
   selector: 'np-pick-list',
@@ -51,6 +56,18 @@ export class PickListComponent<T = unknown> {
 
   /** Item property shown as the label (when no item template is projected) */
   readonly optionLabel = input('label');
+
+  /** Item property with an icon file name, shown before the label (without an item template) */
+  readonly optionIcon = input('');
+
+  /** Item property shown as a second line (without an item template) */
+  readonly optionDescription = input('');
+
+  /** Look: default, cards, compact, glass (frosted) or minimal (no panel frame) */
+  readonly variant = input<PickListVariant>('default');
+
+  /** Most items the target list can hold (0: no limit). Moves past it are cut off */
+  readonly targetLimit = input(0, { transform: numberAttribute });
 
   /** Show a search box above each list? */
   readonly filter = input(false, { transform: booleanAttribute });
@@ -84,15 +101,22 @@ export class PickListComponent<T = unknown> {
     target: computed(() => this.applyFilter(this.target(), this.query.target())),
   };
 
+  /** Free places in the target list */
+  protected readonly room = computed(() =>
+    this.targetLimit() ? Math.max(0, this.targetLimit() - this.target().length) : Infinity,
+  );
+
+  /** Drag-and-drop: a full target list accepts only its own items */
+  protected readonly canEnter = (drag: CdkDrag<T>, drop: CdkDropList<ListSide>) =>
+    drop.data === 'source' || drag.dropContainer.data === 'target' || this.room() > 0;
+
   protected header(side: ListSide) {
     return side === 'source' ? this.sourceHeader() : this.targetHeader();
   }
 
-  protected label(item: T): string {
-    const value =
-      item && typeof item === 'object'
-        ? (item as Record<string, unknown>)[this.optionLabel()]
-        : item;
+  /** An item property as text; plain (non-object) items are their own label */
+  protected field(item: T, key = this.optionLabel()): string {
+    const value = item && typeof item === 'object' ? (item as Record<string, unknown>)[key] : item;
     return String(value ?? '');
   }
 
@@ -117,8 +141,9 @@ export class PickListComponent<T = unknown> {
     items = this.visible[from]().filter((item) => this.selected[from]().has(item)),
     index = Infinity,
   ) {
-    if (!items.length) return;
     const to: ListSide = from === 'source' ? 'target' : 'source';
+    if (to === 'target') items = items.slice(0, this.room());
+    if (!items.length) return;
     const moving = new Set(items);
     this[from].update((list) => list.filter((item) => !moving.has(item)));
     this[to].update((list) => [...list.slice(0, index), ...items, ...list.slice(index)]);
@@ -157,6 +182,7 @@ export class PickListComponent<T = unknown> {
 
   private applyFilter(items: T[], query: string) {
     const q = query.trim().toLowerCase();
-    return q ? items.filter((item) => this.label(item).toLowerCase().includes(q)) : items;
+    const text = (item: T) => `${this.field(item)} ${this.field(item, this.optionDescription())}`;
+    return q ? items.filter((item) => text(item).toLowerCase().includes(q)) : items;
   }
 }

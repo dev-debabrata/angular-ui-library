@@ -2,13 +2,26 @@
 @if (visible()) {
   <span
     class="overlay-badge"
-    [class]="['tone-' + severity(), 'overlay-badge--' + position(), 'overlay-badge--' + size()]"
+    [class]="[
+      'tone-' + severity(),
+      'overlay-badge--' + position(),
+      'overlay-badge--' + size(),
+      'overlay-badge--' + variant(),
+    ]"
     [class.overlay-badge--dot]="dot()"
+    [class.overlay-badge--pulse]="pulse()"
+    [class.overlay-badge--circular]="circular()"
     [attr.aria-label]="ariaLabel() || null"
     [attr.aria-hidden]="ariaLabel() ? null : 'true'"
     [attr.role]="ariaLabel() ? 'status' : null"
   >
-    @if (!dot()) {
+    @if (icon() && !dot()) {
+      <np-icon
+        [name]="icon()"
+        [size]="{ small: 9, medium: 12, large: 14 }[size()]"
+        [strokeWidth]="3"
+      />
+    } @else if (!dot()) {
       {{ text() }}
     }
   </span>

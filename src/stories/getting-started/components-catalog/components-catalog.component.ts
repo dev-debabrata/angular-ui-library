@@ -29,8 +29,8 @@ interface IndexEntry {
   tags?: string[];
 }
 
-/** Lucide icon drawn on each card's preview, by component folder */
-const ICONS: Record<string, string> = {
+/** Lucide icon drawn on each card's preview, by component folder (also used by the site search) */
+export const COMPONENT_ICONS: Record<string, string> = {
   accordion: 'list-collapse',
   alert: 'triangle-alert',
   'animate-on-scroll': 'mouse',
@@ -141,7 +141,7 @@ export class ComponentsCatalogComponent {
             folder,
             // The component's id: Storybook opens its docs page if there is one, else the first story
             href: managerHref(entry.id.split('--')[0]),
-            icon: ICONS[folder] ?? 'box',
+            icon: COMPONENT_ICONS[folder] ?? 'box',
           };
         }),
       );

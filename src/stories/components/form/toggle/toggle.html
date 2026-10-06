@@ -1,4 +1,8 @@
-<label class="toggle" [class.toggle--disabled]="disabled()">
+<label
+  class="toggle"
+  [class]="['toggle--' + variant(), 'toggle--' + size(), 'toggle--label-' + labelPosition()]"
+  [class.toggle--disabled]="disabled()"
+>
   <input
     type="checkbox"
     role="switch"
@@ -6,8 +10,18 @@
     [disabled]="disabled()"
     (change)="checked.set($any($event.target).checked)"
   />
-  <span class="toggle-track"><span class="toggle-thumb"></span></span>
+  <span class="toggle-track">
+    @if (variant() === 'labeled') {
+      <span class="toggle-text toggle-text--on" aria-hidden="true">{{ onLabel() }}</span>
+      <span class="toggle-text toggle-text--off" aria-hidden="true">{{ offLabel() }}</span>
+    }
+    <span class="toggle-thumb">
+      @if (variant() === 'icon') {
+        <np-icon class="toggle-icon" [name]="checked() ? onIcon() : offIcon()" [size]="iconSize()" [strokeWidth]="3" />
+      }
+    </span>
+  </span>
   @if (label()) {
-    <span>{{ label() }}</span>
+    <span class="toggle-label">{{ label() }}</span>
   }
 </label>

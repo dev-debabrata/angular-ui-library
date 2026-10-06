@@ -1,12 +1,26 @@
-<div class="alert" [class]="'tone-' + type()" role="alert">
-  <span class="ui-tone-icon" aria-hidden="true">{{ icons[type()] }}</span>
+<div
+  class="alert"
+  [class]="['tone-' + type(), 'alert--' + variant()]"
+  [class.alert--compact]="compact()"
+  [class.alert--closing]="state() === 'closing'"
+  role="alert"
+  (transitionend)="$event.propertyName === 'scale' && [state.set('closed'), dismiss.emit()]"
+>
+  <span class="ui-tone-icon" aria-hidden="true">
+    @if (icon()) {
+      <np-icon [name]="icon()" [size]="14" />
+    } @else {
+      {{ icons[type()] }}
+    }
+  </span>
   <div class="alert-content">
     @if (title()) {
       <strong class="alert-title">{{ title() }}</strong>
     }
     <span>{{ message() }}</span>
+    <div class="alert-actions"><ng-content select="[alertActions]" /></div>
   </div>
-  @if (dismissible()) {
-    <button type="button" class="ui-close" aria-label="Close" (click)="dismiss.emit()">×</button>
+  @if (dismissible() || closable()) {
+    <button type="button" class="ui-close" aria-label="Close" (click)="close()">×</button>
   }
 </div>

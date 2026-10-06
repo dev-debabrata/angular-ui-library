@@ -1,11 +1,32 @@
-<ol class="timeline" [class]="['timeline--' + layout(), 'timeline--' + align()]">
+<ol
+  class="timeline"
+  [class]="
+    'timeline--' +
+    layout() +
+    ' timeline--' +
+    align() +
+    ' timeline--' +
+    variant() +
+    (lineTone() ? ' tone-' + lineTone() : '')
+  "
+  [style.--tl-c]="lineTone() ? 'var(--tone-solid)' : lineColor() || null"
+  [class.timeline--opposite]="dateOpposite()"
+>
   @for (event of value(); track $index) {
     <li
       class="timeline-event"
       [class.timeline-event--flip]="align() === 'alternate' && $odd"
+      [class.timeline-event--done]="$index < activeIndex()"
+      [class.timeline-event--active]="$index === activeIndex()"
+      [class.timeline-event--pending]="activeIndex() >= 0 && $index > activeIndex()"
+      [attr.aria-current]="$index === activeIndex() ? 'step' : null"
       [style.animation-delay.ms]="$index * 80"
     >
-      <div class="timeline-opposite"></div>
+      <div class="timeline-opposite">
+        @if (dateOpposite()) {
+          <time class="timeline-date">{{ event.date }}</time>
+        }
+      </div>
 
       <div class="timeline-separator">
         <span
@@ -15,7 +36,7 @@
           [class.timeline-marker--dot]="!event.icon"
         >
           @if (event.icon) {
-            <np-icon [name]="event.icon" [size]="16" />
+            <np-icon [name]="event.icon" [size]="variant() === 'compact' ? 12 : 16" />
           }
         </span>
         @if (!$last) {
@@ -27,11 +48,22 @@
         @if (contentTemplate(); as tpl) {
           <ng-container [ngTemplateOutlet]="tpl" [ngTemplateOutletContext]="{ $implicit: event }" />
         } @else {
-          <div class="timeline-status">{{ event.status }}</div>
-          <time class="timeline-date">{{ event.date }}</time>
-          @if (event.description) {
-            <p class="timeline-description">{{ event.description }}</p>
-          }
+          <div class="timeline-body">
+            <div class="timeline-status">
+              {{ event.status }}
+              @if (event.tag) {
+                <span class="timeline-tag" [class]="'tone-' + (event.tone || 'info')">{{
+                  event.tag
+                }}</span>
+              }
+            </div>
+            @if (!dateOpposite()) {
+              <time class="timeline-date">{{ event.date }}</time>
+            }
+            @if (event.description) {
+              <p class="timeline-description">{{ event.description }}</p>
+            }
+          </div>
         }
       </div>
     </li>

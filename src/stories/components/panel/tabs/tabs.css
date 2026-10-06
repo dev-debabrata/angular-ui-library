@@ -1,47 +1,77 @@
-/* Segmented "pill" tabs */
+/* Shared by every variant; each variant below only changes the list, the tabs and the active tab */
 .tab-list {
   display: inline-flex;
+  max-width: 100%;
   gap: 4px;
-  padding: 4px;
-  border-radius: 999px;
-  background: var(--ui-surface-sunken);
-  box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.06);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.tab-list--stretch {
+  display: flex;
+}
+
+.tab-list--stretch .tab {
+  flex: 1;
+  justify-content: center;
 }
 
 .tab {
+  position: relative;
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: 8px;
   padding: 8px 18px;
   border: none;
-  border-radius: 999px;
   background: none;
   color: var(--ui-text-muted);
   font: inherit;
   font-size: 14px;
   font-weight: 500;
+  white-space: nowrap;
   cursor: pointer;
   transition:
     background var(--ui-ease),
     color var(--ui-ease),
+    border-color var(--ui-ease),
     box-shadow var(--ui-ease);
 }
 
-.tab:hover {
+.tab:hover:not(:disabled) {
   color: var(--ui-text);
 }
 
-.tab:focus-visible {
+.tab:focus-visible,
+.tab-panel:focus-visible {
   outline: none;
   box-shadow: var(--ui-ring);
 }
 
+.tab:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
 .tab--active {
-  background: var(--ui-surface);
   color: var(--ui-primary);
   font-weight: 600;
-  box-shadow: var(--ui-shadow);
+}
+
+.tab__badge {
+  min-width: 18px;
+  padding: 1px 6px;
+  border-radius: var(--ui-radius-full);
+  background: var(--ui-primary-soft);
+  color: var(--ui-primary);
+  font-size: 11px;
+  font-weight: 700;
+  text-align: center;
 }
 
 .tab-panel {
   padding: 18px 6px;
+  border-radius: var(--ui-radius-sm);
   color: var(--ui-text-muted);
   font-size: 14px;
   line-height: 1.6;
@@ -52,5 +82,183 @@
   from {
     opacity: 0;
     transform: translateY(4px);
+  }
+}
+
+/* ---- pill, solid and minimal: rounded tabs; pill and solid sit on a rounded track */
+.tabs--pill .tab-list,
+.tabs--solid .tab-list {
+  padding: 4px;
+  border-radius: var(--ui-radius-full);
+}
+
+.tabs--pill .tab,
+.tabs--solid .tab,
+.tabs--minimal .tab {
+  border-radius: var(--ui-radius-full);
+}
+
+/* pill: a segmented control on a sunken track */
+.tabs--pill .tab-list {
+  background: var(--ui-surface-sunken);
+  box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.06);
+}
+
+.tabs--pill .tab--active {
+  background: var(--ui-surface);
+  box-shadow: var(--ui-shadow);
+}
+
+/* ---- solid: the active tab in the brand gradient */
+.tabs--solid .tab-list {
+  border: 1px solid var(--ui-border);
+  background: var(--ui-surface);
+}
+
+.tabs--solid .tab--active {
+  background: var(--ui-gradient);
+  color: #fff;
+  box-shadow: 0 4px 14px color-mix(in srgb, var(--ui-primary) 35%, transparent);
+}
+
+.tabs--solid .tab--active .tab__badge {
+  background: rgb(255 255 255 / 0.25);
+  color: #fff;
+}
+
+/* ---- minimal: plain text tabs, the active one on a soft tint */
+.tabs--minimal .tab:hover:not(:disabled) {
+  background: var(--ui-surface-sunken);
+}
+
+.tabs--minimal .tab--active,
+.tabs--minimal .tab--active:hover:not(:disabled) {
+  background: var(--ui-primary-soft);
+}
+
+/* ---- underline: a gradient bar grows under the active tab */
+.tabs--underline .tab-list {
+  gap: 8px;
+  box-shadow: inset 0 -1px 0 var(--ui-border);
+}
+
+.tabs--underline .tab {
+  padding: 10px 6px;
+}
+
+.tabs--underline .tab::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--ui-gradient);
+  transform: scaleX(0);
+  transition: transform var(--ui-ease);
+}
+
+.tabs--underline .tab--active::after {
+  transform: scaleX(1);
+}
+
+/* ---- boxed: folder tabs that join a bordered panel */
+.tabs--boxed .tab-list {
+  gap: 2px;
+  margin-bottom: -1px;
+}
+
+.tabs--boxed .tab {
+  border: 1px solid transparent;
+  border-bottom: 0;
+  border-radius: var(--ui-radius) var(--ui-radius) 0 0;
+}
+
+.tabs--boxed .tab:hover:not(:disabled) {
+  background: var(--ui-surface-sunken);
+}
+
+.tabs--boxed .tab--active,
+.tabs--boxed .tab--active:hover:not(:disabled) {
+  border-color: var(--ui-border);
+  background: var(--ui-surface);
+  box-shadow: inset 0 2px 0 var(--ui-primary);
+}
+
+.tabs--boxed .tab-panel {
+  padding: 18px;
+  border: 1px solid var(--ui-border);
+  border-radius: 0 var(--ui-radius) var(--ui-radius) var(--ui-radius);
+  background: var(--ui-surface);
+}
+
+/* ---- vertical: the list becomes a column beside the panel */
+.tabs--vertical {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.tabs--vertical .tab-list {
+  flex-direction: column;
+  flex: none;
+  overflow: visible;
+}
+
+.tabs--vertical .tab-panel {
+  flex: 1;
+  padding-top: 8px;
+}
+
+.tabs--vertical.tabs--underline .tab-list {
+  box-shadow: inset -1px 0 0 var(--ui-border);
+}
+
+.tabs--vertical.tabs--underline .tab {
+  padding: 8px 18px 8px 6px;
+}
+
+.tabs--vertical.tabs--underline .tab::after {
+  top: 0;
+  left: auto;
+  width: 2px;
+  height: auto;
+  transform: scaleY(0);
+}
+
+.tabs--vertical.tabs--underline .tab--active::after {
+  transform: scaleY(1);
+}
+
+/* The panel is as tall as the tab column, so the two read as one box */
+.tabs--vertical.tabs--boxed {
+  align-items: stretch;
+  gap: 0;
+}
+
+.tabs--vertical.tabs--boxed .tab-list {
+  margin: 0 -1px 0 0;
+}
+
+.tabs--vertical.tabs--boxed .tab {
+  border: 1px solid transparent;
+  border-right: 0;
+  border-radius: var(--ui-radius) 0 0 var(--ui-radius);
+}
+
+.tabs--vertical.tabs--boxed .tab--active {
+  border-color: var(--ui-border);
+  box-shadow: inset 2px 0 0 var(--ui-primary);
+}
+
+/* Back to the boxed padding (the vertical layout trims the panel's top) */
+.tabs--vertical.tabs--boxed .tab-panel {
+  padding: 18px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tab-panel {
+    animation: none;
   }
 }

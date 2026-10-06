@@ -9,9 +9,23 @@
 
 .menu-group {
   padding: 10px 12px 4px;
-  color: var(--ui-text-subtle);
+  color: var(--mi-muted, var(--ui-text-subtle));
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
+}
+
+/* [menuHeader] / [menuFooter] wrappers: split from the items by a line, hidden when empty */
+.menu-slot {
+  padding: 8px 10px 10px;
+  border: 0 solid var(--mi-sep, var(--ui-border));
+  border-bottom-width: 1px;
+  &:empty {
+    display: none;
+  }
+  &:last-child {
+    padding: 10px 10px 4px;
+    border-width: 1px 0 0;
+  }
 }

@@ -1,7 +1,7 @@
-<section class="helpful" [attr.aria-label]="question()">
+<section class="helpful" [class]="'helpful--' + variant()" [attr.aria-label]="question()">
   <b class="helpful__question">{{ question() }}</b>
-  <div class="helpful__buttons">
-    @for (option of ['yes', 'no']; track option) {
+  <div class="helpful__buttons" [class]="'helpful__' + mode()" (pointerleave)="hovered.set(0)">
+    @for (option of mode() === 'thumbs' ? ['yes', 'no'] : []; track option) {
       <button
         type="button"
         class="helpful__button"
@@ -14,11 +14,45 @@
         {{ option === 'yes' ? yesLabel() : noLabel() }}
       </button>
     }
-  </div>
-  <p class="helpful__counts" aria-live="polite">
-    @if (vote()) {
-      <span class="helpful__thanks">Thanks for your feedback!</span>
+    @for (n of { thumbs: [], emoji: [1, 2, 3], stars: [1, 2, 3, 4, 5] }[mode()]; track n) {
+      <button
+        type="button"
+        class="helpful__rate"
+        [class.helpful__rate--on]="n === (hovered() || rating())"
+        [attr.aria-pressed]="rating() === n"
+        [attr.aria-label]="mode() === 'emoji' ? faceLabels[n - 1] : n + ' of 5'"
+        [disabled]="!!rating()"
+        (pointerenter)="hovered.set(rating() ? 0 : n)"
+        (click)="rating.set(n); rated.emit(n)"
+      >
+        {{ mode() === 'emoji' ? faces[n - 1] : '★' }}
+      </button>
     }
-    {{ counts().yes }} found helpful · {{ counts().no }} didn't
+  </div>
+  @if (asking()) {
+    <form
+      class="helpful__followup"
+      (submit)="$event.preventDefault(); sent.set(true); commented.emit(comment.value)"
+    >
+      <textarea
+        #comment
+        class="ui-control"
+        rows="3"
+        [placeholder]="followUp()"
+        [attr.aria-label]="followUp()"
+      ></textarea>
+      <button type="submit" class="ui-btn ui-btn--primary ui-btn--sm">
+        <np-icon name="send" [size]="14" />
+        Send
+      </button>
+    </form>
+  }
+  <p class="helpful__counts" aria-live="polite">
+    @if ((vote() || rating()) && !asking()) {
+      <span class="helpful__thanks">{{ thanks() }}</span>
+    }
+    @if (mode() === 'thumbs') {
+      {{ counts().yes }} found helpful · {{ counts().no }} didn't
+    }
   </p>
 </section>

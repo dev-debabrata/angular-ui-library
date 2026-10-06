@@ -1,1 +1,29 @@
 <div class="lottie"></div>
+@if (controls()) {
+  <div class="lottie__controls">
+    <button
+      type="button"
+      class="ui-btn ui-btn--text ui-btn--icon ui-btn--sm"
+      [attr.aria-label]="playing() ? 'Pause' : 'Play'"
+      (click)="playing() ? pause() : play()"
+    >
+      <np-icon [name]="playing() ? 'pause' : 'play'" [size]="16" />
+    </button>
+    <input
+      type="range"
+      step="any"
+      aria-label="Progress"
+      [max]="frames()"
+      [value]="frame()"
+      (input)="seek($any($event.target).valueAsNumber)"
+    />
+    <button
+      type="button"
+      class="ui-btn ui-btn--text ui-btn--sm"
+      aria-label="Speed"
+      (click)="rate.set(rate() >= 2 ? 0.5 : rate() * 2)"
+    >
+      {{ rate() }}×
+    </button>
+  </div>
+}

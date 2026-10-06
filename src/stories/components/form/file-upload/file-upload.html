@@ -35,91 +35,349 @@
     }
   </div>
 } @else {
-  <div class="uploader" [class.uploader--disabled]="disabled()">
-    <div class="toolbar">
-      <button
-        type="button"
-        class="ui-btn ui-btn--primary"
-        [disabled]="disabled()"
-        (click)="fileInput.click()"
+  @switch (variant()) {
+    @case ('dropzone') {
+      <div class="zone-wrap" [class.uploader--disabled]="disabled()">
+        <div
+          class="zone"
+          [class.zone--active]="dragging()"
+          (dragenter)="onDragEnter($event)"
+          (dragover)="$event.preventDefault()"
+          (dragleave)="onDragLeave()"
+          (drop)="onDrop($event)"
+        >
+          <button type="button" class="zone-target" [disabled]="disabled()" (click)="fileInput.click()">
+            <span class="zone-icon"><np-icon name="cloud-upload" [size]="30" /></span>
+            <b class="zone-title">
+              {{ dragging() ? 'Drop to upload' : 'Drag & drop ' + (multiple() ? 'files' : 'a file') + ' or' }}
+              @if (!dragging()) {
+                <span class="zone-link">browse</span>
+              }
+            </b>
+            <small class="zone-hint">{{ hintText() }}</small>
+          </button>
+        </div>
+
+        <ng-container [ngTemplateOutlet]="messageList" />
+
+        @if (items().length) {
+          <ul class="rows">
+            @for (item of items(); track item.id) {
+              <li class="row" [class]="'row--' + item.status">
+                <span class="row-icon">
+                  @if (item.url) {
+                    <img [src]="item.url" alt="" />
+                  } @else {
+                    <np-icon [name]="typeIcon(item.file)" [size]="20" />
+                  }
+                </span>
+                <span class="row-main">
+                  <span class="row-top">
+                    <b class="ellipsis" [title]="item.file.name">{{ item.file.name }}</b>
+                    <small>{{ formatSize(item.file.size) }}</small>
+                    <ng-container [ngTemplateOutlet]="statusLabel" [ngTemplateOutletContext]="{ $implicit: item }" />
+                  </span>
+                  <ng-container [ngTemplateOutlet]="bar" [ngTemplateOutletContext]="{ $implicit: item }" />
+                </span>
+                <ng-container [ngTemplateOutlet]="removeButton" [ngTemplateOutletContext]="{ $implicit: item }" />
+              </li>
+            }
+          </ul>
+          <ng-container [ngTemplateOutlet]="actions" />
+        }
+      </div>
+    }
+
+    @case ('compact') {
+      <div
+        class="compact"
+        [class.compact--active]="dragging()"
+        [class.uploader--disabled]="disabled()"
+        (dragenter)="onDragEnter($event)"
+        (dragover)="$event.preventDefault()"
+        (dragleave)="onDragLeave()"
+        (drop)="onDrop($event)"
       >
-        <np-icon name="plus" [size]="16" /> {{ chooseLabel() }}
-      </button>
-      @if (!auto()) {
         <button
           type="button"
-          class="ui-btn"
-          [disabled]="disabled() || !pending().length || uploading()"
-          (click)="uploadPending()"
+          class="ui-btn ui-btn--sm"
+          [disabled]="disabled()"
+          (click)="fileInput.click()"
         >
-          <np-icon name="upload" [size]="16" /> {{ uploadLabel() }}
+          <np-icon name="paperclip" [size]="14" /> {{ chooseLabel() }}
         </button>
-      }
-      <button
-        type="button"
-        class="ui-btn"
-        [disabled]="disabled() || !items().length"
-        (click)="cancel()"
-      >
-        <np-icon name="x" [size]="16" /> {{ cancelLabel() }}
-      </button>
-    </div>
-
-    @if (uploading()) {
-      <np-progress-bar class="progress" [value]="progress()" />
-    }
-
-    @if (messages().length) {
-      <ul class="messages" role="alert">
-        @for (message of messages(); track $index) {
-          <li><np-icon name="circle-alert" [size]="14" /> {{ message }}</li>
+        @if (items().length) {
+          <ul class="chips">
+            @for (item of items(); track item.id) {
+              <li class="chip" [class]="'chip--' + item.status">
+                <np-icon class="chip-icon" [name]="typeIcon(item.file)" [size]="14" />
+                <span class="ellipsis" [title]="item.file.name">{{ item.file.name }}</span>
+                <small>{{ formatSize(item.file.size) }}</small>
+                @if (item.status === 'completed') {
+                  <np-icon class="chip-done" name="circle-check" [size]="14" label="Uploaded" />
+                } @else if (item.status === 'error') {
+                  <np-icon class="chip-failed" name="circle-alert" [size]="14" label="Failed" />
+                }
+                <button
+                  type="button"
+                  class="chip-remove"
+                  [disabled]="item.status === 'uploading'"
+                  [attr.aria-label]="'Remove ' + item.file.name"
+                  (click)="removeItem(item)"
+                >
+                  <np-icon name="x" [size]="12" />
+                </button>
+                @if (item.status === 'uploading') {
+                  <span class="chip-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" [attr.aria-valuenow]="itemProgress(item)">
+                    <span [style.width.%]="itemProgress(item)"></span>
+                  </span>
+                }
+              </li>
+            }
+          </ul>
+        } @else {
+          <span class="compact-empty ellipsis">
+            {{ dragging() ? 'Drop to add' : multiple() ? 'No files chosen' : 'No file chosen' }}
+          </span>
         }
-      </ul>
+        @if (!auto() && pending().length) {
+          <button
+            type="button"
+            class="ui-btn ui-btn--primary ui-btn--sm compact-upload"
+            [disabled]="disabled() || uploading()"
+            (click)="uploadPending()"
+          >
+            <np-icon name="upload" [size]="14" /> {{ uploadLabel() }}
+          </button>
+        }
+      </div>
+      <ng-container [ngTemplateOutlet]="messageList" />
     }
 
-    <div
-      class="dropzone"
-      [class.dropzone--active]="dragging()"
-      (dragenter)="onDragEnter($event)"
-      (dragover)="$event.preventDefault()"
-      (dragleave)="onDragLeave()"
-      (drop)="onDrop($event)"
-    >
-      @if (items().length) {
-        <ul class="files">
+    @case ('cards') {
+      <div
+        class="cards-wrap"
+        [class.cards-wrap--active]="dragging()"
+        [class.uploader--disabled]="disabled()"
+        (dragenter)="onDragEnter($event)"
+        (dragover)="$event.preventDefault()"
+        (dragleave)="onDragLeave()"
+        (drop)="onDrop($event)"
+      >
+        <ng-container [ngTemplateOutlet]="messageList" />
+        <ul class="cards">
           @for (item of items(); track item.id) {
-            <li class="file">
-              <span class="thumb">
+            <li class="card" [class]="'card--' + item.status">
+              <span class="card-media">
                 @if (item.url) {
                   <img [src]="item.url" alt="" />
                 } @else {
-                  <np-icon name="file-text" [size]="22" />
+                  <span class="card-type">
+                    <np-icon [name]="typeIcon(item.file)" [size]="30" />
+                    @if (extension(item.file.name)) {
+                      <small>{{ extension(item.file.name) }}</small>
+                    }
+                  </span>
                 }
+                <ng-container [ngTemplateOutlet]="removeButton" [ngTemplateOutletContext]="{ $implicit: item }" />
               </span>
-              <span class="meta">
+              <span class="card-body">
                 <b class="ellipsis" [title]="item.file.name">{{ item.file.name }}</b>
-                <small>{{ formatSize(item.file.size) }}</small>
+                <span class="card-meta">
+                  <small>{{ formatSize(item.file.size) }}</small>
+                  <ng-container [ngTemplateOutlet]="statusLabel" [ngTemplateOutletContext]="{ $implicit: item }" />
+                </span>
+                <ng-container [ngTemplateOutlet]="bar" [ngTemplateOutletContext]="{ $implicit: item }" />
               </span>
-              <np-badge [label]="item.status" [variant]="statusTones[item.status]" [pill]="true" />
-              <button
-                type="button"
-                class="ui-close"
-                [disabled]="item.status === 'uploading'"
-                [attr.aria-label]="'Remove ' + item.file.name"
-                (click)="removeItem(item)"
-              >
-                <np-icon name="x" [size]="16" />
+            </li>
+          }
+          @if (!fileLimit() || items().length < fileLimit() || !multiple()) {
+            <li class="card-add-cell">
+              <button type="button" class="card-add" [disabled]="disabled()" (click)="fileInput.click()">
+                <span class="card-add-icon"><np-icon name="plus" [size]="22" /></span>
+                <b>{{ dragging() ? 'Drop here' : chooseLabel() }}</b>
+                <small>{{ hintText() }}</small>
               </button>
             </li>
           }
         </ul>
-      } @else {
-        <button type="button" class="empty" [disabled]="disabled()" (click)="fileInput.click()">
-          <span class="empty-icon"><np-icon name="cloud-upload" [size]="28" /></span>
-          <b>Drag and drop files here</b>
-          <small>or click to browse</small>
+        @if (items().length) {
+          <ng-container [ngTemplateOutlet]="actions" />
+        }
+      </div>
+    }
+
+    @default {
+    <div class="uploader" [class.uploader--disabled]="disabled()">
+      <div class="toolbar">
+        <button
+          type="button"
+          class="ui-btn ui-btn--primary"
+          [disabled]="disabled()"
+          (click)="fileInput.click()"
+        >
+          <np-icon name="plus" [size]="16" /> {{ chooseLabel() }}
+        </button>
+        @if (!auto()) {
+          <button
+            type="button"
+            class="ui-btn"
+            [disabled]="disabled() || !pending().length || uploading()"
+            (click)="uploadPending()"
+          >
+            <np-icon name="upload" [size]="16" /> {{ uploadLabel() }}
+          </button>
+        }
+        <button
+          type="button"
+          class="ui-btn"
+          [disabled]="disabled() || !items().length"
+          (click)="cancel()"
+        >
+          <np-icon name="x" [size]="16" /> {{ cancelLabel() }}
+        </button>
+      </div>
+
+      @if (uploading()) {
+        <np-progress-bar class="progress" [value]="progress()" />
+      }
+
+      @if (messages().length) {
+        <ul class="messages" role="alert">
+          @for (message of messages(); track $index) {
+            <li><np-icon name="circle-alert" [size]="14" /> {{ message }}</li>
+          }
+        </ul>
+      }
+
+      <div
+        class="dropzone"
+        [class.dropzone--active]="dragging()"
+        (dragenter)="onDragEnter($event)"
+        (dragover)="$event.preventDefault()"
+        (dragleave)="onDragLeave()"
+        (drop)="onDrop($event)"
+      >
+        @if (items().length) {
+          <ul class="files">
+            @for (item of items(); track item.id) {
+              <li class="file">
+                <span class="thumb">
+                  @if (item.url) {
+                    <img [src]="item.url" alt="" />
+                  } @else {
+                    <np-icon [name]="typeIcon(item.file)" [size]="22" />
+                  }
+                </span>
+                <span class="meta">
+                  <b class="ellipsis" [title]="item.file.name">{{ item.file.name }}</b>
+                  <small>{{ formatSize(item.file.size) }}</small>
+                </span>
+                <np-badge [label]="item.status" [variant]="statusTones[item.status]" [pill]="true" />
+                <button
+                  type="button"
+                  class="ui-close"
+                  [disabled]="item.status === 'uploading'"
+                  [attr.aria-label]="'Remove ' + item.file.name"
+                  (click)="removeItem(item)"
+                >
+                  <np-icon name="x" [size]="16" />
+                </button>
+              </li>
+            }
+          </ul>
+        } @else {
+          <button type="button" class="empty" [disabled]="disabled()" (click)="fileInput.click()">
+            <span class="empty-icon"><np-icon name="cloud-upload" [size]="28" /></span>
+            <b>Drag and drop files here</b>
+            <small>or click to browse</small>
+          </button>
+        }
+      </div>
+    </div>
+    }
+  }
+}
+
+<ng-template #messageList>
+  @if (messages().length) {
+    <ul class="messages" role="alert">
+      @for (message of messages(); track $index) {
+        <li><np-icon name="circle-alert" [size]="14" /> {{ message }}</li>
+      }
+    </ul>
+  }
+</ng-template>
+
+<ng-template #statusLabel let-item>
+  @switch (item.status) {
+    @case ('uploading') {
+      <span class="status status--uploading">
+        <np-icon class="spin" name="loader-circle" [size]="13" /> {{ itemProgress(item) }}%
+      </span>
+    }
+    @case ('completed') {
+      <span class="status status--completed"><np-icon name="circle-check" [size]="13" /> Uploaded</span>
+    }
+    @case ('error') {
+      <span class="status status--error"><np-icon name="circle-alert" [size]="13" /> Failed</span>
+    }
+    @default {
+      <span class="status">Ready</span>
+    }
+  }
+</ng-template>
+
+<ng-template #bar let-item>
+  <span
+    class="bar"
+    [class]="'bar--' + item.status"
+    role="progressbar"
+    aria-valuemin="0"
+    aria-valuemax="100"
+    [attr.aria-valuenow]="itemProgress(item)"
+    [attr.aria-label]="item.file.name + ' upload progress'"
+  >
+    <span [style.width.%]="itemProgress(item)"></span>
+  </span>
+</ng-template>
+
+<ng-template #removeButton let-item>
+  <button
+    type="button"
+    class="ui-close remove"
+    [disabled]="item.status === 'uploading'"
+    [attr.aria-label]="'Remove ' + item.file.name"
+    (click)="removeItem(item)"
+  >
+    <np-icon name="x" [size]="14" />
+  </button>
+</ng-template>
+
+<ng-template #actions>
+  @if (!auto() || uploading()) {
+    <div class="actions">
+      <button
+        type="button"
+        class="ui-btn ui-btn--text ui-btn--sm"
+        [disabled]="disabled() || !items().length"
+        (click)="cancel()"
+      >
+        {{ cancelLabel() }}
+      </button>
+      @if (!auto()) {
+        <button
+          type="button"
+          class="ui-btn ui-btn--primary ui-btn--sm"
+          [disabled]="disabled() || !pending().length || uploading()"
+          (click)="uploadPending()"
+        >
+          <np-icon name="upload" [size]="14" /> {{ uploadLabel() }}
+          @if (pending().length) {
+            ({{ pending().length }})
+          }
         </button>
       }
     </div>
-  </div>
-}
+  }
+</ng-template>

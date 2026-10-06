@@ -1,10 +1,11 @@
 @if (open()) {
-  <div class="modal-backdrop" (click)="close()">
+  <div class="modal-backdrop" (click)="closeOnBackdrop() && close()">
     <div
       class="modal"
       role="dialog"
       aria-modal="true"
       [attr.aria-label]="title()"
+      [class]="'modal--' + variant() + ' modal--' + size()"
       (click)="$event.stopPropagation()"
     >
       <div class="modal-header">
@@ -14,6 +15,7 @@
       <div class="modal-body">
         <ng-content />
       </div>
+      <div class="modal-footer"><ng-content select="[modalFooter]" /></div>
     </div>
   </div>
 }

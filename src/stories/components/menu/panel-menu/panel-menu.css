@@ -1,3 +1,4 @@
+/* Panels read --pm-bg, --pm-border, --pm-radius, --pm-shadow, and --pm-open / --pm-glow when open (set by variants) */
 .panel-menu {
   --mi-turn-ease: 0.25s ease;
   display: flex;
@@ -10,23 +11,23 @@
 
 .pm-panel {
   overflow: hidden;
-  border: 1px solid var(--ui-border);
-  border-radius: var(--ui-radius);
-  background: var(--ui-surface);
-  box-shadow: var(--ui-shadow-sm);
+  border: 1px solid var(--pm-border, var(--ui-border));
+  border-radius: var(--pm-radius, var(--ui-radius));
+  background: var(--pm-bg, var(--ui-surface));
+  box-shadow: var(--pm-shadow, var(--ui-shadow-sm));
   transition:
     border-color var(--ui-ease),
     box-shadow var(--ui-ease);
 }
 
 .pm-panel--open {
-  border-color: var(--ui-primary);
-  box-shadow: 0 4px 14px rgba(99, 102, 241, 0.12);
+  border-color: var(--pm-open, var(--ui-primary));
+  box-shadow: var(--pm-glow, 0 4px 14px color-mix(in srgb, var(--ui-primary) 12%, transparent));
 }
 
 .pm-header {
-  --mi-pad: 14px 16px;
-  --mi-radius: 0;
+  --mi-pad: var(--pm-pad, 14px 16px);
+  --mi-radius: var(--pm-header-radius, 0);
   --mi-ring: inset var(--ui-ring);
   --mi-icon: var(--ui-primary);
   --mi-turn: 180deg;
@@ -37,6 +38,7 @@
 .pm-collapse {
   display: grid;
   grid-template-rows: 0fr;
+  background: var(--pm-tree-bg, none);
   transition: grid-template-rows 0.25s ease;
 }
 
@@ -59,5 +61,62 @@
 
 .pm-tree--root {
   padding: 4px 6px 6px;
-  border-top: 1px solid var(--ui-border);
+  border-top: 1px solid var(--pm-border, var(--ui-border));
+}
+
+/* Joined (one card), minimal: no per-panel cards */
+.panel-menu--joined,
+.panel-menu--minimal {
+  --pm-border: transparent;
+  --pm-open: transparent;
+  --pm-shadow: none;
+  --pm-glow: none;
+}
+.panel-menu--joined {
+  --pm-radius: 0;
+  gap: 0;
+  overflow: hidden;
+  border: 1px solid var(--ui-border);
+  border-radius: var(--ui-radius);
+  background: var(--ui-surface);
+  box-shadow: var(--ui-shadow-sm);
+  & .pm-panel + .pm-panel {
+    border-top-color: var(--ui-border);
+  }
+}
+.panel-menu--minimal {
+  --pm-bg: none;
+  --pm-header-radius: var(--ui-radius-sm);
+  gap: 2px;
+}
+.panel-menu--soft {
+  --pm-bg: color-mix(in srgb, var(--ui-primary) 5%, var(--ui-surface));
+  --pm-border: color-mix(in srgb, var(--ui-primary) 16%, transparent);
+  --pm-shadow: none;
+}
+/* Gradient: the open panel's header sits on the gradient, its tree on the surface */
+.panel-menu--gradient .pm-panel--open {
+  --pm-bg: var(--ui-gradient);
+  --pm-open: transparent;
+  --pm-tree-bg: var(--ui-surface);
+  & > .pm-header {
+    --mi-fg: #fff;
+    --mi-icon: #fff;
+    --mi-muted: #fff;
+  }
+}
+
+/* Icon-only rail: labels shrink to 0 (kept for screen readers); badges, chevrons and trees hide */
+.panel-menu--collapsed {
+  --mi-gap: 0;
+  --pm-pad: 12px;
+  width: max-content;
+  & .mi-label {
+    font-size: 0;
+  }
+  & .mi-badge,
+  & .mi-chevron,
+  & .pm-collapse {
+    display: none;
+  }
 }

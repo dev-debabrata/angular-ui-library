@@ -1,4 +1,4 @@
-/** nexprime-ui/elements: importing it registers every NexPrime component as an <np-*> Web Component */
+/** nexprime/elements: importing it registers every NexPrime component as an <np-*> Web Component */
 export {};
 
 /** Options for window.NexPrime.confirm() */

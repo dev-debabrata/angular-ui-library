@@ -10,50 +10,124 @@
 />
 
 <div
-  class="box"
-  [class]="'box--' + shape()"
-  [class.box--active]="dragging()"
-  [class.box--filled]="!!value()"
-  [class.box--disabled]="disabled()"
-  [style.width]="width()"
-  [style.aspect-ratio]="ratio()"
-  (dragover)="onDragOver($event)"
-  (dragleave)="dragging.set(false)"
-  (drop)="onDrop($event)"
+  class="frame"
+  [class]="'frame--' + variant()"
+  [class.frame--filled]="!!value()"
+  [style.width]="boxWidth()"
 >
-  @if (value()) {
-    <img class="preview" [src]="value()" alt="Uploaded image" />
-    @if (!disabled()) {
-      <div class="overlay">
-        <button
-          type="button"
-          class="ui-btn ui-btn--icon"
-          aria-label="Change image"
-          (click)="fileInput.click()"
-        >
-          <np-icon name="pencil" [size]="16" />
-        </button>
-        <button
-          type="button"
-          class="ui-btn ui-btn--icon remove"
-          aria-label="Remove image"
-          (click)="clear()"
-        >
-          <np-icon name="trash-2" [size]="16" />
-        </button>
-      </div>
-    }
-  } @else {
-    <button type="button" class="empty" [disabled]="disabled()" (click)="fileInput.click()">
-      <span class="empty-icon"><np-icon name="image-plus" [size]="22" /></span>
-      <b>{{ label() }}</b>
-      @if (shape() === 'square') {
-        <small>{{ hintText() }}</small>
+  <div
+    class="box"
+    [class]="'box--' + (round() ? 'circle' : 'square')"
+    [class.box--active]="dragging()"
+    [class.box--filled]="!!value()"
+    [class.box--disabled]="disabled()"
+    [style.aspect-ratio]="ratio()"
+    (dragover)="onDragOver($event)"
+    (dragleave)="dragging.set(false)"
+    (drop)="onDrop($event)"
+  >
+    @if (value()) {
+      <img class="preview" [src]="value()" alt="Uploaded image" />
+      @if (!disabled()) {
+        @switch (variant()) {
+          @case ('avatar') {}
+          @case ('cover') {
+            <div class="cover-overlay">
+              <button type="button" class="ui-btn ui-btn--sm" (click)="fileInput.click()">
+                <np-icon name="camera" [size]="14" /> Change cover
+              </button>
+              <button
+                type="button"
+                class="ui-btn ui-btn--sm ui-btn--icon remove"
+                aria-label="Remove cover"
+                (click)="clear()"
+              >
+                <np-icon name="trash-2" [size]="14" />
+              </button>
+            </div>
+          }
+          @default {
+            <div class="overlay">
+              <button
+                type="button"
+                class="ui-btn ui-btn--icon"
+                aria-label="Change image"
+                (click)="fileInput.click()"
+              >
+                <np-icon name="pencil" [size]="16" />
+              </button>
+              <button
+                type="button"
+                class="ui-btn ui-btn--icon remove"
+                aria-label="Remove image"
+                (click)="clear()"
+              >
+                <np-icon name="trash-2" [size]="16" />
+              </button>
+            </div>
+          }
+        }
       }
+    } @else {
+      @switch (variant()) {
+        @case ('avatar') {
+          <button
+            type="button"
+            class="empty empty--avatar"
+            [disabled]="disabled()"
+            [attr.aria-label]="label()"
+            (click)="fileInput.click()"
+          >
+            @if (initials()) {
+              <span class="initials">{{ initials() }}</span>
+            } @else {
+              <np-icon name="user" [size]="40" />
+            }
+          </button>
+        }
+        @case ('cover') {
+          <button type="button" class="empty empty--cover" [disabled]="disabled()" (click)="fileInput.click()">
+            <span class="empty-icon"><np-icon name="image-plus" [size]="22" /></span>
+            <b>{{ label() }}</b>
+            <small>{{ hintText() }}</small>
+          </button>
+        }
+        @case ('minimal') {
+          <button type="button" class="empty empty--minimal" [disabled]="disabled()" (click)="fileInput.click()">
+            <span class="plus"><np-icon name="plus" [size]="20" /></span>
+            <small>{{ label() }}</small>
+          </button>
+        }
+        @default {
+          <button type="button" class="empty" [disabled]="disabled()" (click)="fileInput.click()">
+            <span class="empty-icon"><np-icon name="image-plus" [size]="22" /></span>
+            <b>{{ label() }}</b>
+            @if (shape() === 'square') {
+              <small>{{ hintText() }}</small>
+            }
+          </button>
+        }
+      }
+    }
+  </div>
+
+  @if (variant() === 'avatar' && !disabled()) {
+    <button
+      type="button"
+      class="badge"
+      [attr.aria-label]="value() ? 'Change photo' : label()"
+      (click)="fileInput.click()"
+    >
+      <np-icon name="camera" [size]="16" />
     </button>
+    @if (value()) {
+      <button type="button" class="badge badge--remove" aria-label="Remove photo" (click)="clear()">
+        <np-icon name="x" [size]="12" />
+      </button>
+    }
   }
 </div>
 
 @if (error()) {
-  <p class="ui-error" role="alert" [style.max-width]="width()">{{ error() }}</p>
+  <p class="ui-error" role="alert" [style.max-width]="boxWidth()">{{ error() }}</p>
 }

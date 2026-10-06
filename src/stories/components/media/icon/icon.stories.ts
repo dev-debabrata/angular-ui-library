@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/angular-vite';
 
 import { ICON_VARIANTS, IconComponent } from './icon.component';
+import { appearanceStories } from '../../../utils/appearance-stories';
 
 /** Browse and copy every icon on the "Icons" page at the top of the sidebar */
 const meta: Meta<IconComponent> = {
@@ -51,3 +52,8 @@ export const Variants: Story = {
     `,
   }),
 };
+
+/** The appearance classes from theme.css (np-color-*, np-shape-*) on the Default example */
+const appearance = appearanceStories(meta, Default);
+export const AppearanceColors = appearance.colors;
+export const AppearanceShapes = appearance.shapes;

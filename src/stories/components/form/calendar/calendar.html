@@ -41,7 +41,9 @@
     <div
       #panel
       class="calendar-panel"
+      [class]="'calendar-panel--' + variant()"
       [class.calendar-panel--popup]="!inline()"
+      [class.calendar-panel--presets]="presets().length"
       [class.calendar-panel--disabled]="inline() && disabled()"
       [attr.role]="inline() ? 'group' : 'dialog'"
       [attr.aria-labelledby]="label() ? id + '-label' : null"
@@ -51,178 +53,209 @@
       [style.left.px]="position()?.left"
       [style.visibility]="inline() || position() ? null : 'hidden'"
     >
-      @let view = currentView();
-      @if (view === 'date') {
-        <div class="calendar-months">
-          @for (month of months(); track month.key; let first = $first, last = $last) {
-            <div class="calendar-month">
-              <div class="calendar-header">
-                <button
-                  type="button"
-                  class="calendar-nav"
-                  aria-label="Previous month"
-                  [class.calendar-nav--hidden]="!first"
-                  [disabled]="prevDisabled()"
-                  (click)="navigate(-1)"
-                >
-                  <np-icon name="chevron-left" [size]="16" />
-                </button>
-                <div class="calendar-title">
+      @if (presets().length) {
+        <div class="calendar-presets" role="group" aria-label="Quick picks">
+          @for (preset of presets(); track preset.label) {
+            @let active = isPresetActive(preset);
+            <button
+              type="button"
+              class="calendar-preset"
+              [class.calendar-preset--active]="active"
+              [attr.aria-pressed]="active"
+              (click)="applyPreset(preset)"
+            >
+              {{ preset.label }}
+            </button>
+          }
+        </div>
+      }
+      <div class="calendar-main">
+        @let view = currentView();
+        @if (view === 'date') {
+          <div class="calendar-months">
+            @for (month of months(); track month.key; let first = $first, last = $last) {
+              <div class="calendar-month">
+                <div class="calendar-header">
                   <button
                     type="button"
-                    class="calendar-title-btn"
-                    [attr.aria-label]="'Choose month, ' + month.monthLabel"
-                    (click)="currentView.set('month')"
+                    class="calendar-nav"
+                    aria-label="Previous month"
+                    [class.calendar-nav--hidden]="!first"
+                    [disabled]="prevDisabled()"
+                    (click)="navigate(-1)"
                   >
-                    {{ month.monthLabel }}
+                    <np-icon name="chevron-left" [size]="16" />
                   </button>
+                  <div class="calendar-title">
+                    <button
+                      type="button"
+                      class="calendar-title-btn"
+                      [attr.aria-label]="'Choose month, ' + month.monthLabel"
+                      (click)="currentView.set('month')"
+                    >
+                      {{ month.monthLabel }}
+                    </button>
+                    <button
+                      type="button"
+                      class="calendar-title-btn"
+                      [attr.aria-label]="'Choose year, ' + month.year"
+                      (click)="currentView.set('year')"
+                    >
+                      {{ month.year }}
+                    </button>
+                  </div>
                   <button
                     type="button"
-                    class="calendar-title-btn"
-                    [attr.aria-label]="'Choose year, ' + month.year"
-                    (click)="currentView.set('year')"
+                    class="calendar-nav"
+                    aria-label="Next month"
+                    [class.calendar-nav--hidden]="!last"
+                    [disabled]="nextDisabled()"
+                    (click)="navigate(1)"
                   >
-                    {{ month.year }}
+                    <np-icon name="chevron-right" [size]="16" />
                   </button>
                 </div>
-                <button
-                  type="button"
-                  class="calendar-nav"
-                  aria-label="Next month"
-                  [class.calendar-nav--hidden]="!last"
-                  [disabled]="nextDisabled()"
-                  (click)="navigate(1)"
-                >
-                  <np-icon name="chevron-right" [size]="16" />
-                </button>
-              </div>
 
-              <table
-                class="calendar-grid"
-                role="grid"
-                [attr.aria-label]="month.monthLabel + ' ' + month.year"
-                (mouseleave)="hoverDate.set(null)"
-              >
-                <thead>
-                  <tr>
-                    @for (day of weekdays(); track day.long) {
-                      <th scope="col" [attr.abbr]="day.long">{{ day.short }}</th>
-                    }
-                  </tr>
-                </thead>
-                <tbody>
-                  @for (week of month.weeks; track $index) {
+                <table
+                  class="calendar-grid"
+                  role="grid"
+                  [attr.aria-label]="month.monthLabel + ' ' + month.year"
+                  (mouseleave)="hoverDate.set(null)"
+                >
+                  <thead>
                     <tr>
-                      @for (cell of week; track cell.key) {
-                        <td
-                          [attr.aria-selected]="cell.hidden ? null : cell.selected"
-                          [class.calendar-cell--in-range]="cell.inRange"
-                          [class.calendar-cell--range-start]="cell.rangeStart"
-                          [class.calendar-cell--range-end]="cell.rangeEnd"
-                        >
-                          @if (!cell.hidden) {
-                            <button
-                              type="button"
-                              class="calendar-day"
-                              [class.calendar-day--other]="cell.otherMonth"
-                              [class.calendar-day--today]="cell.today"
-                              [class.calendar-day--selected]="cell.selected"
-                              [class.calendar-day--in-range]="cell.inRange || cell.rangeEnd"
-                              [class.calendar-day--disabled]="cell.disabled"
-                              [attr.tabindex]="
-                                !cell.otherMonth && cell.key === activeKey() ? 0 : -1
-                              "
-                              [attr.aria-label]="cell.label"
-                              [attr.aria-disabled]="cell.disabled || null"
-                              [attr.aria-current]="cell.today ? 'date' : null"
-                              (click)="pickDay(cell)"
-                              (keydown)="onDayKeydown($event, cell)"
-                              (mouseenter)="hover(cell.date)"
-                            >
-                              {{ cell.date.getDate() }}
-                            </button>
-                          }
-                        </td>
+                      @if (showWeekNumbers()) {
+                        <th class="calendar-week" scope="col" abbr="Week">Wk</th>
+                      }
+                      @for (day of weekdays(); track day.long) {
+                        <th scope="col" [attr.abbr]="day.long">{{ day.short }}</th>
                       }
                     </tr>
-                  }
-                </tbody>
-              </table>
-            </div>
-          }
-        </div>
-      } @else {
-        @let page = view === 'month' ? 'year' : 'decade';
-        <div class="calendar-header">
-          <button
-            type="button"
-            class="calendar-nav"
-            [attr.aria-label]="'Previous ' + page"
-            (click)="navigate(-1)"
-          >
-            <np-icon name="chevron-left" [size]="16" />
-          </button>
-          @if (view === 'month') {
+                  </thead>
+                  <tbody>
+                    @for (week of month.weeks; track $index) {
+                      <tr>
+                        @if (showWeekNumbers()) {
+                          <td class="calendar-week">{{ week.number }}</td>
+                        }
+                        @for (cell of week.days; track cell.key) {
+                          <td
+                            [attr.aria-selected]="cell.hidden ? null : cell.selected"
+                            [class.calendar-cell--in-range]="cell.inRange"
+                            [class.calendar-cell--range-start]="cell.rangeStart"
+                            [class.calendar-cell--range-end]="cell.rangeEnd"
+                          >
+                            @if (!cell.hidden) {
+                              <button
+                                type="button"
+                                class="calendar-day"
+                                [class.calendar-day--other]="cell.otherMonth"
+                                [class.calendar-day--today]="cell.today"
+                                [class.calendar-day--selected]="cell.selected"
+                                [class.calendar-day--in-range]="cell.inRange || cell.rangeEnd"
+                                [class.calendar-day--disabled]="cell.disabled"
+                                [attr.tabindex]="
+                                  !cell.otherMonth && cell.key === activeKey() ? 0 : -1
+                                "
+                                [attr.aria-label]="cell.label"
+                                [attr.aria-disabled]="cell.disabled || null"
+                                [attr.aria-current]="cell.today ? 'date' : null"
+                                (click)="pickDay(cell)"
+                                (keydown)="onDayKeydown($event, cell)"
+                                (mouseenter)="hover(cell.date)"
+                              >
+                                {{ cell.date.getDate() }}
+                                @if (cell.marks.length) {
+                                  <span class="calendar-day__marks" aria-hidden="true">
+                                    @for (mark of cell.marks; track $index) {
+                                      <i [style.background]="mark.color"></i>
+                                    }
+                                  </span>
+                                }
+                              </button>
+                            }
+                          </td>
+                        }
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+              </div>
+            }
+          </div>
+        } @else {
+          @let page = view === 'month' ? 'year' : 'decade';
+          <div class="calendar-header">
             <button
               type="button"
-              class="calendar-title-btn"
-              [attr.aria-label]="'Choose year, ' + viewDate().getFullYear()"
-              (click)="currentView.set('year')"
+              class="calendar-nav"
+              [attr.aria-label]="'Previous ' + page"
+              (click)="navigate(-1)"
             >
-              {{ viewDate().getFullYear() }}
+              <np-icon name="chevron-left" [size]="16" />
             </button>
-          } @else {
-            <span class="calendar-title-text">{{ decadeStart() }} – {{ decadeStart() + 9 }}</span>
-          }
-          <button
-            type="button"
-            class="calendar-nav"
-            [attr.aria-label]="'Next ' + page"
-            (click)="navigate(1)"
-          >
-            <np-icon name="chevron-right" [size]="16" />
-          </button>
-        </div>
-        <div class="calendar-picker">
-          @for (cell of pickerCells(); track cell.label) {
+            @if (view === 'month') {
+              <button
+                type="button"
+                class="calendar-title-btn"
+                [attr.aria-label]="'Choose year, ' + viewDate().getFullYear()"
+                (click)="currentView.set('year')"
+              >
+                {{ viewDate().getFullYear() }}
+              </button>
+            } @else {
+              <span class="calendar-title-text">{{ decadeStart() }} – {{ decadeStart() + 9 }}</span>
+            }
             <button
               type="button"
-              class="calendar-picker-item"
-              [class.calendar-picker-item--muted]="cell.muted"
-              [class.calendar-picker-item--current]="cell.current"
-              [class.calendar-picker-item--selected]="cell.selected"
-              [attr.aria-pressed]="cell.selected"
-              [disabled]="cell.disabled"
-              (click)="pickCell(cell)"
+              class="calendar-nav"
+              [attr.aria-label]="'Next ' + page"
+              (click)="navigate(1)"
             >
-              {{ cell.label }}
+              <np-icon name="chevron-right" [size]="16" />
             </button>
-          }
-        </div>
-      }
+          </div>
+          <div class="calendar-picker">
+            @for (cell of pickerCells(); track cell.label) {
+              <button
+                type="button"
+                class="calendar-picker-item"
+                [class.calendar-picker-item--muted]="cell.muted"
+                [class.calendar-picker-item--current]="cell.current"
+                [class.calendar-picker-item--selected]="cell.selected"
+                [attr.aria-pressed]="cell.selected"
+                [disabled]="cell.disabled"
+                (click)="pickCell(cell)"
+              >
+                {{ cell.label }}
+              </button>
+            }
+          </div>
+        }
 
-      @if (showTime() && selectionMode() === 'single') {
-        <div class="calendar-time">
-          <np-time-picker
-            class="time-picker--flat"
-            [value]="timeValue()"
-            [hourFormat]="hourFormat()"
-            [disabled]="disabled()"
-            (valueChange)="onTime($event)"
-          />
-        </div>
-      }
+        @if (showTime() && selectionMode() === 'single') {
+          <div class="calendar-time">
+            <np-time-picker
+              class="time-picker--flat"
+              [value]="timeValue()"
+              [hourFormat]="hourFormat()"
+              [disabled]="disabled()"
+              (valueChange)="onTime($event)"
+            />
+          </div>
+        }
 
-      @if (showButtonBar()) {
-        <div class="calendar-buttonbar">
-          <button type="button" class="ui-btn ui-btn--text ui-btn--sm" (click)="selectToday()">
-            Today
-          </button>
-          <button type="button" class="ui-btn ui-btn--text ui-btn--sm" (click)="clearValue()">
-            Clear
-          </button>
-        </div>
-      }
+        @if (showButtonBar()) {
+          <div class="calendar-buttonbar">
+            <button type="button" class="ui-btn ui-btn--text ui-btn--sm" (click)="selectToday()">
+              Today
+            </button>
+            <button type="button" class="ui-btn ui-btn--text ui-btn--sm" (click)="clearValue()">
+              Clear
+            </button>
+          </div>
+        }
+      </div>
     </div>
   }
 </div>

@@ -1,3 +1,40 @@
-@if (animation() === 'wave') {
+@let p = preset();
+@if (p === 'text') {
+  <div class="stack">
+    @for (i of range(lines()); track i) {
+      <span class="bone"></span>
+    }
+  </div>
+} @else if (p === 'avatar' || p === 'list') {
+  @for (i of range(p === 'list' ? lines() : 1); track i) {
+    <div class="row">
+      <span class="bone bone--avatar"></span>
+      <div class="stack">
+        <span class="bone bone--title"></span>
+        <span class="bone"></span>
+      </div>
+    </div>
+  }
+} @else if (p === 'card') {
+  <span class="bone bone--media"></span>
+  <div class="stack">
+    <span class="bone bone--title"></span>
+    @for (i of range(lines()); track i) {
+      <span class="bone"></span>
+    }
+  </div>
+  <div class="row">
+    <span class="bone bone--button"></span>
+    <span class="bone bone--button"></span>
+  </div>
+} @else if (p === 'table') {
+  @for (r of range(lines() + 1); track r) {
+    <div class="table-row">
+      @for (c of range(columns()); track c) {
+        <span class="bone"></span>
+      }
+    </div>
+  }
+} @else if (animation() === 'wave') {
   <span class="skeleton__wave"></span>
 }

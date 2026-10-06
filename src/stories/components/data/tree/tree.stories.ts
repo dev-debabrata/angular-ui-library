@@ -2,7 +2,8 @@ import type { Meta, StoryObj } from '@storybook/angular-vite';
 import { fn } from 'storybook/test';
 
 import type { TreeNode } from '../../../utils/types';
-import { TreeComponent } from './tree.component';
+import { TREE_VARIANTS, TreeComponent } from './tree.component';
+import { appearanceStories } from '../../../utils/appearance-stories';
 
 const files: TreeNode[] = [
   {
@@ -56,6 +57,7 @@ const meta: Meta<TreeComponent> = {
       options: ['none', 'single', 'multiple', 'checkbox'],
       mapping: { none: null },
     },
+    variant: { control: 'select', options: TREE_VARIANTS },
   },
   args: {
     value: files,
@@ -91,3 +93,52 @@ export const ExpandCollapseAll: Story = {
     `,
   }),
 };
+
+/** Every look, with single selection (glass on a gradient so the frosting shows) */
+export const Variants: Story = {
+  render: (args) => ({
+    props: { ...args, variants: TREE_VARIANTS, selection: files[0].children![0].children![1] },
+    template: `
+      <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px">
+        @for (v of variants; track v) {
+          <div style="padding: 12px; border-radius: 16px" [style.background]="v === 'glass' ? 'var(--ui-gradient)' : null">
+            <code>{{ v }}</code>
+            <np-tree [variant]="v" [value]="value" selectionMode="single" [selection]="selection" />
+          </div>
+        }
+      </div>
+    `,
+  }),
+};
+
+/** `cards`, with `data.description` lines, `showCounts` on parents and a `data.badge` on the leaf */
+export const Cards: Story = {
+  args: {
+    variant: 'cards',
+    showCounts: true,
+    selectionMode: 'single',
+    value: files.map((n) => ({
+      ...n,
+      data: {
+        description: `${n.children?.length ?? 0} items`,
+        badge: n.children ? undefined : 'New',
+      },
+    })),
+  },
+};
+
+/** `compact` file explorer: checkboxes, expand/collapse `controls`, and `highlight` marks the filter text */
+export const Compact: Story = {
+  args: {
+    variant: 'compact',
+    selectionMode: 'checkbox',
+    controls: true,
+    filter: true,
+    highlight: true,
+  },
+};
+
+/** The appearance classes from theme.css (np-color-*, np-shape-*) on the Default example */
+const appearance = appearanceStories(meta, Default);
+export const AppearanceColors = appearance.colors;
+export const AppearanceShapes = appearance.shapes;

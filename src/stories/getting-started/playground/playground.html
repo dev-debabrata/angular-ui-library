@@ -1,0 +1,86 @@
+<nav class="picker" aria-label="Components">
+  @for (group of groups; track group.name) {
+    <p class="picker__group">{{ group.name }}</p>
+    @for (item of group.items; track item.tag) {
+      <button
+        type="button"
+        class="picker__item"
+        [class.picker__item--active]="item === selected()"
+        [attr.aria-current]="item === selected() ? 'true' : null"
+        (click)="pick(item)"
+      >
+        {{ item.label }}
+      </button>
+    }
+  }
+</nav>
+
+<section class="stage" [attr.aria-label]="selected().label + ' playground'">
+  <header class="stage__head">
+    <div>
+      <h1 class="stage__title">{{ selected().label }}</h1>
+      <p class="stage__tag">&lt;np-{{ selected().tag }}&gt;</p>
+    </div>
+    <button type="button" class="ui-btn ui-btn--text ui-btn--sm" (click)="reset()">Reset</button>
+  </header>
+
+  <div class="preview">
+    <div class="preview__item" [class.preview__item--wide]="wide()" [class]="appearance()">
+      <ng-container *ngComponentOutlet="selected().component; inputs: values()" />
+    </div>
+  </div>
+
+  <!-- Works on every component: the np-color-* and np-shape-* classes from theme.css -->
+  <div class="appearance">
+    <np-select
+      label="color (any component)"
+      [options]="colorOptions"
+      [value]="color()"
+      (valueChange)="color.set($event)"
+    />
+    <np-select
+      label="shape (any component)"
+      [options]="shapeOptions"
+      [value]="shape()"
+      (valueChange)="shape.set($event)"
+    />
+  </div>
+
+  <div class="controls">
+    @for (control of selected().controls; track control.name) {
+      @if (control.type === 'boolean') {
+        <np-toggle
+          class="controls__toggle"
+          [label]="control.name"
+          [checked]="checked(control)"
+          (checkedChange)="set(control.name, $event)"
+        />
+      } @else if (control.type === 'number') {
+        <np-input-number
+          [label]="control.name"
+          showButtons
+          [min]="control.min"
+          [max]="control.max"
+          [step]="control.step ?? 1"
+          [value]="number(control)"
+          (valueChange)="set(control.name, $event)"
+        />
+      } @else if (control.type === 'select') {
+        <np-select
+          [label]="control.name"
+          [options]="options(control)"
+          [value]="text(control)"
+          (valueChange)="set(control.name, $event)"
+        />
+      } @else {
+        <np-text-input
+          [label]="control.name"
+          [value]="text(control)"
+          (valueChange)="set(control.name, $event)"
+        />
+      }
+    }
+  </div>
+
+  <np-framework-code [code]="code()" [angularImport]="selected().className" />
+</section>

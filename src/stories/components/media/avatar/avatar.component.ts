@@ -1,11 +1,18 @@
-import { Component, computed, input } from '@angular/core';
+import { Component, booleanAttribute, computed, input, numberAttribute } from '@angular/core';
 
 import type { Size } from '../../../utils/types';
+import { IconComponent } from '../icon/icon.component';
+
+/** Looks of the avatar */
+export const AVATAR_VARIANTS = ['default', 'ring', 'soft', 'square', 'glass'] as const;
+export type AvatarVariant = (typeof AVATAR_VARIANTS)[number];
 
 @Component({
   selector: 'np-avatar',
+  imports: [IconComponent],
   templateUrl: './avatar.html',
   styleUrl: './avatar.css',
+  host: { '[class.stacked]': 'stacked()' },
 })
 export class AvatarComponent {
   /** Image URL. Initials are shown when empty */
@@ -18,7 +25,15 @@ export class AvatarComponent {
   readonly size = input<Size>('medium');
 
   /** Presence dot in the corner */
-  readonly status = input<'online' | 'away' | 'offline' | ''>('');
+  readonly status = input<'online' | 'away' | 'busy' | 'offline' | ''>('');
+  /** Look: default, ring (gradient story ring), soft (tinted initials), square (rounded square) or glass (frosted) */
+  readonly variant = input<AvatarVariant>('default');
+  /** Icon file name from src/stories/icons/svg, shown when there's no image and no name */
+  readonly icon = input('');
+  /** Show "+N" instead of a person, e.g. the hidden members at the end of a stack */
+  readonly more = input(0, { transform: numberAttribute });
+  /** Overlap the previous avatar, for avatar groups (put the avatars side by side in a flex row) */
+  readonly stacked = input(false, { transform: booleanAttribute });
 
   protected readonly initials = computed(() =>
     this.name()
@@ -29,9 +44,8 @@ export class AvatarComponent {
       .join(''),
   );
 
-  /** Each name gets its own gradient, so the same person always has the same color */
-  protected readonly gradient = computed(() => {
-    const hue = [...this.name()].reduce((sum, char) => sum + char.charCodeAt(0) * 7, 0) % 360;
-    return `linear-gradient(135deg, hsl(${hue} 80% 62%), hsl(${(hue + 45) % 360} 75% 52%))`;
-  });
+  /** Each name gets its own hue, so the same person always has the same color */
+  protected readonly hue = computed(
+    () => [...this.name()].reduce((sum, char) => sum + char.charCodeAt(0) * 7, 0) % 360,
+  );
 }

@@ -1,7 +1,7 @@
 {
-  "name": "nexprime-ui",
-  "version": "0.1.0",
-  "description": "NexPrime: one premium UI system for every framework. 85+ components for Angular 21 (standalone, signal-based, SSR-ready) and, as Web Components, for React, Next.js, Vue, Svelte and plain HTML: forms, tables, charts, dialogs, menus, chat, onboarding tours, background effects, a Lottie player, 1,500+ icons, CSS animations and a light/dark theme with custom colors.",
+  "name": "nexprime",
+  "version": "0.1.2",
+  "description": "NexPrime: one premium UI system for every framework. 85+ components for Angular and, as Web Components, for React, Next.js, Vue, Svelte and plain HTML: forms, tables, charts, dialogs, menus, chat, onboarding tours, background effects, a Lottie player, 2,000+ icons, CSS animations and a light/dark theme with custom colors.",
   "keywords": [
     "nexprime",
     "angular",
@@ -40,6 +40,7 @@
     "confetti"
   ],
   "license": "MIT",
+  "homepage": "https://nexprime-dev.vercel.app/",
   "peerDependencies": {
     "@angular/cdk": "^21.2.0",
     "@angular/common": "^21.2.0",

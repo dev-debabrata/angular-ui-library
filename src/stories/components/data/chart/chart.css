@@ -14,6 +14,7 @@ svg {
 
 /* Recessive grid and axis: 1px, solid */
 .grid {
+  fill: none;
   stroke: var(--ui-border);
 }
 
@@ -36,6 +37,11 @@ svg {
   text-anchor: middle;
 }
 
+/* Bar data labels */
+.value {
+  font-weight: 600;
+}
+
 .line {
   fill: none;
   stroke-width: 2;
@@ -46,6 +52,10 @@ svg {
 /* A light wash of the series color */
 .area {
   opacity: 0.12;
+}
+
+.area--gradient {
+  opacity: 1;
 }
 
 /* 2px surface ring keeps the marker readable where lines cross */
@@ -72,11 +82,25 @@ svg {
   stroke: var(--ui-surface);
   stroke-width: 2;
   stroke-linejoin: round;
+}
+
+/* Radial and gauge: round ends on a faint track of the ring's color */
+.ring {
+  fill: none;
+  stroke-linecap: round;
+}
+
+.track {
+  opacity: 0.15;
+}
+
+.slice,
+.ring {
   cursor: pointer;
   transition: opacity var(--ui-ease);
 }
 
-.slice--dim {
+.dim {
   opacity: 0.35;
 }
 
@@ -148,4 +172,40 @@ svg {
   display: flex;
   align-items: center;
   gap: 6px;
+}
+
+/* Draw-in: lines and arcs trace (pathLength="1"), bars grow from the baseline, fills fade in */
+@media (prefers-reduced-motion: no-preference) {
+  .chart--animate {
+    .line,
+    .arc {
+      stroke-dasharray: 1;
+      animation: np-chart-in 1.2s ease-out;
+    }
+
+    .bar {
+      transform-box: fill-box;
+      transform-origin: bottom;
+      animation: np-chart-grow 0.7s cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+
+    .area,
+    .slice,
+    .value {
+      animation: np-chart-in 0.9s ease-out;
+    }
+  }
+}
+
+@keyframes np-chart-in {
+  from {
+    opacity: 0;
+    stroke-dashoffset: 1;
+  }
+}
+
+@keyframes np-chart-grow {
+  from {
+    transform: scaleY(0);
+  }
 }

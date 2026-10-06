@@ -1,4 +1,12 @@
-import { Component, type ElementRef, computed, input, signal, viewChild } from '@angular/core';
+import {
+  Component,
+  type ElementRef,
+  computed,
+  input,
+  signal,
+  viewChild,
+  linkedSignal,
+} from '@angular/core';
 
 import {
   ButtonToggleComponent,
@@ -26,7 +34,9 @@ export class LottieGalleryComponent {
   /** All animations to show */
   readonly animations = input<GalleryAnimation[]>([]);
 
-  protected readonly query = signal('');
+  /** Search text to start with (the site search opens the page with ?q=…) */
+  readonly q = input<string | undefined>('');
+  protected readonly query = linkedSignal(() => this.q() ?? '');
   protected readonly category = signal('All');
   /** Animations added from pasted links */
   protected readonly linked = signal<GalleryAnimation[]>([]);

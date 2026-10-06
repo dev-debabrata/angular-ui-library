@@ -10,9 +10,12 @@ import {
   signal,
 } from '@angular/core';
 
-import type { Tone } from '../../../utils/types';
+import type { FieldVariant, Tone } from '../../../utils/types';
 import { CheckboxComponent } from '../checkbox/checkbox.component';
 import { IconComponent } from '../../media/icon/icon.component';
+import { InputNumberComponent } from '../input-number/input-number.component';
+import { InputOtpComponent } from '../input-otp/input-otp.component';
+import { StepperComponent } from '../../panel/stepper/stepper.component';
 import { RadioGroupComponent } from '../radio-group/radio-group.component';
 import { RatingComponent } from '../rating/rating.component';
 import { SelectComponent } from '../select/select.component';
@@ -32,13 +35,22 @@ export type FormFieldType =
   | 'radio'
   | 'checkbox'
   | 'toggle'
-  | 'rating';
+  | 'rating'
+  | 'emoji'
+  | 'number'
+  | 'otp';
+
+/** Looks of the form: glass, gradient, accent and glow also draw it as a card */
+export const FORM_VARIANTS = ['default', 'glass', 'gradient', 'accent', 'glow'] as const;
+export type FormVariant = (typeof FORM_VARIANTS)[number];
 
 export interface FormOption {
   value: string;
   label: string;
   /** Second line on 'cards' options */
   description?: string;
+  /** Icon file name shown before the label (chips, cards, segmented, choice) */
+  icon?: string;
 }
 
 export interface FormField {
@@ -47,11 +59,14 @@ export interface FormField {
   /** Label, or the question on survey steps */
   label: string;
   /**
-   * text/email/password/tel/url, textarea, select, radio, checkbox, toggle, rating (stars),
+   * text/email/password/tel/url, textarea, select, radio, checkbox, toggle, rating (stars), emoji (faces;
+   * option labels name each face), number (with − + buttons), otp (one box per character),
    * chips (pick one), multichips (pick any), cards (options with a description), segmented (equal-width options),
    * choice (full-width list), color (swatches; option values are CSS colors)
    */
   type: FormFieldType;
+  /** Leading icon file name (text, select and number fields) */
+  icon?: string;
   placeholder?: string;
   hint?: string;
   options?: FormOption[];
@@ -67,6 +82,13 @@ export interface FormField {
   match?: string;
   /** Error shown when `match` doesn't match */
   matchMessage?: string;
+  /** Smallest and largest number (number fields) */
+  min?: number;
+  max?: number;
+  /** Step of the − + buttons (number fields) */
+  step?: number;
+  /** Number of boxes (otp fields, default 6) */
+  length?: number;
   /** Textarea height in lines */
   rows?: number;
   /** Take the full row in a two-column form (textarea always does) */
@@ -93,8 +115,11 @@ let nextId = 0;
     CheckboxComponent,
     IconComponent,
     RadioGroupComponent,
+    InputNumberComponent,
+    InputOtpComponent,
     RatingComponent,
     SelectComponent,
+    StepperComponent,
     TextInputComponent,
     TextareaComponent,
     ToggleComponent,
@@ -126,6 +151,18 @@ export class FormComponent {
 
   /** Draw the form as a bordered card */
   readonly card = input(false, { transform: booleanAttribute });
+
+  /**
+   * Look: default, glass (frosted card), gradient (heading on a gradient band), accent (gradient strip on top)
+   * or glow (gradient border with a soft glow). Every look but default is a card
+   */
+  readonly variant = input<FormVariant>('default');
+
+  /** Style of the text, select, textarea and number fields: outlined, filled, underline or floating */
+  readonly fieldVariant = input<FieldVariant>('outlined');
+
+  /** Multi-step progress: bars (segmented bar) or stepper (numbered circles with the step titles) */
+  readonly progress = input<'bars' | 'stepper'>('bars');
 
   /** 'inline': fields and the button on one row with a centered heading (newsletter style) */
   readonly layout = input<'stacked' | 'inline'>('stacked');
@@ -174,6 +211,8 @@ export class FormComponent {
 
   protected readonly locked = computed(() => this.disabled() || this.loading());
   protected readonly lastStep = computed(() => this.step() >= this.steps().length - 1);
+  protected readonly isCard = computed(() => this.card() || this.variant() !== 'default');
+  protected readonly stepTitles = computed(() => this.steps().map((s) => s.title));
 
   /** Fields on the current page */
   protected readonly visibleFields = computed(
@@ -214,6 +253,15 @@ export class FormComponent {
 
   protected rating(field: FormField) {
     return Number(this.value()[field.name] ?? 0);
+  }
+
+  protected number(field: FormField) {
+    const value = this.value()[field.name];
+    return typeof value === 'number' ? value : null;
+  }
+
+  protected optionLabels(field: FormField) {
+    return (field.options ?? []).map((o) => o.label);
   }
 
   /** Label with a required marker, for components that have no `required` input */
@@ -284,14 +332,20 @@ export class FormComponent {
     if (field.type === 'checkbox' || field.type === 'toggle') {
       return field.required && value !== true ? required : '';
     }
-    if (field.type === 'rating') return field.required && !Number(value) ? 'Choose a rating' : '';
+    if (field.type === 'rating' || field.type === 'emoji') {
+      return field.required && !Number(value) ? 'Choose a rating' : '';
+    }
     if (Array.isArray(value) || field.type === 'multichips') {
       return field.required && !(value as string[] | undefined)?.length
         ? 'Choose at least one'
         : '';
     }
-    const text = typeof value === 'string' ? value.trim() : '';
+    // Numbers are checked as text too (Input Number already keeps them within min/max)
+    const text = String(value ?? '').trim();
     if (!text) return field.required ? (this.isOptions(field) ? 'Choose an option' : required) : '';
+    if (field.type === 'otp' && text.length < (field.length ?? 6)) {
+      return `Enter all ${field.length ?? 6} characters`;
+    }
     if (field.type === 'email' && !EMAIL.test(text)) return 'Enter a valid email address';
     if (field.minLength && text.length < field.minLength) {
       return `Use at least ${field.minLength} characters`;

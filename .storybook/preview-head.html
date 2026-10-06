@@ -104,4 +104,13 @@
     addEventListener('scroll', update, { passive: true });
     update();
   });
+
+  // Code blocks' copy icon (docs-theme.css) turns into a check for a moment after copying
+  document.addEventListener('click', (event) => {
+    const copy = event.target.closest?.('.sbdocs .docblock-source > div > button');
+    if (!copy) return;
+    copy.classList.add('np-copied');
+    clearTimeout(copy.npCopied);
+    copy.npCopied = setTimeout(() => copy.classList.remove('np-copied'), 1500);
+  });
 </script>

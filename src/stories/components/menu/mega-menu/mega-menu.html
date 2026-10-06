@@ -1,4 +1,8 @@
-<nav class="mega" [class]="'mega--' + orientation()">
+<nav
+  class="mega"
+  [class]="'mega--' + orientation() + ' mega--' + variant()"
+  [class.mega--stretch]="stretch()"
+>
   <ul class="mega-root" role="menubar" [attr.aria-orientation]="orientation()">
     @for (item of model(); track $index) {
       @let open = path.isOpen(item, 0);
@@ -15,13 +19,41 @@
               <div class="mega-column">
                 @for (section of column.items ?? []; track $index) {
                   <div class="mega-section" role="group" [attr.aria-label]="section.label">
-                    <span class="mega-heading">{{ section.label }}</span>
+                    <span class="mega-heading">
+                      @if (section.icon) {
+                        <np-icon [name]="section.icon" variant="soft" [size]="24" />
+                      }
+                      {{ section.label }}
+                    </span>
                     @for (link of section.items ?? []; track $index) {
                       <np-menu-item [item]="link" (click)="select($event, link)" />
                     }
                   </div>
                 }
               </div>
+            }
+            @if (item.featured; as f) {
+              <a
+                class="mega-feature"
+                role="menuitem"
+                [href]="f.url || '#'"
+                (click)="
+                  f.url || $event.preventDefault(); select($event, { label: f.title, url: f.url })
+                "
+              >
+                @if (f.image) {
+                  <img [src]="f.image" alt="" />
+                } @else if (f.icon) {
+                  <np-icon [name]="f.icon" [size]="22" />
+                }
+                <strong>{{ f.title }}</strong>
+                @if (f.text) {
+                  <p>{{ f.text }}</p>
+                }
+                @if (f.cta) {
+                  <span>{{ f.cta }} <np-icon name="arrow-right" [size]="14" /></span>
+                }
+              </a>
             }
           </div>
         }

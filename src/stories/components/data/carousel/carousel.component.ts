@@ -19,6 +19,14 @@ import {
 
 import { IconComponent } from '../../media/icon/icon.component';
 
+/** Looks of the carousel */
+export const CAROUSEL_VARIANTS = ['default', 'peek', 'coverflow', 'fade', 'glass'] as const;
+export type CarouselVariant = (typeof CAROUSEL_VARIANTS)[number];
+
+/** Styles of the page indicator */
+export const CAROUSEL_INDICATORS = ['dots', 'bars', 'numbers', 'progress'] as const;
+export type CarouselIndicator = (typeof CAROUSEL_INDICATORS)[number];
+
 /**
  * Slides through items rendered with your template:
  * <np-carousel [items]="products"><ng-template let-item>…</ng-template></np-carousel>
@@ -59,6 +67,18 @@ export class CarouselComponent<T = unknown> {
   /** Page dots below the items */
   readonly showIndicators = input(true, { transform: booleanAttribute });
 
+  /** Look: default, peek (dimmed neighbors at the edges), coverflow (3D), fade (crossfade) or glass (frosted controls) */
+  readonly variant = input<CarouselVariant>('default');
+
+  /** Page indicator: dots, bars (fill during autoplay), numbers ("3 / 8") or progress (a filling line) */
+  readonly indicator = input<CarouselIndicator>('dots');
+
+  /** Slide up and down instead of sideways (needs `height`) */
+  readonly vertical = input(false, { transform: booleanAttribute });
+
+  /** Height of the slides area when `vertical` (any CSS length) */
+  readonly height = input('320px');
+
   /** Gap between items (any CSS length) */
   readonly gap = input('16px');
 
@@ -75,41 +95,53 @@ export class CarouselComponent<T = unknown> {
   /** Child-element slides (when there is no template) */
   private readonly slides = signal<HTMLElement[]>([]);
 
+  /** Items visible at once (fade always shows one) */
+  protected readonly visible = computed(() => (this.variant() === 'fade' ? 1 : this.numVisible()));
+
+  /** Autoplay is running (not paused by hover or focus) */
+  protected readonly playing = computed(
+    () => this.autoplayInterval() > 0 && !this.paused() && this.pages() > 1,
+  );
+
   /** Number of slides */
   protected readonly count = computed(() =>
     this.template() ? this.items().length : this.slides().length,
   );
 
   protected readonly pages = computed(() =>
-    Math.max(1, Math.ceil((this.count() - this.numVisible()) / this.numScroll()) + 1),
+    Math.max(1, Math.ceil((this.count() - this.visible()) / this.numScroll()) + 1),
   );
 
   protected readonly pageList = computed(() => Array.from({ length: this.pages() }, (_, i) => i));
 
   /** Index of the first visible item; the last page is aligned to the end */
   protected readonly first = computed(() =>
-    Math.max(0, Math.min(this.page() * this.numScroll(), this.count() - this.numVisible())),
+    Math.max(0, Math.min(this.page() * this.numScroll(), this.count() - this.visible())),
   );
+
+  /** Middle visible slide; each slide's `--offset` is its distance to it (coverflow) */
+  protected readonly center = computed(() => this.first() + Math.floor((this.visible() - 1) / 2));
 
   protected readonly canPrev = computed(() => this.circular() || this.page() > 0);
   protected readonly canNext = computed(() => this.circular() || this.page() < this.pages() - 1);
 
-  /** Pointer x where a swipe started */
+  /** Pointer position (x, or y when vertical) where a swipe started */
   private swipeStart: number | null = null;
 
   constructor() {
     // Keep the page valid when items or sizes change
     effect(() => this.page() >= this.pages() && this.page.set(this.pages() - 1));
 
+    // One timeout per page, so any page change (or resuming) restarts the countdown and the bars indicator
     effect((onCleanup) => {
-      const interval = this.autoplayInterval();
-      if (!interval || this.paused() || this.pages() < 2) return;
-      const timer = setInterval(() => this.go(this.page() + 1, true), interval);
-      onCleanup(() => clearInterval(timer));
+      if (!this.playing()) return;
+      const page = this.page();
+      const timer = setTimeout(() => this.go(page + 1, true), this.autoplayInterval());
+      onCleanup(() => clearTimeout(timer));
     });
 
-    // Child-element slides: read them once rendered (and when they change), size and label them like template
-    // slides, then keep off-screen ones hidden
+    // Child-element slides: read them once rendered (and when they change) and label them like template slides
+    // (carousel.css sizes every child of the track), then keep off-screen ones hidden
     const destroyRef = inject(DestroyRef);
     afterNextRender(() => {
       if (this.template()) return;
@@ -117,8 +149,6 @@ export class CarouselComponent<T = unknown> {
       const read = () => {
         const slides = [...track.children] as HTMLElement[];
         slides.forEach((slide, i) => {
-          slide.style.cssText +=
-            ';flex: 0 0 calc((100% - (var(--visible) - 1) * var(--gap)) / var(--visible)); min-width: 0';
           slide.setAttribute('role', 'group');
           slide.setAttribute('aria-roledescription', 'slide');
           slide.setAttribute('aria-label', `${i + 1} of ${slides.length}`);
@@ -134,6 +164,7 @@ export class CarouselComponent<T = unknown> {
       this.slides().forEach((slide, i) => {
         slide.toggleAttribute('inert', !this.isVisible(i));
         slide.setAttribute('aria-hidden', String(!this.isVisible(i)));
+        slide.style.setProperty('--offset', String(i - this.center()));
       }),
     );
   }
@@ -145,24 +176,25 @@ export class CarouselComponent<T = unknown> {
   }
 
   protected isVisible(index: number) {
-    return index >= this.first() && index < this.first() + this.numVisible();
+    return index >= this.first() && index < this.first() + this.visible();
   }
 
   protected onKeydown(event: KeyboardEvent) {
-    const step = { ArrowLeft: -1, ArrowRight: 1 }[event.key];
+    const [prev, next] = this.vertical() ? ['ArrowUp', 'ArrowDown'] : ['ArrowLeft', 'ArrowRight'];
+    const step = { [prev]: -1, [next]: 1 }[event.key];
     if (!step) return;
     event.preventDefault();
     this.go(this.page() + step);
   }
 
   protected onPointerDown(event: PointerEvent) {
-    this.swipeStart = event.clientX;
+    this.swipeStart = this.vertical() ? event.clientY : event.clientX;
   }
 
-  /** A horizontal drag of 50px or more changes the page */
+  /** A drag of 50px or more along the carousel changes the page */
   protected onPointerUp(event: PointerEvent) {
     if (this.swipeStart === null) return;
-    const distance = event.clientX - this.swipeStart;
+    const distance = (this.vertical() ? event.clientY : event.clientX) - this.swipeStart;
     this.swipeStart = null;
     if (Math.abs(distance) >= 50) this.go(this.page() + (distance < 0 ? 1 : -1));
   }

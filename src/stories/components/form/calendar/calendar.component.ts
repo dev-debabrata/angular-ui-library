@@ -26,6 +26,24 @@ export type CalendarValue = Date | (Date | null)[] | null;
 export type CalendarSelectionMode = 'single' | 'multiple' | 'range';
 export type CalendarView = 'date' | 'month' | 'year';
 
+export const CALENDAR_VARIANTS = ['default', 'gradient', 'glass', 'minimal'] as const;
+export type CalendarVariant = (typeof CALENDAR_VARIANTS)[number];
+
+/** A dot under a day: an event, a deadline… */
+export interface CalendarMark {
+  date: Date;
+  /** Dot color (any CSS color); the theme color by default */
+  color?: string;
+  /** Read out with the day, e.g. "Team meeting" */
+  label?: string;
+}
+
+/** A quick pick in the side list: a fixed value, or a function evaluated when it's clicked */
+export interface CalendarPreset {
+  label: string;
+  value: CalendarValue | (() => CalendarValue);
+}
+
 interface DayCell {
   date: Date;
   key: number;
@@ -39,6 +57,7 @@ interface DayCell {
   rangeStart: boolean;
   rangeEnd: boolean;
   inRange: boolean;
+  marks: CalendarMark[];
 }
 
 /** A month (month grid) or a year (year grid). `date` is what picking it selects or drills into */
@@ -69,6 +88,33 @@ const shiftMonth = (d: Date, n: number) =>
   );
 const withTime = (d: Date, t: Date | null) =>
   t ? new Date(new Date(d).setHours(t.getHours(), t.getMinutes(), t.getSeconds(), 0)) : d;
+
+/** Week of the year for a row of days, from its Thursday (ISO 8601): its day of the year / 7 */
+const weekNumber = (thursday: Date) =>
+  Math.floor(Math.round((+thursday - +new Date(thursday.getFullYear(), 0, 1)) / 864e5) / 7) + 1;
+
+/** [today + from, today + to] in days, and [first, last] day of the month `n` months from now */
+const days = (from: number, to: number) => () => [
+  addDays(new Date(), from),
+  addDays(new Date(), to),
+];
+const month = (n: number) => () => [
+  addMonths(new Date(), n),
+  addDays(addMonths(new Date(), n + 1), -1),
+];
+
+/** Common date-range quick picks for `presets` (evaluated when clicked, so "today" is always today) */
+export const RANGE_PRESETS: CalendarPreset[] = [
+  { label: 'Today', value: days(0, 0) },
+  { label: 'Yesterday', value: days(-1, -1) },
+  { label: 'Last 7 days', value: days(-6, 0) },
+  { label: 'Last 30 days', value: days(-29, 0) },
+  { label: 'This month', value: month(0) },
+  { label: 'Last month', value: month(-1) },
+];
+
+const resolvePreset = ({ value }: CalendarPreset) =>
+  typeof value === 'function' ? value() : value;
 
 /**
  * Format `date` with tokens: d / dd (day), m / mm (month number), M / MM (short / full month name), yy (4-digit year).
@@ -158,6 +204,18 @@ export class CalendarComponent implements OnInit {
   /** Months shown side by side */
   readonly numberOfMonths = input(1, { transform: numberAttribute });
 
+  /** Look: default, gradient (header in the brand gradient), glass (frosted) or minimal (flat) */
+  readonly variant = input<CalendarVariant>('default');
+
+  /** Dots under days (events, deadlines). Up to 3 per day are shown */
+  readonly marks = input<CalendarMark[]>([]);
+
+  /** Quick picks in a side list, e.g. RANGE_PRESETS */
+  readonly presets = input<CalendarPreset[]>([]);
+
+  /** Show the week number in front of each week */
+  readonly showWeekNumbers = input(false, { transform: booleanAttribute });
+
   /** Emits the clicked date */
   readonly select = output<Date>();
 
@@ -219,6 +277,16 @@ export class CalendarComponent implements OnInit {
     return v.map(fmt).filter(Boolean).join(', ');
   });
 
+  /** Marks by day key */
+  private readonly marksByDay = computed(() => {
+    const map = new Map<number, CalendarMark[]>();
+    for (const mark of this.marks()) {
+      const key = dayKey(mark.date);
+      map.set(key, [...(map.get(key) ?? []), mark]);
+    }
+    return map;
+  });
+
   protected readonly weekdays = computed(() =>
     Array.from({ length: 7 }, (_, i) => {
       const d = new Date(2024, 0, 7 + ((i + this.firstDayOfWeek()) % 7)); // Jan 7 2024 is a Sunday
@@ -243,17 +311,23 @@ export class CalendarComponent implements OnInit {
     return Array.from({ length: this.count() }, (_, i) => {
       const first = addMonths(this.viewDate(), i);
       const gridStart = addDays(first, -((first.getDay() - this.firstDayOfWeek() + 7) % 7));
-      const weeks = Array.from({ length: 6 }, (_, w) =>
-        Array.from({ length: 7 }, (_, d): DayCell => {
+      const thursday = (4 - this.firstDayOfWeek() + 7) % 7;
+      const weeks = Array.from({ length: 6 }, (_, w) => ({
+        number: weekNumber(addDays(gridStart, w * 7 + thursday)),
+        days: Array.from({ length: 7 }, (_, d): DayCell => {
           const date = addDays(gridStart, w * 7 + d);
           const key = dayKey(date);
           const otherMonth = date.getMonth() !== first.getMonth();
           const hidden = otherMonth && this.count() > 1;
           const inBand = band && !hidden;
+          const marks = this.marksByDay().get(key) ?? [];
           return {
             date,
             key,
-            label: date.toLocaleDateString(undefined, { dateStyle: 'full' }),
+            label: [
+              date.toLocaleDateString(undefined, { dateStyle: 'full' }),
+              ...marks.map((m) => m.label).filter(Boolean),
+            ].join(', '),
             otherMonth,
             hidden,
             today: key === todayKey,
@@ -262,9 +336,10 @@ export class CalendarComponent implements OnInit {
             rangeStart: inBand && key === start,
             rangeEnd: inBand && key === end,
             inRange: inBand && key > start && key < end,
+            marks: marks.slice(0, 3),
           };
         }),
-      );
+      }));
       return {
         key: first.getTime(),
         year: first.getFullYear(),
@@ -429,6 +504,26 @@ export class CalendarComponent implements OnInit {
     this.setViewDate(date);
     this.currentView.set(view);
     if (view !== 'date' || !this.isDisabled(date)) this.selectDate(date);
+  }
+
+  /** Applies a quick pick: sets the value, shows its month and closes the popup */
+  protected applyPreset(preset: CalendarPreset) {
+    const value = resolvePreset(preset);
+    this.value.set(value);
+    const first = (Array.isArray(value) ? value[0] : value) ?? null;
+    if (first) {
+      this.setViewDate(first);
+      this.currentView.set(this.view());
+      this.select.emit(first);
+    }
+    this.close(true);
+  }
+
+  /** Is the current value the one this preset gives (same days)? */
+  protected isPresetActive(preset: CalendarPreset) {
+    const keys = (v: CalendarValue) =>
+      (Array.isArray(v) ? v : [v]).map((d) => (d ? dayKey(d) : 0)).join();
+    return keys(resolvePreset(preset)) === keys(this.value());
   }
 
   protected clearValue() {

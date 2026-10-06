@@ -5,11 +5,12 @@ import { addons } from 'storybook/preview-api';
 import { DEFAULT_GLOBALS, PALETTES } from '../../../../.storybook/np-theme';
 import { IconComponent } from '../../components/media/icon/icon.component';
 import { PAGES, SECTIONS, managerHref } from '../landing';
+import { SiteSearchComponent } from '../site-search/site-search.component';
 
-/** Top bar of the full-screen landing pages: logo, section links, search, light/dark mode, theme color */
+/** Top bar of the full-screen landing pages: logo, section links, site search (Ctrl/⌘ K), light/dark mode, theme color */
 @Component({
   selector: 'np-landing-nav',
-  imports: [IconComponent],
+  imports: [IconComponent, SiteSearchComponent],
   templateUrl: './landing-nav.html',
   styleUrl: './landing-nav.css',
 })

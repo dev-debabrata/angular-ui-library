@@ -37,11 +37,12 @@
   width: 52px;
   height: 52px;
   padding: 0;
-  border: none;
-  border-radius: 50%;
-  background: var(--ui-gradient);
-  box-shadow: var(--ui-shadow-lg);
-  color: #fff;
+  border: var(--st-border, none);
+  border-radius: var(--ui-radius-full);
+  background: var(--st-bg, var(--ui-gradient));
+  box-shadow: var(--st-shadow, var(--ui-shadow-lg));
+  color: var(--st-fg, #fff);
+  box-sizing: border-box;
   cursor: pointer;
   opacity: 0;
   pointer-events: none;
@@ -61,7 +62,7 @@
 .scroll-top:hover {
   box-shadow:
     0 0 0 6px var(--ui-primary-ring),
-    var(--ui-shadow-lg);
+    var(--st-shadow, var(--ui-shadow-lg));
 }
 
 .scroll-top:focus-visible {
@@ -88,6 +89,55 @@
 
 .scroll-top__ring .scroll-top__track {
   stroke: var(--ui-border);
+}
+
+/* Variants (--st-*: background, text, border, shadow): surface, primary icon and a soft shadow unless set below */
+.scroll-top:where(:not(.scroll-top--default)) {
+  --st-bg: var(--ui-surface);
+  --st-fg: var(--ui-primary);
+  --st-shadow: var(--ui-shadow);
+}
+
+.scroll-top--glass {
+  --st-bg: color-mix(in srgb, var(--ui-surface) 55%, transparent);
+  --st-border: 1px solid color-mix(in srgb, var(--ui-surface) 70%, transparent);
+  backdrop-filter: blur(14px) saturate(1.6);
+}
+
+.scroll-top--outlined {
+  --st-border: 1.5px solid var(--ui-primary);
+}
+
+.scroll-top--soft {
+  --st-bg: var(--ui-primary-soft);
+  --st-shadow: var(--ui-shadow-sm);
+}
+
+.scroll-top--minimal {
+  --st-fg: var(--ui-text-muted);
+  --st-border: 1px solid var(--ui-border);
+  --st-shadow: var(--ui-shadow-sm);
+}
+
+/* Label: a pill */
+.scroll-top--pill {
+  display: flex;
+  gap: 6px;
+  width: auto;
+  height: 44px;
+  padding: 0 18px 0 14px;
+  font: 600 14px var(--ui-font);
+}
+
+/* Percent: the number, swapped for the icon on hover */
+.scroll-top--percent:not(:hover, :focus-visible) np-icon,
+.scroll-top--percent:is(:hover, :focus-visible) .scroll-top__pct {
+  display: none;
+}
+
+.scroll-top__pct {
+  font: 700 13px var(--ui-font);
+  font-variant-numeric: tabular-nums;
 }
 
 @media (prefers-reduced-motion: reduce) {

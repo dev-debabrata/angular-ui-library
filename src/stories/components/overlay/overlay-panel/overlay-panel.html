@@ -2,9 +2,12 @@
   <div
     #panel
     class="overlay-panel"
-    [class]="'overlay-panel--' + (position()?.placement ?? 'below')"
+    popover="manual"
+    [class]="'overlay-panel--' + variant()"
+    [class.overlay-panel--above]="position()?.placement === 'above'"
     role="dialog"
-    [attr.aria-label]="ariaLabel() || null"
+    [attr.aria-label]="ariaLabel() || header() || null"
+    [style.width]="width() || null"
     [style.top.px]="position()?.top"
     [style.left.px]="position()?.left"
     [style.--arrow-left.px]="position()?.arrowLeft"
@@ -20,6 +23,15 @@
         <np-icon name="x" [size]="16" />
       </button>
     }
+    @if (header()) {
+      <header class="overlay-panel-header">
+        @if (icon()) {
+          <np-icon [name]="icon()" variant="soft" [size]="32" />
+        }
+        <strong>{{ header() }}</strong>
+      </header>
+    }
     <ng-content />
+    <footer class="overlay-panel-footer"><ng-content select="[panelFooter]" /></footer>
   </div>
 }

@@ -1,20 +1,79 @@
-<nav class="pagination" aria-label="Pagination">
-  <button type="button" [disabled]="page() <= 1" (click)="goTo(page() - 1)">‹ Prev</button>
-  @for (item of pages(); track $index) {
-    @if (item === null) {
-      <span class="ellipsis">…</span>
-    } @else {
-      <button
-        type="button"
-        [class.active]="item === page()"
-        [attr.aria-current]="item === page() ? 'page' : null"
-        (click)="goTo(item)"
-      >
-        {{ item }}
+@let last = count();
+@let first = page() <= 1;
+@let end = page() >= last;
+<div class="pagination" [class]="'pagination--' + variant() + ' pagination--' + size()">
+  @if (showSummary() && totalRecords()) {
+    @let to = page() * rows();
+    <span class="pagination__text">
+      {{ to - rows() + 1 }}–{{ to < totalRecords() ? to : totalRecords() }} of {{ totalRecords() }}
+    </span>
+  }
+  <nav
+    class="pagination__nav"
+    aria-label="Pagination"
+    (keydown.arrowleft)="goTo(page() - 1)"
+    (keydown.arrowright)="goTo(page() + 1)"
+  >
+    @if (showFirstLast()) {
+      <button type="button" aria-label="First page" [disabled]="first" (click)="goTo(1)">
+        <np-icon name="chevrons-left" [size]="16" />
       </button>
     }
+    <button type="button" aria-label="Previous page" [disabled]="first" (click)="goTo(page() - 1)">
+      <np-icon name="chevron-left" [size]="16" /><span class="pagination__label">Prev</span>
+    </button>
+    @if (variant() === 'minimal') {
+      <span class="pagination__status" aria-live="polite">Page {{ page() }} of {{ last }}</span>
+    } @else {
+      @for (item of pages(); track $index) {
+        @if (item === null) {
+          <span class="pagination__ellipsis">…</span>
+        } @else {
+          <button
+            type="button"
+            class="pagination__page"
+            [class.active]="item === page()"
+            [attr.aria-label]="'Page ' + item"
+            [attr.aria-current]="item === page() ? 'page' : null"
+            (click)="goTo(item)"
+          >
+            {{ item }}
+          </button>
+        }
+      }
+    }
+    <button type="button" aria-label="Next page" [disabled]="end" (click)="goTo(page() + 1)">
+      <span class="pagination__label">Next</span><np-icon name="chevron-right" [size]="16" />
+    </button>
+    @if (showFirstLast()) {
+      <button type="button" aria-label="Last page" [disabled]="end" (click)="goTo(last)">
+        <np-icon name="chevrons-right" [size]="16" />
+      </button>
+    }
+  </nav>
+  @if (rowsOptions().length) {
+    <select
+      #perPage
+      class="ui-control pagination__field"
+      aria-label="Rows per page"
+      (change)="rows.set(+perPage.value); page.set(1)"
+    >
+      @for (n of rowsOptions(); track n) {
+        <option [value]="n" [selected]="n === +rows()">{{ n }} / page</option>
+      }
+    </select>
   }
-  <button type="button" [disabled]="page() >= totalPages()" (click)="goTo(page() + 1)">
-    Next ›
-  </button>
-</nav>
+  @if (showJump()) {
+    <label class="pagination__text">
+      Go to
+      <input
+        #jump
+        type="number"
+        class="ui-control pagination__field"
+        min="1"
+        [max]="last"
+        (change)="goTo(jump.valueAsNumber || page()); jump.value = ''"
+      />
+    </label>
+  }
+</div>

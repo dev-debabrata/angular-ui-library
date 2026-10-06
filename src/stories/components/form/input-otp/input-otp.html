@@ -5,6 +5,7 @@
   <div
     class="otp"
     [class]="['otp--' + size(), 'otp--' + variant()]"
+    [class.otp--success]="success() && !invalid()"
     role="group"
     [attr.aria-labelledby]="label() ? id + '-label' : null"
     [attr.aria-describedby]="hint() ? id + '-hint' : null"
@@ -17,6 +18,7 @@
         [type]="mask() ? 'password' : 'text'"
         [attr.inputmode]="integerOnly() ? 'numeric' : 'text'"
         [attr.autocomplete]="i === 0 ? 'one-time-code' : 'off'"
+        [placeholder]="placeholder()"
         [attr.aria-label]="'Digit ' + (i + 1) + ' of ' + length()"
         [attr.aria-invalid]="invalid()"
         [value]="c"
@@ -33,5 +35,17 @@
   </div>
   @if (hint()) {
     <span [class]="invalid() ? 'ui-error' : 'ui-hint'" [id]="id + '-hint'">{{ hint() }}</span>
+  }
+  @if (resendSeconds()) {
+    <span class="otp__resend ui-hint">
+      Didn't get a code?
+      @if (countdown() > 0) {
+        <span class="otp__timer">Resend in {{ clock(countdown()) }}</span>
+      } @else {
+        <button type="button" class="otp__resend-btn" [disabled]="disabled()" (click)="onResend()">
+          Resend code
+        </button>
+      }
+    </span>
   }
 </div>

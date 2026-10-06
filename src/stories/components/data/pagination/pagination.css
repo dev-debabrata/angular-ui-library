@@ -1,56 +1,159 @@
+/* Variants and sizes only set the --pg-* variables */
 .pagination {
+  --pg-h: 36px;
   display: inline-flex;
+  flex-wrap: wrap;
   align-items: center;
-  gap: 6px;
-  padding: 6px;
-  border: 1px solid var(--ui-border);
-  border-radius: 999px;
-  background: var(--ui-surface);
-  box-shadow: var(--ui-shadow-sm);
+  gap: 12px;
+  color: var(--ui-text-muted);
   font-size: 14px;
 }
 
-.pagination button {
-  min-width: 36px;
-  height: 36px;
-  padding: 0 12px;
-  border: none;
-  border-radius: 999px;
-  background: none;
-  color: var(--ui-text-muted);
+.pagination--small {
+  --pg-h: 30px;
+  font-size: 13px;
+}
+
+.pagination--large {
+  --pg-h: 44px;
+  font-size: 15px;
+}
+
+.pagination--outlined,
+.pagination--minimal {
+  --pg-border: var(--ui-border);
+  --pg-bg: var(--ui-surface);
+}
+
+.pagination--outlined,
+.pagination--soft {
+  --pg-radius: var(--ui-radius);
+}
+
+.pagination--soft {
+  --pg-active-bg: var(--ui-primary-soft);
+  --pg-active-fg: var(--ui-primary);
+  --pg-glow: transparent;
+}
+
+.pagination__nav {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Default and glass: the buttons sit in one pill track (frosted on glass) */
+.pagination--default .pagination__nav,
+.pagination--glass .pagination__nav {
+  padding: 6px;
+  border: 1px solid var(--ui-border);
+  border-radius: var(--ui-radius-full);
+  background: var(--ui-surface);
+  box-shadow: var(--ui-shadow-sm);
+}
+
+.pagination--glass .pagination__nav {
+  border-color: color-mix(in srgb, var(--ui-surface) 70%, transparent);
+  background: color-mix(in srgb, var(--ui-surface) 55%, transparent);
+  backdrop-filter: blur(12px) saturate(1.6);
+}
+
+.pagination__nav button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  min-width: var(--pg-h);
+  height: var(--pg-h);
+  padding: 0 calc(var(--pg-h) / 3);
+  border: 1px solid var(--pg-border, transparent);
+  border-radius: var(--pg-radius, var(--ui-radius-full));
+  background: var(--pg-bg);
+  color: inherit;
   font: inherit;
   font-weight: 500;
   font-variant-numeric: tabular-nums;
+  box-sizing: border-box;
   cursor: pointer;
   transition:
+    width var(--ui-ease),
     background var(--ui-ease),
     color var(--ui-ease),
     box-shadow var(--ui-ease);
+
+  &:hover:not(:disabled, .active) {
+    background: var(--ui-primary-soft);
+    color: var(--ui-primary);
+  }
+  &:focus-visible {
+    outline: none;
+    box-shadow: var(--ui-ring);
+  }
+  &:disabled {
+    color: var(--ui-border-strong);
+    cursor: not-allowed;
+  }
+  &.active {
+    border-color: transparent;
+    background: var(--pg-active-bg, var(--ui-gradient));
+    color: var(--pg-active-fg, #fff);
+    font-weight: 600;
+    box-shadow: 0 4px 12px color-mix(in srgb, var(--pg-glow, var(--ui-primary)) 35%, transparent);
+  }
 }
 
-.pagination button:hover:not(:disabled):not(.active) {
-  background: var(--ui-primary-soft);
-  color: var(--ui-primary);
+/* Minimal and dots: round arrow buttons without text; dots turn the pages into dots, the current one a bar */
+.pagination--minimal,
+.pagination--dots {
+  & .pagination__nav button {
+    padding: 0;
+  }
+  & .pagination__label {
+    display: none;
+  }
 }
 
-.pagination button:focus-visible {
-  outline: none;
-  box-shadow: var(--ui-ring);
+.pagination--dots .pagination__nav .pagination__page {
+  --pg-bg: var(--ui-border-strong);
+  width: 10px;
+  min-width: 0;
+  height: 10px;
+  font-size: 0;
+
+  &:hover:not(.active) {
+    background: color-mix(in srgb, var(--ui-primary) 55%, transparent);
+  }
+  &.active {
+    width: 28px;
+  }
 }
 
-.pagination button.active {
-  background: var(--ui-gradient);
-  color: #fff;
-  font-weight: 600;
-  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.35);
-}
-
-.pagination button:disabled {
-  color: var(--ui-border-strong);
-  cursor: not-allowed;
-}
-
-.ellipsis {
+.pagination__ellipsis {
   padding: 0 4px;
   color: var(--ui-text-subtle);
+}
+
+.pagination__text,
+.pagination__status {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.pagination__status {
+  padding: 0 8px;
+  color: var(--ui-text);
+  font-weight: 500;
+}
+
+.pagination__field {
+  width: auto;
+  height: var(--pg-h);
+  padding-block: 0;
+
+  &[type='number'] {
+    width: 72px;
+  }
 }

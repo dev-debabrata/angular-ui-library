@@ -13,6 +13,7 @@
     "build:elements": "ng run nexprime-ui:build-elements && node -e \"require('fs').renameSync('dist/nexprime-elements/browser/main.js', 'dist/nexprime-elements/browser/nexprime.js')\"",
     "build:lib": "ng build nexprime-lib && npm run build:elements && node packaging/package-lib.mjs",
     "pack:lib": "npm run build:lib && cd dist/nexprime-lib && npm pack",
+    "publish:lib": "npm run build:lib && cd dist/nexprime-lib && npm publish --access public",
     "serve:ssr:nexprime-ui": "node dist/nexprime-ui/server/server.mjs"
   },
   "private": true,

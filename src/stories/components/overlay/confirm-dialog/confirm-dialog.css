@@ -19,3 +19,24 @@
   font-size: 14px;
   line-height: 1.5;
 }
+
+/* Tone badge: the shared round tone icon, bigger and with a soft halo */
+.confirm-tone {
+  --size: 44px;
+  width: var(--size);
+  height: var(--size);
+  font-size: calc(var(--size) * 0.45);
+  box-shadow: 0 0 0 6px color-mix(in srgb, var(--tone-solid) 16%, transparent);
+}
+
+.confirm-body--hero {
+  flex-direction: column;
+  text-align: center;
+  & .confirm-tone {
+    --size: 60px;
+  }
+}
+
+.confirm-field {
+  margin-top: 16px;
+}

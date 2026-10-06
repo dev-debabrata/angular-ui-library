@@ -1,5 +1,7 @@
 import { Injectable, signal } from '@angular/core';
 
+import type { Tone } from '../../../utils/types';
+
 /** Options for ConfirmationService.confirm() */
 export interface Confirmation {
   message: string;
@@ -10,6 +12,10 @@ export interface Confirmation {
   rejectLabel?: string;
   /** Color of the accept button */
   acceptTone?: 'primary' | 'danger';
+  /** Show the icon (or the tone's glyph) in a big round badge of this tone; danger also turns Yes red (ConfirmDialog) */
+  tone?: Tone;
+  /** Text the user must type before Yes is enabled, e.g. the project name (ConfirmDialog) */
+  confirmText?: string;
   /** Element to anchor to. Set it for <np-confirm-popup>, leave it empty for <np-confirm-dialog> */
   target?: EventTarget | null;
   accept?: () => void;

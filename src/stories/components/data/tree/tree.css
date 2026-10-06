@@ -1,8 +1,22 @@
-.tree-filter {
+.tree-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   margin-bottom: 12px;
+
+  & .tree-filter {
+    flex: 1;
+  }
 }
 
 .tree {
+  --tree-pad-y: 7px;
+  --tree-indent: 22px;
+  --tree-toggler: 22px;
+  --tree-row-radius: var(--ui-radius);
+  --tree-sel-bg: var(--ui-gradient);
+  --tree-sel-fg: #fff;
+  --tree-sel-shadow: 0 4px 12px color-mix(in srgb, var(--ui-primary) 30%, transparent);
   padding: 8px;
   border: 1px solid var(--ui-border);
   border-radius: var(--ui-radius-lg);
@@ -11,7 +25,59 @@
   font-size: 14px;
 }
 
+.tree--soft {
+  --tree-sel-bg: var(--ui-primary-soft);
+  --tree-sel-fg: var(--ui-primary);
+  --tree-sel-shadow: inset 3px 0 0 var(--ui-primary);
+}
+
+.tree--compact {
+  --tree-pad-y: 3px;
+  --tree-indent: 16px;
+  --tree-toggler: 18px;
+  --tree-row-radius: var(--ui-radius-sm);
+  padding: 4px;
+  font-size: 13px;
+}
+
+.tree--glass {
+  border-color: color-mix(in srgb, var(--ui-surface) 60%, transparent);
+  background: color-mix(in srgb, var(--ui-surface) 65%, transparent);
+  backdrop-filter: blur(16px) saturate(160%);
+}
+
+/* Cards: no outer panel, each top-level node is its own card */
+.tree--cards {
+  padding: 0;
+  border: none;
+  background: none;
+  box-shadow: none;
+
+  & > .tree-group {
+    display: grid;
+    gap: 10px;
+  }
+
+  & > .tree-group > .tree-item {
+    padding: 6px;
+    border: 1px solid var(--ui-border);
+    border-radius: var(--ui-radius-lg);
+    background: var(--ui-surface);
+    box-shadow: var(--ui-shadow-sm);
+    transition: box-shadow var(--ui-ease);
+
+    &:hover {
+      box-shadow: var(--ui-shadow);
+    }
+
+    & > .tree-node {
+      font-weight: 600;
+    }
+  }
+}
+
 .tree-group {
+  position: relative;
   margin: 0;
   padding: 0;
   list-style: none;
@@ -19,6 +85,15 @@
   & & {
     animation: tree-open 180ms ease-out;
   }
+}
+
+/* Lines: a guide under each open parent, centered on its toggler (the group inherits the parent's --level) */
+.tree--lines .tree-group .tree-group::before {
+  content: '';
+  position: absolute;
+  inset: 0 auto 4px calc(8px + var(--level) * var(--tree-indent) + var(--tree-toggler) / 2);
+  width: 1px;
+  background: var(--ui-border-strong);
 }
 
 .tree-item {
@@ -29,8 +104,8 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 7px 10px;
-  border-radius: var(--ui-radius);
+  padding: var(--tree-pad-y) 10px var(--tree-pad-y) calc(8px + var(--level) * var(--tree-indent));
+  border-radius: var(--tree-row-radius);
   color: var(--ui-text);
   user-select: none;
   transition:
@@ -54,18 +129,18 @@
 
 .tree-node--selected,
 .tree-node--selected:hover {
-  background: var(--ui-gradient);
-  color: #fff;
-  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+  background: var(--tree-sel-bg);
+  color: var(--tree-sel-fg);
+  box-shadow: var(--tree-sel-shadow);
 }
 
 .tree-toggler {
   display: inline-grid;
   flex-shrink: 0;
   place-items: center;
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
+  width: var(--tree-toggler);
+  height: var(--tree-toggler);
+  border-radius: var(--ui-radius-full);
   color: var(--ui-text-muted);
   cursor: pointer;
   transition:
@@ -86,7 +161,7 @@
   pointer-events: none;
 }
 
-.tree-node--selected :is(.tree-toggler, .tree-icon) {
+.tree-node--selected :is(.tree-toggler, .tree-icon, .tree-description) {
   color: inherit;
 }
 
@@ -114,17 +189,47 @@
 .tree-checkbox--mixed {
   border-color: transparent !important;
   background: var(--ui-gradient);
-  box-shadow: 0 2px 8px rgba(99, 102, 241, 0.35);
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--ui-primary) 35%, transparent);
 }
 
 .tree-icon {
   color: var(--ui-primary);
 }
 
-.tree-label {
+.tree-label,
+.tree-description {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.tree-description {
+  display: block;
+  color: var(--ui-text-muted);
+  font-size: 12px;
+  font-weight: 400;
+}
+
+.tree-match {
+  border-radius: var(--ui-radius-sm);
+  background: color-mix(in srgb, var(--ui-warning) 30%, transparent);
+  color: inherit;
+}
+
+.tree-badge {
+  flex-shrink: 0;
+  margin-left: auto;
+  padding: 2px 7px;
+  border-radius: var(--ui-radius-full);
+  background: var(--ui-primary-soft);
+  color: var(--ui-primary);
+  font-size: 11px;
+  font-weight: 600;
+
+  .tree-node--selected > & {
+    background: color-mix(in srgb, currentColor 20%, transparent);
+    color: inherit;
+  }
 }
 
 .tree-empty {

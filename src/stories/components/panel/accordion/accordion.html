@@ -1,18 +1,36 @@
-<div class="accordion">
+<div
+  class="accordion"
+  [class]="'accordion--' + variant()"
+  [class.accordion--start]="iconPos() === 'start'"
+  (keydown)="onKeydown($event)"
+>
   @for (item of items(); track $index) {
+    @let open = expanded().includes($index);
     <div class="accordion-item">
       <button
         type="button"
         class="accordion-header"
-        [attr.aria-expanded]="isOpen($index)"
+        [attr.aria-expanded]="open"
+        [attr.aria-controls]="uid + '-p' + $index"
+        [disabled]="item.disabled"
         (click)="toggle($index)"
       >
-        <span>{{ item.title }}</span>
-        <span class="accordion-icon" [class.accordion-icon--open]="isOpen($index)">▾</span>
+        @if (item.icon) {
+          <np-icon variant="soft" size="34" [name]="item.icon" />
+        }
+        <span class="accordion-title"
+          >{{ item.title }} <small>{{ item.subtitle }}</small></span
+        >
+        <span class="accordion-icon" [class.accordion-icon--open]="open">
+          <np-icon
+            size="14"
+            [name]="toggleIcon() === 'plus' ? (open ? 'minus' : 'plus') : 'chevron-down'"
+          />
+        </span>
       </button>
-      @if (isOpen($index)) {
-        <div class="accordion-body">{{ item.content }}</div>
-      }
+      <div class="accordion-body" [id]="uid + '-p' + $index" [inert]="!open">
+        <div>{{ item.content }}</div>
+      </div>
     </div>
   }
 </div>

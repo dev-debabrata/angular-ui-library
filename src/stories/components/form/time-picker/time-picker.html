@@ -43,13 +43,17 @@
   </div>
 </ng-template>
 
-<div class="ui-field">
+<div
+  class="ui-field"
+  [class]="fieldClass()"
+  [class.ui-field--has-value]="hasField() && !!(draft() ?? text())"
+>
   @if (label()) {
     <label class="ui-label" [id]="id + '-label'" [attr.for]="inline() ? null : id">{{
       label()
     }}</label>
   }
-  @if (inline() && mode() === 'spinner') {
+  @if (!hasField()) {
     <div
       role="group"
       [attr.aria-labelledby]="label() ? id + '-label' : null"

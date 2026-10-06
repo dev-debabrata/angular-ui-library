@@ -1,9 +1,35 @@
-<input
-  type="search"
-  class="ui-control"
-  [placeholder]="placeholder()"
-  [value]="value()"
-  [disabled]="disabled()"
-  (input)="search.emit($any($event.target).value)"
-  (search)="$event.stopPropagation()"
-/>
+<div class="ui-field" [class]="'ui-field--' + variant()" [class.ui-field--has-value]="!!text()">
+  @if (label()) {
+    <label class="ui-label" [for]="id">{{ label() }}</label>
+  }
+  <div class="search-box">
+    @if (loading()) {
+      <span class="search-spinner" role="status" aria-label="Loading"></span>
+    } @else {
+      <np-icon class="search-icon" name="search" [size]="16" />
+    }
+    <input
+      #control
+      type="search"
+      class="ui-control"
+      [id]="id"
+      [class.search-control--kbd]="!!shortcut() && !text()"
+      [placeholder]="placeholder()"
+      [value]="text()"
+      [disabled]="disabled()"
+      [attr.aria-label]="label() ? null : placeholder() || 'Search'"
+      [attr.aria-keyshortcuts]="keyshortcuts()"
+      [attr.aria-busy]="loading() || null"
+      (input)="onInput($event)"
+      (keydown.escape)="onEscape($event)"
+      (search)="$event.stopPropagation()"
+    />
+    @if (text() && !disabled()) {
+      <button type="button" class="search-clear" aria-label="Clear search" (click)="clear()">
+        <np-icon name="x" [size]="16" />
+      </button>
+    } @else if (shortcut()) {
+      <kbd class="search-kbd" aria-hidden="true">{{ shortcutLabel() }}</kbd>
+    }
+  </div>
+</div>

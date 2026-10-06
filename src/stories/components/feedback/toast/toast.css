@@ -11,6 +11,7 @@
   border: 1px solid var(--ui-border);
   border-radius: var(--ui-radius);
   background: rgba(255, 255, 255, 0.92);
+  color: var(--toast-fg);
   backdrop-filter: blur(8px);
   box-shadow: var(--ui-shadow-lg);
   font-size: 14px;
@@ -19,11 +20,12 @@
 }
 
 .toast-message {
+  display: grid;
   flex: 1;
 }
 
 .toast .ui-close {
-  color: var(--ui-text-muted);
+  color: var(--toast-fg, var(--ui-text-muted));
 }
 
 /* Bar along the bottom that shrinks until the toast closes */
@@ -33,7 +35,7 @@
   bottom: 0;
   width: 100%;
   height: 3px;
-  background: var(--tone-solid);
+  background: var(--toast-bar, var(--tone-solid));
   transform-origin: left;
   animation: countdown linear forwards;
 }
@@ -58,6 +60,73 @@
   left: 16px;
 }
 
+.toast--top-center {
+  inset: 16px 0 auto;
+}
+
+.toast--bottom-center {
+  inset: auto 0 16px;
+}
+
+.toast--top-center,
+.toast--bottom-center {
+  width: fit-content;
+  margin-inline: auto;
+}
+
+.toast--solid {
+  background: var(--tone-solid);
+  --toast-fg: #fff;
+  border-color: transparent;
+  --toast-bar: color-mix(in srgb, #fff 55%, transparent);
+  & .ui-tone-icon {
+    background: color-mix(in srgb, #fff 25%, transparent);
+  }
+}
+
+.toast--glass {
+  background: color-mix(in srgb, var(--tone-bg) 50%, transparent);
+  border-color: color-mix(in srgb, #fff 45%, transparent);
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, #fff 50%, transparent),
+    var(--ui-shadow-lg);
+  backdrop-filter: blur(18px) saturate(1.8);
+}
+
+/* Gradient border: surface on the padding box over the gradient on the border box */
+.toast--gradient {
+  background:
+    linear-gradient(var(--ui-surface), var(--ui-surface)) padding-box,
+    var(--ui-gradient) border-box;
+  border-color: transparent;
+  --toast-bar: var(--ui-gradient);
+  border-width: 1.5px;
+}
+
+.toast--pill {
+  background: var(--ui-text);
+  --toast-fg: var(--ui-surface);
+  border-color: transparent;
+  min-width: 0;
+  padding: 8px 8px 8px 10px;
+  border-radius: var(--ui-radius-full);
+}
+
+.toast--paused .toast-countdown {
+  animation-play-state: paused;
+}
+
+/* --dx: drag distance in px */
+.toast--swipeable {
+  touch-action: pan-y;
+  user-select: none;
+  translate: calc(var(--dx) * 1px) 0;
+  opacity: calc(1 - max(var(--dx), -1 * var(--dx)) / 200);
+  transition: var(--ui-ease);
+  transition-property: translate, opacity;
+  cursor: grab;
+}
+
 @keyframes toast-in {
   from {
     opacity: 0;
@@ -68,5 +137,11 @@
 @keyframes countdown {
   to {
     transform: scaleX(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .toast {
+    animation: none;
   }
 }

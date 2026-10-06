@@ -1,7 +1,13 @@
 @let layout = showButtons() ? buttonLayout() : 'none';
 @let stacked = layout === 'stacked';
-@let outer = layout === 'horizontal' ? -1 : layout === 'vertical' ? 1 : 0;
-@let cls = layout === 'horizontal' ? 'ui-btn ui-btn--icon' : 'ui-btn ui-btn--sm';
+@let inside = stacked || layout === 'inline';
+@let outer = layout === 'horizontal' || layout === 'split' ? -1 : layout === 'vertical' ? 1 : 0;
+@let cls =
+  layout === 'horizontal'
+    ? 'ui-btn ui-btn--icon'
+    : layout === 'split'
+      ? 'input-number__side'
+      : 'ui-btn ui-btn--sm';
 
 <!-- dir 1 = increment, -1 = decrement. Pointer presses repeat; keyboard clicks (detail 0) step once -->
 <ng-template #btn let-dir let-cls="cls">
@@ -23,13 +29,24 @@
   </button>
 </ng-template>
 
-<div class="ui-field">
+<div
+  class="ui-field"
+  [class]="'ui-field--' + variant()"
+  [class.ui-field--has-value]="value() != null"
+>
   @if (label()) {
     <label class="ui-label" [for]="id">{{ label() }}</label>
   }
-  <div class="input-number" [class]="'input-number--' + layout">
+  <div
+    class="input-number"
+    [class]="'input-number--' + layout"
+    [class.input-number--icon]="!!icon()"
+  >
     @if (outer) {
       <ng-container *ngTemplateOutlet="btn; context: { $implicit: outer, cls }" />
+    }
+    @if (icon()) {
+      <np-icon class="input-number__icon" [name]="icon()" [size]="18" />
     }
     <input
       class="ui-control input-number__input"
@@ -55,9 +72,9 @@
     />
     @if (outer) {
       <ng-container *ngTemplateOutlet="btn; context: { $implicit: -outer, cls }" />
-    } @else if (stacked) {
+    } @else if (inside) {
       <span class="input-number__spinner">
-        @for (dir of [1, -1]; track dir) {
+        @for (dir of stacked ? [1, -1] : [-1, 1]; track dir) {
           <ng-container
             *ngTemplateOutlet="btn; context: { $implicit: dir, cls: 'input-number__spin' }"
           />
@@ -65,6 +82,9 @@
       </span>
     }
   </div>
+  @if (meter() && percent() != null) {
+    <span class="input-number__meter" [style.--fill]="percent() + '%'" aria-hidden="true"></span>
+  }
   @if (hint()) {
     <span [class]="invalid() ? 'ui-error' : 'ui-hint'" [id]="id + '-hint'">{{ hint() }}</span>
   }

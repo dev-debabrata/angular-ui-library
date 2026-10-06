@@ -2,3 +2,104 @@
   display: block;
   max-width: 320px;
 }
+
+/* The input with its leading icon and trailing buttons laid over it */
+.text-input-box {
+  position: relative;
+  display: block;
+}
+
+.text-input-icon {
+  position: absolute;
+  top: 50%;
+  left: 14px;
+  color: var(--ui-text-subtle);
+  pointer-events: none;
+  translate: 0 -50%;
+  transition: color var(--ui-ease);
+}
+
+.text-input-box:focus-within .text-input-icon {
+  color: var(--ui-primary);
+}
+
+.text-input--icon .ui-control {
+  padding-left: 42px;
+}
+
+.ui-control.text-input-control--actions {
+  padding-right: calc(10px + var(--text-input-actions) * 30px);
+}
+
+.text-input-actions {
+  position: absolute;
+  top: 50%;
+  right: 6px;
+  display: flex;
+  gap: 2px;
+  translate: 0 -50%;
+}
+
+.text-input-action {
+  display: inline-grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: none;
+  border-radius: var(--ui-radius-full);
+  background: none;
+  color: var(--ui-text-subtle);
+  cursor: pointer;
+  transition:
+    background var(--ui-ease),
+    color var(--ui-ease);
+
+  &:hover:not(:disabled) {
+    background: var(--ui-primary-soft);
+    color: var(--ui-primary);
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: var(--ui-ring);
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+
+  &[aria-pressed='true'] {
+    color: var(--ui-primary);
+  }
+}
+
+/* Underline: no side padding, so the icon and buttons hug the line's ends */
+.ui-field--underline {
+  .text-input-icon {
+    left: 2px;
+  }
+
+  &.text-input--icon .ui-control {
+    padding-left: 30px;
+  }
+
+  .text-input-actions {
+    right: 0;
+  }
+}
+
+/* Floating: the resting label sits after the icon, and moves to the border's start when it floats */
+.ui-field--floating.text-input--icon > .ui-label {
+  left: 38px;
+  transition:
+    top var(--ui-ease),
+    left var(--ui-ease),
+    font-size var(--ui-ease),
+    color var(--ui-ease);
+}
+
+.ui-field--floating.text-input--icon:is(:focus-within, .ui-field--has-value) > .ui-label {
+  left: 11px;
+}

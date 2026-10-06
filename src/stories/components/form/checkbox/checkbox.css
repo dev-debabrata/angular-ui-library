@@ -1,18 +1,43 @@
 .checkbox {
+  --cb-size: 20px;
   display: inline-flex;
   align-items: center;
   gap: 10px;
+  color: var(--ui-text);
   font-size: 14px;
   cursor: pointer;
   user-select: none;
+
+  &:has(.checkbox__description) {
+    align-items: flex-start;
+  }
 }
 
-.checkbox input {
+.checkbox--small {
+  --cb-size: 16px;
+  gap: 8px;
+  font-size: 13px;
+}
+
+.checkbox--large {
+  --cb-size: 24px;
+  gap: 12px;
+  font-size: 15px;
+}
+
+/* The native input is the box; the check is an SVG laid over it and drawn in on check */
+.checkbox__box {
+  position: relative;
+  display: inline-grid;
+  flex: none;
+  width: var(--cb-size);
+  height: var(--cb-size);
+}
+
+.checkbox__input {
   appearance: none;
-  display: grid;
-  place-content: center;
-  width: 20px;
-  height: 20px;
+  width: 100%;
+  height: 100%;
   margin: 0;
   border: 2px solid var(--ui-border-strong);
   border-radius: var(--ui-radius-sm);
@@ -22,45 +47,200 @@
     background var(--ui-ease),
     border-color var(--ui-ease),
     box-shadow var(--ui-ease);
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: var(--ui-ring);
+  }
+  &[aria-invalid='true'] {
+    border-color: var(--ui-danger);
+  }
+  .checkbox:hover &:not(:disabled) {
+    border-color: var(--ui-primary);
+  }
+  .checkbox--on & {
+    border-color: transparent;
+    background: var(--ui-gradient);
+    box-shadow: 0 2px 8px color-mix(in srgb, var(--ui-primary) 35%, transparent);
+    animation: checkbox-pop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
 }
 
-/* Checkmark drawn with two borders, rotated */
-.checkbox input::after {
-  content: '';
-  width: 5px;
-  height: 10px;
-  margin-top: -2px;
-  border: solid #fff;
-  border-width: 0 2.5px 2.5px 0;
-  transform: rotate(45deg) scale(0);
-  transition: transform var(--ui-ease);
+.checkbox__mark {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
 }
 
-.checkbox:hover input:not(:disabled) {
-  border-color: var(--ui-primary);
+.checkbox__path {
+  fill: none;
+  stroke: #fff;
+  stroke-width: 2.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  transition: stroke-dashoffset 0.28s cubic-bezier(0.65, 0, 0.35, 1);
+
+  .checkbox--on & {
+    stroke-dashoffset: 0;
+  }
 }
 
-.checkbox input:checked {
-  border-color: transparent;
-  background: var(--ui-gradient);
-  box-shadow: 0 2px 8px rgba(99, 102, 241, 0.35);
+.checkbox__text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
 }
 
-.checkbox input:checked::after {
-  transform: rotate(45deg) scale(1);
+.checkbox__label {
+  line-height: var(--cb-size);
 }
 
-.checkbox input:focus-visible {
-  outline: none;
-  box-shadow: var(--ui-ring);
+.checkbox__description {
+  color: var(--ui-text-muted);
+  font-size: 0.86em;
+  line-height: 1.4;
+}
+
+.checkbox__icon {
+  display: inline-grid;
+  flex: none;
+  place-items: center;
+  color: var(--ui-primary);
+}
+
+/* Round box: circle, card and todo */
+:is(.checkbox--circle, .checkbox--card, .checkbox--todo) .checkbox__input {
+  border-radius: var(--ui-radius-full);
+}
+
+/* Card and chip: the whole label is the control (border, hover, focus ring) */
+.checkbox--card,
+.checkbox--chip {
+  border: 1px solid var(--ui-border);
+  transition:
+    border-color var(--ui-ease),
+    background var(--ui-ease),
+    color var(--ui-ease),
+    box-shadow var(--ui-ease);
+
+  &:hover:not(.checkbox--disabled) {
+    border-color: var(--ui-primary);
+  }
+  &:has(:focus-visible) {
+    box-shadow: var(--ui-ring);
+  }
+  &.checkbox--disabled {
+    opacity: 0.6;
+  }
+}
+
+/* Card: icon tile on the left, box on the right */
+.checkbox--card {
+  display: flex;
+  gap: 12px;
+  padding: 14px 16px;
+  border-radius: var(--ui-radius-lg);
+  background: var(--ui-surface);
+
+  .checkbox__box {
+    order: 1;
+    margin-left: auto;
+  }
+  .checkbox__icon {
+    width: 40px;
+    height: 40px;
+    border-radius: var(--ui-radius);
+    background: var(--ui-primary-soft);
+  }
+  .checkbox__label {
+    font-weight: 600;
+  }
+  &.checkbox--on {
+    border-color: var(--ui-primary);
+    background: color-mix(in srgb, var(--ui-primary) 5%, var(--ui-surface));
+
+    .checkbox__icon {
+      background: var(--ui-gradient);
+      color: #fff;
+    }
+  }
+}
+
+/* Chip: a pill; the box collapses and only shows (as a check) when checked */
+.checkbox--chip {
+  gap: 6px;
+  height: calc(var(--cb-size) + 14px);
+  padding: 0 14px;
+  border-radius: var(--ui-radius-full);
+  background: var(--ui-surface-muted);
+  color: var(--ui-text-muted);
+  font-weight: 500;
+
+  .checkbox__box {
+    width: 0;
+    margin-right: -6px;
+    transition: width var(--ui-ease), margin var(--ui-ease);
+  }
+  .checkbox__input {
+    border: none;
+    background: none;
+    box-shadow: none;
+    animation: none;
+  }
+  &.checkbox--on {
+    border-color: transparent;
+    background: var(--ui-gradient);
+    color: #fff;
+
+    .checkbox__box {
+      width: calc(var(--cb-size) * 0.8);
+      margin-right: 0;
+    }
+    .checkbox__icon {
+      color: inherit;
+    }
+  }
+}
+
+/* Todo: the label is struck through (drawn in from the left) and dimmed when checked */
+.checkbox--todo {
+  .checkbox__label {
+    background: linear-gradient(currentColor, currentColor) no-repeat 0 55% / 0 1.5px;
+    transition: background-size 0.3s ease, color var(--ui-ease);
+  }
+  &.checkbox--on .checkbox__label {
+    background-size: 100% 1.5px;
+    color: var(--ui-text-subtle);
+  }
+  &.checkbox--on .checkbox__input {
+    background: var(--ui-success);
+  }
 }
 
 .checkbox--disabled {
   color: var(--ui-text-subtle);
   cursor: not-allowed;
+
+  &:not(.checkbox--on) .checkbox__input {
+    border-color: var(--ui-border);
+    background: var(--ui-surface-sunken);
+  }
+  &.checkbox--on .checkbox__input {
+    opacity: 0.55;
+  }
 }
 
-.checkbox--disabled input {
-  border-color: var(--ui-border);
-  background: var(--ui-surface-sunken);
+@keyframes checkbox-pop {
+  50% {
+    scale: 1.15;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .checkbox * {
+    transition: none !important;
+    animation: none !important;
+  }
 }

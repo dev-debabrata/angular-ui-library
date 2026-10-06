@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from '@storybook/angular-vite';
 
 import { TONES } from '../../../utils/types';
 import { BadgeComponent } from './badge.component';
+import { appearanceStories } from '../../../utils/appearance-stories';
 
 const meta: Meta<BadgeComponent> = {
   title: 'Components/Media/Badge',
@@ -30,3 +31,8 @@ export const AllVariants: Story = {
     `,
   }),
 };
+
+/** The appearance classes from theme.css (np-color-*, np-shape-*) on the Default example */
+const appearance = appearanceStories(meta, Default);
+export const AppearanceColors = appearance.colors;
+export const AppearanceShapes = appearance.shapes;

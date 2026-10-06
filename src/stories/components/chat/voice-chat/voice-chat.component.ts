@@ -19,6 +19,10 @@ import { IconComponent } from '../../media/icon/icon.component';
 
 export type VoiceState = 'idle' | 'listening' | 'processing' | 'speaking';
 
+/** Looks of the voice chat */
+export const VOICE_VARIANTS = ['default', 'orb', 'bars', 'minimal', 'glass'] as const;
+export type VoiceVariant = (typeof VOICE_VARIANTS)[number];
+
 /** The parts of the Web Speech API used here (Chrome and Safari prefix it with webkit) */
 interface Recognition {
   lang: string;
@@ -36,14 +40,13 @@ interface Recognition {
 }
 type RecognitionClass = new () => Recognition;
 
-/** Status text and mic icon per state */
-const STATES: Record<VoiceState, [status: string, icon: string]> = {
-  idle: ['Tap to speak', 'mic'],
-  listening: ['Listening… tap to stop', 'mic'],
+/** Status text and mic icon per state, plus the status in push-to-talk mode */
+const STATES: Record<VoiceState, [status: string, icon: string, push?: string]> = {
+  idle: ['Tap to speak', 'mic', 'Hold to speak'],
+  listening: ['Listening… tap to stop', 'mic', 'Listening… release to send'],
   processing: ['Thinking…', 'loader-circle'],
   speaking: ['Speaking… tap to stop', 'volume-2'],
 };
-
 /**
  * Voice assistant panel: a mic button that goes idle → listening → processing → speaking, a waveform, the live
  * transcript and a scrolling conversation history. Uses the browser's speech recognition and speech synthesis when available;
@@ -70,12 +73,24 @@ export class VoiceChatComponent {
 
   /** Height of the scrolling conversation history (any CSS length) */
   readonly historyHeight = input('200px');
+  /** Look: default, orb (glowing gradient orb), bars (audio equalizer), minimal (no card) or glass (frosted). Non-default looks show the status as a chip */
+  readonly variant = input<VoiceVariant>('default');
+  /** toggle: tap to start and stop; push: hold the mic (or Space) while talking */
+  readonly mode = input<'toggle' | 'push'>('toggle');
+  /** Show a large live caption: what's heard while listening, the reply while speaking */
+  readonly caption = input(false, { transform: booleanAttribute });
+  /** Show a mute button in the corner that turns reading replies aloud off and on */
+  readonly muteButton = input(false, { transform: booleanAttribute });
+  /** Replies are not read aloud. Supports [(muted)] two-way binding */
+  readonly muted = model(false);
 
   /** Emits what the user said. Reply by appending a 'them' message to `messages` */
   readonly utterance = output<string>();
 
   protected readonly transcript = signal('');
-  protected readonly status = computed(() => STATES[this.state()][0]);
+  protected readonly status = computed(
+    () => STATES[this.state()][this.mode() === 'push' ? 2 : 0] ?? STATES[this.state()][0],
+  );
   protected readonly micIcon = computed(() => STATES[this.state()][1]);
   protected readonly bars = Array.from({ length: 28 }, (_, i) => i);
 
@@ -130,6 +145,17 @@ export class VoiceChatComponent {
     else if (state === 'speaking') this.stopAll();
   }
 
+  /** Push-to-talk: pressing starts listening, releasing sends */
+  protected press(down: boolean) {
+    if (this.mode() !== 'push') return;
+    if (down ? this.state() === 'idle' : this.state() === 'listening') this.toggle();
+  }
+
+  protected toggleMute() {
+    this.muted.update((m) => !m);
+    if (this.muted() && typeof speechSynthesis !== 'undefined') speechSynthesis.cancel();
+  }
+
   /** Text box fallback: Enter sends what was typed */
   protected onTypedKeydown(event: KeyboardEvent) {
     if (event.key === 'Enter') {
@@ -175,7 +201,7 @@ export class VoiceChatComponent {
   private say(text: string) {
     this.state.set('speaking');
     const synth = typeof speechSynthesis === 'undefined' ? null : speechSynthesis;
-    if (this.speak() && synth) {
+    if (this.speak() && !this.muted() && synth) {
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.lang = this.lang();
       utterance.onend = utterance.onerror = () =>

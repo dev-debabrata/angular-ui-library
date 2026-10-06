@@ -1,9 +1,26 @@
-@if (filter()) {
-  <np-search-input
-    class="tree-filter"
-    [placeholder]="filterPlaceholder()"
-    (search)="onFilter($event)"
-  />
+@if (filter() || controls()) {
+  <div class="tree-toolbar">
+    @if (filter()) {
+      <np-search-input
+        class="tree-filter"
+        [placeholder]="filterPlaceholder()"
+        (search)="onFilter($event)"
+      />
+    }
+    @if (controls()) {
+      @for (label of ['Expand all', 'Collapse all']; track label) {
+        <button
+          type="button"
+          class="ui-btn ui-btn--icon"
+          [attr.aria-label]="label"
+          [title]="label"
+          (click)="$index ? collapseAll() : expandAll()"
+        >
+          <np-icon [name]="$index ? 'chevrons-down-up' : 'chevrons-up-down'" [size]="16" />
+        </button>
+      }
+    }
+  </div>
 }
 
 <ng-template #nodeTpl let-nodes let-level="level">
@@ -12,10 +29,12 @@
     @let open = isExpanded(node);
     @let state = checkState(node);
     @let selected = selectedKeys().has(node.key);
+    @let badge = node.data?.badge ?? (showCounts() && parent ? node.children.length : null);
     <li
       role="treeitem"
       tabindex="0"
       class="tree-item"
+      [style.--level]="level"
       [attr.aria-level]="level + 1"
       [attr.aria-expanded]="parent ? open : null"
       [attr.aria-selected]="selectionMode() && selectionMode() !== 'checkbox' ? selected : null"
@@ -26,7 +45,6 @@
         class="tree-node"
         [class.tree-node--selectable]="selectionMode() && node.selectable !== false"
         [class.tree-node--selected]="selectionMode() !== 'checkbox' && selected"
-        [style.padding-left.px]="8 + level * 22"
         (click)="select(node)"
       >
         <!-- Leaves get an empty spacer (pointer-events: none) so labels line up -->
@@ -59,7 +77,17 @@
           [name]="node.icon ?? (parent ? (open ? 'folder-open' : 'folder') : 'file')"
           [size]="18"
         />
-        <span class="tree-label">{{ node.label }}</span>
+        <span class="tree-label">
+          @for (part of parts(node.label); track $index) {
+            <span [class.tree-match]="$odd">{{ part }}</span>
+          }
+          @if (node.data?.description; as description) {
+            <small class="tree-description">{{ description }}</small>
+          }
+        </span>
+        @if (badge != null) {
+          <span class="tree-badge">{{ badge }}</span>
+        }
       </div>
 
       @if (parent && open) {
@@ -74,7 +102,7 @@
   }
 </ng-template>
 
-<div class="tree">
+<div class="tree" [class]="'tree--' + variant()">
   @if (visibleNodes().length) {
     <ul
       role="tree"

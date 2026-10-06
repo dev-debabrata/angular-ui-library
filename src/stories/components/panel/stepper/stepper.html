@@ -1,13 +1,46 @@
-<ol class="stepper">
-  @for (step of steps(); track $index; let i = $index) {
+<ol class="stepper" [class]="'stepper--' + variant()" [class.stepper--vertical]="vertical()">
+  @for (step of items(); track $index; let i = $index) {
+    @let state = stateOf(i, step);
+    @let clickable = canClick(i);
     <li
       class="step"
-      [class.step--done]="i < activeStep()"
-      [class.step--active]="i === activeStep()"
-      [attr.aria-current]="i === activeStep() ? 'step' : null"
+      [class]="'step--' + state"
+      [class.step--clickable]="clickable"
+      [attr.aria-current]="state === 'active' ? 'step' : null"
     >
-      <span class="step-circle">{{ i < activeStep() ? '✓' : i + 1 }}</span>
-      <span class="step-label">{{ step }}</span>
+      <div
+        class="step__inner"
+        [attr.role]="clickable ? 'button' : null"
+        [attr.tabindex]="clickable ? 0 : null"
+        (click)="go(i)"
+        (keydown.enter)="go(i)"
+        (keydown.space)="$event.preventDefault(); go(i)"
+      >
+        <span class="step__marker" aria-hidden="true">
+          @switch (state) {
+            @case ('done') {
+              <np-icon name="check" [size]="16" />
+            }
+            @case ('error') {
+              !
+            }
+            @default {
+              @if (step.icon) {
+                <np-icon [name]="step.icon" [size]="16" />
+              } @else {
+                {{ i + 1 }}
+              }
+            }
+          }
+        </span>
+        <span class="step__text">
+          <span class="step__caption">Step {{ i + 1 }}</span>
+          <span class="step__label">{{ step.label }}</span>
+          @if (step.description) {
+            <span class="step__description">{{ step.description }}</span>
+          }
+        </span>
+      </div>
     </li>
   }
 </ol>

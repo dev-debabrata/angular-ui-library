@@ -57,7 +57,7 @@ const routes: Routes = [
 @Injectable()
 class ManagerTitle extends TitleStrategy {
   override updateTitle(snapshot: RouterStateSnapshot) {
-    const page = snapshot.url.slice(1);
+    const page = snapshot.url.slice(1).split('?')[0];
     addons.getChannel().emit(SITE_ROUTE, { page, title: this.buildTitle(snapshot) });
   }
 }

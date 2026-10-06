@@ -46,7 +46,7 @@
 
 /* Story previews, args tables and code blocks */
 :root[data-theme='dark'] :is(
-    .sbdocs :is(.docs-story, .docblock-argstable, .docblock-source, pre),
+    .sbdocs :is(.docs-story, .docblock-argstable),
     .sbdocs-preview,
     .sbdocs-preview > div:first-child
   ) {
@@ -65,6 +65,34 @@
   border-color: var(--ui-border);
   background: var(--ui-surface-sunken);
   color: var(--ui-text);
+}
+
+/* Code in MDX tables: MDX styles <code> only next to text, so give every one the same pill */
+.sbdocs table:not(.docblock-argstable) td code {
+  display: inline-block;
+  margin: 2px 0;
+  padding: 1px 6px;
+  border: 1px solid var(--ui-border);
+  border-radius: var(--ui-radius-sm);
+  background: var(--ui-surface-muted);
+  color: var(--ui-text);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+/* Plain tables in MDX pages (Installation, Configuration): Storybook stripes every other row light */
+:root[data-theme='dark'] .sbdocs table:not(.docblock-argstable) :is(tr, th, td) {
+  border-color: var(--ui-border);
+  background: var(--ui-surface);
+  color: var(--ui-text);
+}
+
+:root[data-theme='dark'] .sbdocs table:not(.docblock-argstable) :is(tr:nth-of-type(2n), thead tr) {
+  background: var(--ui-surface-muted);
+}
+
+:root[data-theme='dark'] .sbdocs table:not(.docblock-argstable) tr:nth-of-type(2n) td {
+  background: var(--ui-surface-muted);
 }
 
 /* Controls in the args table */
@@ -161,26 +189,136 @@
   margin: 0 0 8px;
 }
 
-/* Copy button in the top-right corner instead of the bottom */
-.np-code .docblock-source > div:has(> button) {
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: auto;
-  z-index: 1;
+/* Code blocks (MDX pages and "Show code"): dark in both modes, with a copy icon in the top-right corner that shows
+   on hover or keyboard focus, like PrimeNG's docs. preview-head.html swaps it for a check after copying */
+.sbdocs .docblock-source {
+  border-color: #334155;
+  background: #1e293b;
+  color: #e2e8f0;
 }
 
-.np-code .docblock-source > div:has(> button) > button {
-  border-radius: 0 var(--ui-radius-lg) 0 var(--ui-radius-sm);
+/* MDX wraps each block in a <pre>: no background of its own, or its square corners show around the rounded block */
+.sbdocs pre:has(> .docblock-source) {
+  background: none;
+}
+
+/* The block's scroll area is focusable: no blue outline on click, the theme's ring on the block for keyboard focus */
+.sbdocs .docblock-source [data-radix-scroll-area-viewport]:focus {
+  outline: none;
+}
+
+.sbdocs .docblock-source:has([data-radix-scroll-area-viewport]:focus-visible) {
+  box-shadow: var(--ui-ring);
+}
+
+.sbdocs .docblock-source pre.prismjs {
+  padding-right: 60px;
+  color: #e2e8f0;
+}
+
+.sbdocs .docblock-source .token:is(.comment, .prolog, .doctype, .cdata) {
+  color: #64748b;
+}
+
+.sbdocs .docblock-source .token:is(.keyword, .boolean, .important, .atrule) {
+  color: #c4b5fd;
+}
+
+.sbdocs .docblock-source .token:is(.string, .char, .attr-value, .template-string, .url) {
+  color: #86efac;
+}
+
+.sbdocs .docblock-source .token:is(.function, .class-name, .maybe-class-name, .builtin) {
+  color: #93c5fd;
+}
+
+.sbdocs .docblock-source .token:is(.tag, .selector, .property) {
+  color: #f9a8d4;
+}
+
+.sbdocs .docblock-source .token:is(.attr-name, .number, .constant, .decorator) {
+  color: #fcd34d;
+}
+
+.sbdocs .docblock-source .token:is(.punctuation, .operator, .imports, .plain-text) {
+  color: #cbd5e1;
+}
+
+.sbdocs .docblock-source > div:has(> button) {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  bottom: auto;
+  z-index: 1;
+  border: 0;
+  background: none;
+  box-shadow: none;
+}
+
+.sbdocs .docblock-source > div:has(> button) > button {
+  position: relative;
+  display: block;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 1px solid rgb(255 255 255 / 0.14);
+  border-radius: 8px;
+  background: rgb(255 255 255 / 0.06);
+  color: #e2e8f0;
+  font-size: 0;
+  /* Storybook underlines the focused button; the ring below is for keyboard focus only */
+  box-shadow: none;
+  opacity: 0;
+  transition:
+    opacity 0.15s var(--ui-ease),
+    background 0.15s var(--ui-ease);
+}
+
+/* Absolutely centered: the hidden "Copy" text would otherwise take a line and push the icon up */
+.sbdocs .docblock-source > div:has(> button) > button::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  width: 16px;
+  height: 16px;
+  background: currentColor;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect width='14' height='14' x='8' y='8' rx='2' ry='2'/%3E%3Cpath d='M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2'/%3E%3C/svg%3E")
+    center / contain no-repeat;
+}
+
+.sbdocs .docblock-source > div:has(> button) > button.np-copied::before {
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E");
+}
+
+.sbdocs .docblock-source > div:has(> button) > button.np-copied {
+  color: #86efac;
+}
+
+.sbdocs .docblock-source:is(:hover, :focus-within) > div:has(> button) > button,
+.sbdocs .docblock-source > div:has(> button) > button.np-copied {
+  opacity: 1;
+}
+
+.sbdocs .docblock-source > div:has(> button) > button:hover {
+  background: rgb(255 255 255 / 0.14);
+}
+
+.sbdocs .docblock-source > div:has(> button) > button:focus-visible {
+  outline: none;
+  box-shadow: var(--ui-ring);
+}
+
+/* Touch screens have no hover: always show it */
+@media (hover: none) {
+  .sbdocs .docblock-source > div:has(> button) > button {
+    opacity: 1;
+  }
 }
 
 /* Storybook's "Incomplete code snippet" warning sits in that corner too: Copy moves to its left */
 .np-code div:has(> button[aria-label='Incomplete code snippet']) .docblock-source > div:has(> button) {
-  right: 36px;
-}
-
-.np-code div:has(> button[aria-label='Incomplete code snippet']) .docblock-source > div:has(> button) > button {
-  border-radius: 0 0 var(--ui-radius-sm) var(--ui-radius-sm);
+  right: 46px;
 }
 
 .np-code__note {

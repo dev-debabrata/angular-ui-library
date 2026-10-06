@@ -1,9 +1,27 @@
-<div class="tree-table-wrapper">
-  <table class="tree-table" role="treegrid">
+@if (filter()) {
+  <np-search-input
+    class="tree-table-filter"
+    [placeholder]="filterPlaceholder()"
+    (search)="onFilter($event)"
+  />
+}
+
+<div
+  class="tree-table-wrapper"
+  [class]="'tree-table--' + variant() + ' tree-table--' + size()"
+  [style.max-height]="scrollHeight() || null"
+>
+  <table
+    class="tree-table"
+    role="treegrid"
+    [attr.aria-multiselectable]="selectionMode() === 'checkbox' || null"
+  >
     <thead>
       <tr>
         @for (column of columns(); track column.field) {
-          <th>{{ column.header }}</th>
+          <th [style.text-align]="column.align" [style.width]="column.width">
+            {{ column.header }}
+          </th>
         }
       </tr>
     </thead>
@@ -12,22 +30,27 @@
         @let node = row.node;
         @let parent = !!node.children?.length;
         @let open = isExpanded(node);
+        @let selected = selectedKeys().has(node.key);
+        @let state = checkState(node);
         <tr
-          [class.row--selectable]="selectionMode() === 'single' && node.selectable !== false"
-          [class.row--selected]="isSelected(node)"
+          [class.row--selectable]="selectionMode() && node.selectable !== false"
+          [class.row--selected]="selectionMode() === 'single' && selected"
           [attr.aria-level]="row.level + 1"
           [attr.aria-expanded]="parent ? open : null"
-          [attr.aria-selected]="selectionMode() ? isSelected(node) : null"
+          [attr.aria-selected]="selectionMode() === 'single' ? selected : null"
+          [attr.aria-checked]="selectionMode() === 'checkbox' ? state : null"
           [attr.tabindex]="selectionMode() ? 0 : null"
           (click)="select(node)"
           (keydown.enter)="select(node)"
           (keydown.space)="select(node); $event.preventDefault()"
+          (keydown.arrowright)="toggle(node, true)"
+          (keydown.arrowleft)="toggle(node, false)"
         >
           @for (column of columns(); track column.field) {
             @let text = cell(node, column.field);
-            <td>
+            <td [style.text-align]="column.align" [style.--level]="$first ? row.level : null">
               @if ($first) {
-                <span class="first-cell" [style.padding-left.px]="row.level * 24">
+                <span class="first-cell">
                   @if (parent) {
                     <button
                       type="button"
@@ -41,6 +64,17 @@
                     </button>
                   } @else {
                     <span class="toggler toggler--spacer"></span>
+                  }
+                  @if (selectionMode() === 'checkbox') {
+                    <span class="checkbox" [class]="'checkbox--' + state" aria-hidden="true">
+                      @if (state !== 'false') {
+                        <np-icon
+                          [name]="state === 'true' ? 'check' : 'minus'"
+                          [size]="14"
+                          [strokeWidth]="3"
+                        />
+                      }
+                    </span>
                   }
                   @if (node.icon || (parent ? (open ? 'folder-open' : 'folder') : null); as icon) {
                     <np-icon class="node-icon" [name]="icon" [size]="18" />

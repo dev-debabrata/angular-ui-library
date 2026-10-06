@@ -1,7 +1,7 @@
 'use client';
 /**
- * React wrapper of the NexPrime Web Components (nexprime-ui/react). Shipped as-is in the npm package.
- * It loads nexprime-ui/elements in the browser only (SSR-safe for Next.js), then gives each element its properties
+ * React wrapper of the NexPrime Web Components (nexprime/react). Shipped as-is in the npm package.
+ * It loads nexprime/elements in the browser only (SSR-safe for Next.js), then gives each element its properties
  * and event listeners once it is defined, so it works on React 18 and 19 and survives hydration.
  */
 import { createElement, useEffect, useRef } from 'react';

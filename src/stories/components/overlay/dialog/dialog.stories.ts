@@ -3,7 +3,8 @@ import { moduleMetadata } from '@storybook/angular-vite';
 import { fn } from 'storybook/test';
 
 import { ButtonComponent } from '../../form/button/button.component';
-import { DIALOG_POSITIONS, DialogComponent } from './dialog.component';
+import { TONES } from '../../../utils/types';
+import { DIALOG_POSITIONS, DIALOG_VARIANTS, DialogComponent } from './dialog.component';
 
 const footer = `
   <div dialogFooter>
@@ -16,8 +17,9 @@ const footer = `
 const template = (trigger: string, withFooter = footer) => `
   ${trigger}
   <np-dialog
-    [visible]="visible" [header]="header" [modal]="modal" [closable]="closable"
-    [dismissableMask]="dismissableMask" [maximizable]="maximizable" [position]="position" [width]="width"
+    [visible]="visible" [header]="header" [subtitle]="subtitle" [icon]="icon" [variant]="variant" [tone]="tone"
+    [modal]="modal" [closable]="closable" [dismissableMask]="dismissableMask" [maximizable]="maximizable"
+    [position]="position" [width]="width" [draggable]="draggable" [blockScroll]="blockScroll"
     (visibleChange)="visible = $event; visibleChange($event)" (show)="show()" (hide)="hide()"
   >
     <p style="margin: 0">
@@ -28,6 +30,16 @@ const template = (trigger: string, withFooter = footer) => `
   </np-dialog>
 `;
 
+/** Story render: a button per option that sets `prop` to it and opens the dialog */
+const pick =
+  (prop: string, options: readonly string[]): Story['render'] =>
+  (args) => ({
+    props: { ...args, options },
+    template: template(`<div style="display: flex; flex-wrap: wrap; gap: 8px">
+      @for (o of options; track o) { <np-button [label]="o" size="small" (clicked)="${prop} = o; visible = true" /> }
+    </div>`),
+  });
+
 const showButton = `<np-button label="Show dialog" [primary]="true" (clicked)="visible = true" />`;
 
 const meta: Meta<DialogComponent> = {
@@ -36,10 +48,15 @@ const meta: Meta<DialogComponent> = {
   tags: ['autodocs'],
   decorators: [moduleMetadata({ imports: [ButtonComponent] })],
   parameters: { docs: { story: { inline: false, height: '420px' } } },
-  argTypes: { position: { control: 'select', options: DIALOG_POSITIONS } },
+  argTypes: {
+    position: { control: 'select', options: DIALOG_POSITIONS },
+    variant: { control: 'select', options: DIALOG_VARIANTS },
+    tone: { control: 'select', options: ['', ...TONES] },
+  },
   args: {
     visible: false,
     header: 'Edit Profile',
+    variant: 'default',
     modal: true,
     closable: true,
     dismissableMask: false,
@@ -60,16 +77,16 @@ export const Default: Story = {};
 
 export const Positions: Story = {
   args: { header: 'Positioned dialog', width: '360px' },
-  render: (args) => ({
-    props: { ...args, positions: DIALOG_POSITIONS },
-    template: template(`
-      <div style="display: flex; flex-wrap: wrap; gap: 8px">
-        @for (p of positions; track p) {
-          <np-button [label]="p" size="small" (clicked)="position = p; visible = true" />
-        }
-      </div>`),
-  }),
+  render: pick('position', DIALOG_POSITIONS),
 };
+
+/** Hero look with a tone: a success or alert dialog with a big icon */
+export const HeroTone: Story = {
+  args: { header: 'Payment received', icon: 'circle-check', variant: 'hero', tone: 'success' },
+};
+
+/** Drag the header to move the dialog */
+export const Draggable: Story = { args: { icon: 'grip-horizontal', draggable: true } };
 
 export const Maximizable: Story = { args: { header: 'Maximizable dialog', maximizable: true } };
 
@@ -83,4 +100,10 @@ export const WithoutModal: Story = {
       '',
     ),
   }),
+};
+
+/** Every look, with an icon and a subtitle */
+export const Variants: Story = {
+  args: { header: 'Invite your team', subtitle: 'Access to this workspace', icon: 'sparkles' },
+  render: pick('variant', DIALOG_VARIANTS),
 };

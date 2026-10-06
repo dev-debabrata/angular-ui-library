@@ -8,7 +8,8 @@ import {
 import { fn } from 'storybook/test';
 
 import type { ChatMessage } from '../chat/chat.component';
-import { VoiceChatComponent } from './voice-chat.component';
+import { VOICE_VARIANTS, VoiceChatComponent } from './voice-chat.component';
+import { appearanceStories } from '../../../utils/appearance-stories';
 
 const greeting: ChatMessage[] = [
   { from: 'them', text: 'Hello! Tap the microphone and start speaking.' },
@@ -26,6 +27,8 @@ const meta: Meta<VoiceChatComponent> = {
   tags: ['autodocs'],
   argTypes: {
     state: { control: 'select', options: ['idle', 'listening', 'processing', 'speaking'] },
+    variant: { control: 'select', options: VOICE_VARIANTS },
+    mode: { control: 'select', options: ['toggle', 'push'] },
   },
   args: {
     messages: greeting,
@@ -33,6 +36,7 @@ const meta: Meta<VoiceChatComponent> = {
     utterance: fn(),
     stateChange: fn(),
     messagesChange: fn(),
+    mutedChange: fn(),
   },
   decorators: [
     componentWrapperDecorator((story) => `<div style="max-width: 460px">${story}</div>`),
@@ -105,3 +109,27 @@ export const States: Story = {
     `,
   }),
 };
+
+/** Push-to-talk: hold the mic (or Space) while talking, release to send */
+export const PushToTalk: Story = { ...Default, args: { mode: 'push', variant: 'orb' } };
+
+/** A large live caption of what's heard and of the reply, plus a mute button for the spoken replies */
+export const CaptionAndMute: Story = {
+  ...Default,
+  args: { caption: true, muteButton: true, speak: true, variant: 'bars' },
+};
+
+/** Every look, each in a different state: default, orb, bars, minimal and glass (over a colorful backdrop) */
+export const Variants: Story = {
+  render: () => ({
+    props: { variants: VOICE_VARIANTS },
+    template: `<div style="display: grid; gap: 16px; padding: 16px; border-radius: 16px; background: radial-gradient(circle at 15% 20%, color-mix(in srgb, var(--ui-primary) 28%, transparent), transparent 55%), radial-gradient(circle at 85% 80%, color-mix(in srgb, var(--ui-accent) 28%, transparent), transparent 55%), var(--ui-surface-muted)">
+      @for (v of variants; track v) { <code>{{ v }}</code> <np-voice-chat [variant]="v" [state]="$any(['idle', 'listening', 'processing', 'speaking', 'listening'][$index])" [messages]="[]" [speak]="false" /> }
+    </div>`,
+  }),
+};
+
+/** The appearance classes from theme.css (np-color-*, np-shape-*) on the Default example */
+const appearance = appearanceStories(meta, Default);
+export const AppearanceColors = appearance.colors;
+export const AppearanceShapes = appearance.shapes;

@@ -12,12 +12,16 @@ import {
 import { IconComponent } from '../../media/icon/icon.component';
 import { type AnchorPosition, anchorPosition } from '../../../utils/anchor-position';
 
+/** Looks of the overlay panel */
+export const OVERLAY_PANEL_VARIANTS = ['default', 'glass', 'glow', 'gradient', 'minimal'] as const;
+export type OverlayPanelVariant = (typeof OVERLAY_PANEL_VARIANTS)[number];
+
 @Component({
   selector: 'np-overlay-panel',
   imports: [IconComponent],
   exportAs: 'overlayPanel',
   host: {
-    '(document:keydown.escape)': 'hide()',
+    '(document:keydown.escape)': 'closeOnEscape() && hide()',
     '(document:click)': 'onDocumentClick($event)',
     '(window:resize)': 'reposition()',
     '(window:scroll)': 'reposition()',
@@ -28,16 +32,22 @@ import { type AnchorPosition, anchorPosition } from '../../../utils/anchor-posit
 export class OverlayPanelComponent {
   /** Close when clicking outside the panel */
   readonly dismissable = input(true, { transform: booleanAttribute });
-
+  /** Close when Escape is pressed */
+  readonly closeOnEscape = input(true, { transform: booleanAttribute });
   /** Show a × button in the corner */
   readonly showCloseIcon = input(false, { transform: booleanAttribute });
-
-  /** Accessible name for the panel */
+  /** Accessible name for the panel (default: the header) */
   readonly ariaLabel = input('');
-
+  /** Look: default, glass (frosted), glow (gradient border), gradient (header on a gradient band) or minimal (no border or arrow) */
+  readonly variant = input<OverlayPanelVariant>('default');
+  /** Title shown in a header row */
+  readonly header = input('');
+  /** Icon file name shown before the header title */
+  readonly icon = input('');
+  /** Panel width as a CSS length (default: fits the content) */
+  readonly width = input('');
   /** Emits when the panel opens */
   readonly onShow = output<void>();
-
   /** Emits when the panel closes */
   readonly onHide = output<void>();
 
@@ -51,10 +61,11 @@ export class OverlayPanelComponent {
   protected readonly position = signal<AnchorPosition | null>(null);
 
   constructor() {
-    // Measure and place the panel when it opens or its anchor changes
+    // Show (as a top-layer popover nothing can clip), measure and place the panel on open or a new anchor
     effect(() => {
       this.anchor();
       this.position.set(null);
+      this.panel()?.nativeElement.showPopover?.();
       if (this.panel()) this.reposition();
     });
   }

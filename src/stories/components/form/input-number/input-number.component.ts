@@ -11,7 +11,12 @@ import {
   signal,
 } from '@angular/core';
 
+import type { FieldVariant } from '../../../utils/types';
 import { IconComponent } from '../../media/icon/icon.component';
+
+/** Where the increment/decrement buttons go */
+export const INPUT_NUMBER_LAYOUTS = ['stacked', 'inline', 'horizontal', 'split', 'vertical'] as const;
+export type InputNumberLayout = (typeof INPUT_NUMBER_LAYOUTS)[number];
 
 let nextId = 0;
 
@@ -37,8 +42,21 @@ export class InputNumberComponent {
   /** Show increment/decrement buttons? */
   readonly showButtons = input(false, { transform: booleanAttribute });
 
-  /** Button placement: small arrows on the right, − input +, or + above and − below */
-  readonly buttonLayout = input<'stacked' | 'horizontal' | 'vertical'>('stacked');
+  /**
+   * Button placement: stacked (small arrows on the right), inline (− + inside the right edge),
+   * horizontal (− input + as separate buttons), split (− and + inside both ends of one field)
+   * or vertical (+ above and − below)
+   */
+  readonly buttonLayout = input<InputNumberLayout>('stacked');
+
+  /** Field style: outlined, filled, underline or floating (label inside, floats up) */
+  readonly variant = input<FieldVariant>('outlined');
+
+  /** Leading icon file name from src/stories/icons/svg */
+  readonly icon = input('');
+
+  /** Show a thin bar under the input for the value between min and max (needs both) */
+  readonly meter = input(false, { transform: booleanAttribute });
 
   /** Format style. In percent mode 25 is shown as 25% */
   readonly mode = input<'decimal' | 'currency' | 'percent'>('decimal');
@@ -117,6 +135,13 @@ export class InputNumberComponent {
       this.formatter().format(this.mode() === 'percent' ? v / 100 : v) +
       this.suffix()
     );
+  });
+
+  /** Position of the value between min and max, 0–100 (null without both bounds) */
+  protected readonly percent = computed(() => {
+    const [min, max, v] = [this.min(), this.max(), this.value()];
+    if (min == null || max == null || max <= min) return null;
+    return Math.max(0, Math.min(100, (((v ?? min) - min) / (max - min)) * 100));
   });
 
   private timer?: ReturnType<typeof setTimeout>;

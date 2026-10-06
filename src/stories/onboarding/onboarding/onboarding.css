@@ -118,7 +118,7 @@
 .onboarding__dots i {
   width: 6px;
   height: 6px;
-  border-radius: 999px;
+  border-radius: var(--ui-radius-full);
   background: var(--ob-dot, var(--ui-border-strong));
   transition:
     width var(--ui-ease),

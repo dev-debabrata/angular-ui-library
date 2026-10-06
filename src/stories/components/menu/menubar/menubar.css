@@ -1,19 +1,33 @@
 /* The host is a size container so the bar collapses based on its own width, not the viewport */
 :host {
+  position: relative;
   display: block;
   container-type: inline-size;
 }
 
+/* The container is its own stacking context: lift it while a menu is open so the menu covers what follows */
+:host(.np-menubar--open) {
+  z-index: 11;
+}
+
+:host(.np-menubar--sticky) {
+  position: sticky;
+  z-index: 10;
+  top: 0;
+}
+
+/* Variants set the bar (--mb-*) variables */
 .menubar {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 8px 16px;
   padding: 8px 12px;
-  border: 1px solid var(--ui-border);
-  border-radius: var(--ui-radius-lg);
-  background: var(--ui-surface);
-  box-shadow: var(--ui-shadow);
+  border: 1px solid var(--mb-border, var(--ui-border));
+  border-radius: var(--mb-radius, var(--ui-radius-lg));
+  background: var(--mb-bg, var(--ui-surface));
+  box-shadow: var(--mb-shadow, var(--ui-shadow));
+  backdrop-filter: var(--mb-blur, none);
   font-family: var(--ui-font);
   font-size: 14px;
 }
@@ -52,6 +66,57 @@
   display: flex;
   align-items: center;
   gap: 4px;
+}
+
+.menubar--glass {
+  --mb-bg: color-mix(in srgb, var(--ui-surface) 65%, transparent);
+  --mb-border: color-mix(in srgb, var(--ui-border) 70%, transparent);
+  --mb-blur: blur(14px) saturate(1.6);
+}
+
+.menubar--floating {
+  --mb-radius: var(--ui-radius-full);
+  --mb-shadow: var(--ui-shadow-lg);
+  width: fit-content;
+  padding: 6px 10px;
+}
+
+/* The current row is [active]; underline swaps its background for a line */
+.menubar--underline .menubar-current {
+  & > np-menu-item {
+    --mi-hover-bg: none;
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: auto 12px -4px;
+    height: 2px;
+    border-radius: var(--ui-radius-full);
+    background: var(--ui-gradient);
+    animation: mb-line 0.25s ease-out;
+  }
+}
+
+/* Gradient: white text on the bar (top-level rows and toggle); the dropdowns keep their own colors */
+.menubar--gradient {
+  --mb-bg: var(--ui-gradient);
+  --mb-border: transparent;
+  color: #fff;
+
+  & .menubar-root > li > np-menu-item,
+  & .menubar-toggle {
+    --ui-text: #fff;
+    --ui-text-muted: color-mix(in srgb, #fff 75%, transparent);
+    --ui-primary: #fff;
+    --ui-primary-soft: color-mix(in srgb, #fff 16%, transparent);
+  }
+}
+
+@keyframes mb-line {
+  from {
+    scale: 0 1;
+  }
 }
 
 /* Dropdown below a top-level item (.mi-float), flyouts (.mi-flyout) to the right of nested items */
@@ -94,6 +159,15 @@
 
 /* Narrow: hamburger toggle, items stack vertically and submenus expand inline */
 @container (max-width: 720px) {
+  .menubar {
+    --mb-radius: var(--ui-radius-lg);
+    width: auto;
+  }
+
+  .menubar-current::after {
+    display: none;
+  }
+
   .menubar-toggle {
     display: grid;
   }
@@ -126,5 +200,11 @@
     border: none;
     box-shadow: none;
     animation: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .menubar * {
+    animation: none !important;
   }
 }

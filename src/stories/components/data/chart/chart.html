@@ -1,15 +1,30 @@
-<div class="chart" [style.height.px]="height()">
+<div class="chart" [class.chart--animate]="animate()" [style.height.px]="height()">
   <svg [attr.width]="width()" [attr.height]="height()" role="img" [attr.aria-label]="ariaLabel()">
-    @if (cartesian()) {
+    @if (!byLabel()) {
       @let p = plot();
-      @for (tick of p.ticks; track tick) {
-        @if (showGrid()) {
-          <line class="grid" [attr.x1]="p.x0" [attr.x2]="p.x1" [attr.y1]="p.y(tick)" [attr.y2]="p.y(tick)" />
+      @let axes = cartesian() && type() !== 'sparkline';
+      @if (type() === 'radar') {
+        @let r = radar();
+        @for (ring of r.rings; track ring.tick) {
+          @if (showGrid()) {
+            <path class="grid" [attr.d]="ring.d" />
+          }
+          <text class="tick" [attr.x]="r.cx + 4" [attr.y]="ring.y - 4">{{ format()(ring.tick) }}</text>
         }
-        <text class="tick tick--y" [attr.x]="p.x0 - 10" [attr.y]="p.y(tick)">{{ format()(tick) }}</text>
-      }
-      @for (label of labels(); track $index) {
-        <text class="tick tick--x" [attr.x]="p.cx($index)" [attr.y]="p.y1 + 18">{{ label }}</text>
+        @for (spoke of r.spokes; track $index) {
+          <line class="grid" [attr.x1]="r.cx" [attr.y1]="r.cy" [attr.x2]="spoke.end[0]" [attr.y2]="spoke.end[1]" />
+          <text class="tick tick--y" [attr.x]="spoke.x" [attr.y]="spoke.y" [style.text-anchor]="spoke.anchor">{{ labels()[$index] }}</text>
+        }
+      } @else if (axes) {
+        @for (tick of p.ticks; track tick) {
+          @if (showGrid()) {
+            <line class="grid" [attr.x1]="p.x0" [attr.x2]="p.x1" [attr.y1]="p.y(tick)" [attr.y2]="p.y(tick)" />
+          }
+          <text class="tick tick--y" [attr.x]="p.x0 - 10" [attr.y]="p.y(tick)">{{ format()(tick) }}</text>
+        }
+        @for (label of labels(); track $index) {
+          <text class="tick tick--x" [attr.x]="p.cx($index)" [attr.y]="p.y1 + 18">{{ label }}</text>
+        }
       }
 
       @if (type() === 'bar') {
@@ -23,10 +38,13 @@
           />
         }
         @for (bar of bars(); track $index) {
-          <path [attr.d]="bar.d" [style.fill]="bar.color" />
+          <path class="bar" [attr.d]="bar.d" [style.fill]="bar.color" />
+          @if (showValues() && bar.text) {
+            <text class="tick tick--x value" [attr.x]="bar.x" [attr.y]="bar.y - 6">{{ bar.text }}</text>
+          }
         }
       } @else {
-        @if (hover() !== null) {
+        @if (hover() !== null && cartesian()) {
           <line
             class="crosshair"
             [attr.x1]="p.cx(hover()!)"
@@ -36,10 +54,24 @@
           />
         }
         @for (s of series(); track $index) {
-          @if (type() === 'area') {
-            <path class="area" [attr.d]="s.area" [style.fill]="s.color" />
+          @if (gradient()) {
+            <linearGradient [attr.id]="uid + $index" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" [style.stop-color]="s.color" stop-opacity="0.32" />
+              <stop offset="1" [style.stop-color]="s.color" stop-opacity="0" />
+            </linearGradient>
           }
-          <path class="line" [attr.d]="s.line" [style.stroke]="s.color" />
+          @if (gradient() || type() === 'area' || type() === 'radar') {
+            <path
+              class="area"
+              [class.area--gradient]="gradient()"
+              [attr.d]="s.area"
+              [style.fill]="gradient() ? 'url(#' + uid + $index + ')' : s.color"
+            />
+          }
+          <path class="line" pathLength="1" [attr.d]="s.line" [style.stroke]="s.color" />
+          @if (type() === 'sparkline' && s.points.at(-1); as end) {
+            <circle class="dot" [attr.cx]="end[0]" [attr.cy]="end[1]" r="4" [style.fill]="s.color" />
+          }
         }
         @if (hover() !== null) {
           @for (s of series(); track $index) {
@@ -49,7 +81,9 @@
           }
         }
       }
-      <line class="axis" [attr.x1]="p.x0" [attr.x2]="p.x1" [attr.y1]="p.base" [attr.y2]="p.base" />
+      @if (axes) {
+        <line class="axis" [attr.x1]="p.x0" [attr.x2]="p.x1" [attr.y1]="p.base" [attr.y2]="p.base" />
+      }
       <rect
         class="hit"
         [attr.x]="p.x0"
@@ -59,11 +93,11 @@
         (pointermove)="onMove($event)"
         (pointerleave)="hover.set(null)"
       />
-    } @else {
+    } @else if (type() === 'pie' || type() === 'doughnut') {
       @for (s of slices(); track $index) {
         <path
           class="slice"
-          [class.slice--dim]="hover() !== null && hover() !== $index"
+          [class.dim]="hover() !== null && hover() !== $index"
           [attr.d]="s.d"
           [style.fill]="s.color"
           (pointerenter)="hover.set($index)"
@@ -73,6 +107,29 @@
       @if (type() === 'doughnut') {
         <text class="total" [attr.x]="width() / 2" [attr.y]="height() / 2 - 4">{{ format()(total()) }}</text>
         <text class="total-label" [attr.x]="width() / 2" [attr.y]="height() / 2 + 16">Total</text>
+      }
+    } @else {
+      <!-- radial and gauge: each ring on a faint track of its color -->
+      @for (ring of rings(); track $index) {
+        <g
+          class="ring"
+          [class.dim]="hover() !== null && hover() !== $index"
+          [style.stroke]="ring.color"
+          [style.stroke-width.px]="ring.width"
+          (pointerenter)="hover.set($index)"
+          (pointerleave)="hover.set(null)"
+        >
+          <path class="track" [attr.d]="ring.track" />
+          @if (ring.d) {
+            <path class="arc" pathLength="1" [attr.d]="ring.d" />
+          }
+        </g>
+      }
+      @if (type() === 'gauge' && rings()[0]; as g) {
+        <text class="total" [attr.x]="g.cx" [attr.y]="g.cy - 8">{{ format()(g.value) }}</text>
+        <text class="total-label" [attr.x]="g.cx" [attr.y]="g.cy + 20">{{ labels()[0] || datasets()[0].label }}</text>
+        <text class="tick tick--x" [attr.x]="g.cx - g.r" [attr.y]="g.cy + 20">{{ format()(0) }}</text>
+        <text class="tick tick--x" [attr.x]="g.cx + g.r" [attr.y]="g.cy + 20">{{ format()(max()) }}</text>
       }
     }
   </svg>
@@ -89,7 +146,7 @@
   }
 </div>
 
-@if (showLegend() && (legend().length > 1 || !cartesian())) {
+@if (showLegend() && (legend().length > 1 || (byLabel() && type() !== 'gauge'))) {
   <ul class="legend">
     @for (item of legend(); track $index) {
       <li><i class="swatch" [style.background]="item.color"></i>{{ item.label }}</li>

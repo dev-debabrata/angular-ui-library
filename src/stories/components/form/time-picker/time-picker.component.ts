@@ -15,6 +15,7 @@ import { NgTemplateOutlet } from '@angular/common';
 
 import { IconComponent } from '../../media/icon/icon.component';
 import { type AnchorPosition, anchorPosition } from '../../../utils/anchor-position';
+import type { FieldVariant } from '../../../utils/types';
 
 type TimeUnit = 'hour' | 'minute' | 'second' | 'meridian';
 
@@ -116,6 +117,9 @@ export class TimePickerComponent {
   /** Is the picker disabled? */
   readonly disabled = input(false, { transform: booleanAttribute });
 
+  /** Style of the popup/list input field: outlined, filled, underline or floating (label inside the field) */
+  readonly variant = input<FieldVariant>('outlined');
+
   protected readonly id = `np-time-picker-${nextId++}`;
   protected readonly opened = signal(false);
   protected readonly position = signal<AnchorPosition | null>(null);
@@ -131,6 +135,14 @@ export class TimePickerComponent {
   /** Time shown in the spinners: the value, or midnight today before anything is picked */
   private readonly current = computed(
     () => this.value() ?? new Date(new Date().setHours(0, 0, 0, 0)),
+  );
+
+  /** Popup and list modes show an input field (the variant styles it); inline spinner mode shows the panel */
+  protected readonly hasField = computed(() => !this.inline() || this.mode() === 'list');
+
+  /** The field's class: its variant, only when there is an input field */
+  protected readonly fieldClass = computed(() =>
+    this.hasField() ? 'ui-field--' + this.variant() : '',
   );
 
   protected readonly text = computed(() => {

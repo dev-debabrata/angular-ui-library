@@ -10,13 +10,71 @@
   animation: fade-in 0.2s ease-out;
 }
 
+/* Glass: a lighter backdrop so the page shows through the frosted modal */
+.modal-backdrop:has(> .modal--glass) {
+  background: rgba(15, 23, 42, 0.25);
+}
+
 .modal {
+  --modal-w: 480px;
+  display: flex;
+  flex-direction: column;
   overflow: hidden;
-  width: min(480px, 90vw);
+  width: min(var(--modal-w), 90vw);
+  max-height: calc(100vh - 48px);
+  border: 1px solid transparent;
   border-radius: var(--ui-radius-lg);
   background: var(--ui-surface);
   box-shadow: var(--ui-shadow-lg);
   animation: pop-in 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.modal--small {
+  --modal-w: 360px;
+}
+
+.modal--large {
+  --modal-w: 720px;
+}
+
+.modal--glass {
+  background: color-mix(in srgb, var(--ui-surface) 65%, transparent);
+  border-color: color-mix(in srgb, #fff 40%, transparent);
+  backdrop-filter: blur(20px) saturate(1.6);
+}
+
+/* Gradient: a gradient border with a soft glow */
+.modal--gradient {
+  background:
+    linear-gradient(var(--ui-surface), var(--ui-surface)) padding-box,
+    var(--ui-gradient) border-box;
+  box-shadow:
+    var(--ui-shadow-lg),
+    0 0 48px -8px color-mix(in srgb, var(--ui-primary) 45%, transparent);
+}
+
+/* Sheet: full width at the bottom with a grab handle */
+.modal--sheet {
+  align-self: flex-end;
+  width: min(var(--modal-w), 100vw);
+  border-radius: var(--ui-radius-lg) var(--ui-radius-lg) 0 0;
+  animation-name: sheet-in;
+  &::before {
+    content: '';
+    align-self: center;
+    width: 40px;
+    height: 4px;
+    margin-top: 10px;
+    border-radius: var(--ui-radius-full);
+    background: var(--ui-border-strong);
+  }
+}
+
+.modal--full {
+  width: 100vw;
+  height: 100vh;
+  max-height: none;
+  border-radius: 0;
 }
 
 .modal-header {
@@ -33,11 +91,25 @@
   letter-spacing: -0.01em;
 }
 
+/* The body scrolls; header and footer stay in place */
 .modal-body {
+  flex: 1;
+  overflow: auto;
   padding: 12px 24px 24px;
   color: var(--ui-text-muted);
   font-size: 14px;
   line-height: 1.6;
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 14px 24px;
+  border-top: 1px solid var(--ui-border);
+  &:empty {
+    display: none;
+  }
 }
 
 @keyframes fade-in {
@@ -50,5 +122,17 @@
   from {
     opacity: 0;
     transform: scale(0.94) translateY(8px);
+  }
+}
+
+@keyframes sheet-in {
+  from {
+    transform: translateY(100%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :is(.modal, .modal-backdrop) {
+    animation: none;
   }
 }

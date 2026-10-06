@@ -40,7 +40,7 @@
   span {
     width: 40px;
     height: 5px;
-    border-radius: 999px;
+    border-radius: var(--ui-radius-full);
     background: var(--ui-border-strong);
   }
 }

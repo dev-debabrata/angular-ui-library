@@ -8,7 +8,9 @@ import {
 import { fn } from 'storybook/test';
 
 import { IconComponent } from '../../media/icon/icon.component';
-import { FormComponent, type FormField, type FormOption } from './form.component';
+import { FIELD_VARIANTS } from '../../../utils/types';
+import { FORM_VARIANTS, FormComponent, type FormField, type FormOption } from './form.component';
+import { appearanceStories } from '../../../utils/appearance-stories';
 
 const options = (...labels: string[]): FormOption[] =>
   labels.map((label) => ({ value: label.toLowerCase().replace(/\s+/g, '-'), label }));
@@ -64,6 +66,11 @@ const meta: Meta<FormComponent> = {
       ({ parameters }) => ({ formWidth: parameters['width'] ?? '480px' }),
     ),
   ],
+  argTypes: {
+    variant: { control: 'select', options: FORM_VARIANTS },
+    fieldVariant: { control: 'select', options: FIELD_VARIANTS },
+    progress: { control: 'inline-radio', options: ['bars', 'stepper'] },
+  },
   args: { submitted: fn(), valueChange: fn() },
 };
 
@@ -559,6 +566,149 @@ export const Onboarding: Story = {
   },
 };
 
+/** `type: 'otp'`: one box per digit, on a card with a gradient border (`variant: 'glow'`) */
+export const VerifyPhone: Story = {
+  args: {
+    variant: 'glow',
+    block: true,
+    icon: 'smartphone',
+    title: 'Verify your phone',
+    subtitle: 'We sent a 6-digit code to +1 (555) 012-3456',
+    submitLabel: 'Verify',
+    submitIcon: 'shield-check',
+    successTitle: 'Phone verified',
+    successMessage: 'You can now sign in with your phone number.',
+    fields: [{ name: 'code', label: 'Verification code', type: 'otp', length: 6, required: true }],
+  },
+};
+
+/** `type: 'number'` fields (− + buttons), options with icons, filled fields and a gradient strip on top */
+export const Booking: Story = {
+  args: {
+    variant: 'accent',
+    fieldVariant: 'filled',
+    columns: 2,
+    icon: 'calendar',
+    title: 'Book your stay',
+    subtitle: 'Free cancellation up to 48 hours before check-in',
+    submitLabel: 'Check availability',
+    submitIcon: 'search',
+    block: true,
+    value: { guests: 2, nights: 3 },
+    fields: [
+      { name: 'guests', label: 'Guests', type: 'number', icon: 'users', min: 1, max: 8, required: true },
+      { name: 'nights', label: 'Nights', type: 'number', icon: 'moon', min: 1, max: 30, required: true },
+      {
+        name: 'room',
+        label: 'Room',
+        type: 'segmented',
+        wide: true,
+        required: true,
+        options: [
+          { value: 'standard', label: 'Standard', icon: 'bed' },
+          { value: 'deluxe', label: 'Deluxe', icon: 'sparkles' },
+          { value: 'suite', label: 'Suite', icon: 'crown' },
+        ],
+      },
+      {
+        name: 'extras',
+        label: 'Extras',
+        type: 'multichips',
+        wide: true,
+        options: [
+          { value: 'breakfast', label: 'Breakfast', icon: 'coffee' },
+          { value: 'parking', label: 'Parking', icon: 'car' },
+          { value: 'spa', label: 'Spa access', icon: 'bath' },
+        ],
+      },
+      { name: 'email', label: 'Email', type: 'email', icon: 'mail', wide: true, required: true },
+    ],
+  },
+};
+
+/** `type: 'emoji'`: faces named by the options, on a card whose heading sits on a gradient band */
+export const QuickFeedback: Story = {
+  args: {
+    variant: 'gradient',
+    icon: 'message-circle-heart',
+    title: 'How was your experience?',
+    subtitle: 'It takes 10 seconds.',
+    submitLabel: 'Send',
+    submitIcon: 'send',
+    block: true,
+    successTitle: 'Thank you!',
+    fields: [
+      {
+        name: 'mood',
+        label: 'Your rating',
+        type: 'emoji',
+        required: true,
+        options: options('Terrible', 'Bad', 'Okay', 'Good', 'Great'),
+      },
+      { name: 'comment', label: 'Anything to add?', type: 'textarea', rows: 3 },
+    ],
+  },
+};
+
+/** The Survey with `progress: 'stepper'`: numbered circles with the step titles */
+export const SurveyStepper: Story = { args: { ...Survey.args, progress: 'stepper' } };
+
+/** Every look (`variant`) */
+export const Variants: Story = {
+  args: { fields: Login.args!.fields!.slice(0, 2), block: true, submitLabel: 'Sign in', icon: 'log-in' },
+  parameters: { width: '100%' },
+  render: (args) => ({
+    props: { ...args, variants: FORM_VARIANTS },
+    template: `
+      <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 24px">
+        @for (v of variants; track v) {
+          <np-form [variant]="v" [title]="v" subtitle="Sign in to your account" [icon]="icon"
+            [fields]="fields" [block]="block" [submitLabel]="submitLabel" (submitted)="submitted($event)" />
+        }
+      </div>
+    `,
+  }),
+};
+
+/** A frosted card over a colorful background */
+export const Glass: Story = {
+  args: { ...Login.args, card: false, variant: 'glass', fieldVariant: 'filled' },
+  render: (args) => ({
+    props: args,
+    template: `
+      <div style="padding: 40px 24px; border-radius: 20px;
+        background: radial-gradient(circle at 15% 20%, #a855f7, transparent 45%),
+          radial-gradient(circle at 85% 80%, #ec4899, transparent 45%), linear-gradient(135deg, #4f46e5, #0ea5e9)">
+        <np-form ${argsToTemplate(args)} />
+      </div>
+    `,
+  }),
+};
+
+/** `fieldVariant` styles the text, select, textarea and number fields */
+export const FieldVariants: Story = {
+  parameters: { width: '100%' },
+  render: (args) => ({
+    props: {
+      ...args,
+      variants: FIELD_VARIANTS,
+      fields: [
+        { name: 'name', label: 'Full name', type: 'text', icon: 'user', required: true },
+        { name: 'email', label: 'Email', type: 'email', icon: 'mail', required: true },
+        { name: 'topic', label: 'Topic', type: 'select', options: options('Sales', 'Support', 'Billing') },
+      ] satisfies FormField[],
+    },
+    template: `
+      <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 24px">
+        @for (v of variants; track v) {
+          <np-form card [title]="v" [fieldVariant]="v" [fields]="fields" submitLabel="Send" block
+            (submitted)="submitted($event)" />
+        }
+      </div>
+    `,
+  }),
+};
+
 /** Two columns; the radio group, bio and toggle take the full row */
 export const Profile: Story = {
   args: { fields: profile, columns: 2, submitLabel: 'Save profile', resetLabel: 'Reset' },
@@ -580,3 +730,8 @@ export const Prefilled: Story = {
 export const Loading: Story = { args: { ...ContactUs.args, loading: true } };
 
 export const Disabled: Story = { args: { ...SignUp.args, disabled: true } };
+
+/** The appearance classes from theme.css (np-color-*, np-shape-*) on the Login example */
+const appearance = appearanceStories(meta, Login);
+export const AppearanceColors = appearance.colors;
+export const AppearanceShapes = appearance.shapes;

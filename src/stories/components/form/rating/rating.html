@@ -1,23 +1,49 @@
-<div
-  class="rating"
-  [class.rating--readonly]="readonly()"
-  role="radiogroup"
-  aria-label="Rating"
-  (mouseleave)="hover.set(0)"
->
-  @for (star of stars(); track star) {
-    <button
-      type="button"
-      class="star"
-      [class.star--filled]="star <= (hover() || value())"
-      [disabled]="readonly()"
-      role="radio"
-      [attr.aria-checked]="star === value()"
-      [attr.aria-label]="star + ' star' + (star > 1 ? 's' : '')"
-      (mouseenter)="!readonly() && hover.set(star)"
-      (click)="value.set(star)"
-    >
-      ★
-    </button>
+@let tabStop = checkedItem() || 1;
+<div class="rating" [class]="['rating--' + variant(), 'rating--' + size()]" [class.rating--readonly]="readonly()">
+  <div
+    class="rating__items"
+    role="radiogroup"
+    aria-label="Rating"
+    [style.--n]="max()"
+    (mouseleave)="hover.set(0)"
+    (keydown)="!readonly() && onKeydown($event)"
+  >
+    @for (item of items(); track item) {
+      <button
+        #btn
+        type="button"
+        class="rating__item"
+        [class.rating__item--on]="item <= shown()"
+        [class.rating__item--current]="item === current()"
+        [style.--i]="item - 1"
+        [disabled]="readonly()"
+        [tabindex]="item === tabStop ? 0 : -1"
+        role="radio"
+        [attr.aria-checked]="item === checkedItem()"
+        [attr.aria-label]="(labels()[item - 1] || item) + (variant() === 'star' ? ' star' + (item > 1 ? 's' : '') : '')"
+        (pointermove)="onPointer($event, item)"
+        (click)="pick($event, item)"
+      >
+        @switch (variant()) {
+          @case ('emoji') {
+            <span class="rating__face" aria-hidden="true">{{ face(item) }}</span>
+          }
+          @case ('number') {
+            {{ item }}
+          }
+          @case ('bar') {}
+          @default {
+            <!-- The base shape, with a clipped filled copy on top (partial fill for half values) -->
+            <svg class="rating__shape" viewBox="0 0 24 24" aria-hidden="true"><path [attr.d]="shape()" /></svg>
+            <span class="rating__fill" [style.width.%]="fill(item)" aria-hidden="true">
+              <svg class="rating__shape" viewBox="0 0 24 24"><path [attr.d]="shape()" /></svg>
+            </span>
+          }
+        }
+      </button>
+    }
+  </div>
+  @if (caption()) {
+    <span class="rating__caption" aria-live="polite">{{ caption() }}</span>
   }
 </div>

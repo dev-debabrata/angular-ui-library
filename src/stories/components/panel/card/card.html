@@ -2,7 +2,21 @@
   <img class="card-image" [src]="image()" [alt]="imageAlt()" [style.height]="imageHeight()" />
 </ng-template>
 
-<div class="card" [class.card--media]="image()">
+<div
+  class="card"
+  [class]="'card--' + variant()"
+  [class.card--media]="image()"
+  [class.card--horizontal]="horizontal() && image()"
+  [class.card--overlay]="overlay() && image()"
+  [attr.aria-busy]="loading() || null"
+>
+  @if (loading()) {
+    @if (image()) {
+      <i class="card-image" [style.height]="imageHeight()"></i>
+    }
+    <div class="card-body card-skeleton" aria-hidden="true"><i></i><i></i><i></i></div>
+  }
+
   @if (image() && imagePosition() === 'top') {
     <ng-container [ngTemplateOutlet]="media" />
   }
@@ -34,4 +48,18 @@
   <div class="card-footer" [class]="'card-footer--' + footerAlign()">
     <ng-content select="[cardFooter]" />
   </div>
+
+  @if (href()) {
+    <a class="card-action" [href]="href()" [attr.aria-label]="title() || imageAlt()"></a>
+  } @else if (clickable()) {
+    <button
+      type="button"
+      class="card-action"
+      [attr.aria-label]="title() || imageAlt()"
+      (click)="cardClick.emit($event)"
+    ></button>
+  }
+  @if (badge()) {
+    <span class="card-badge">{{ badge() }}</span>
+  }
 </div>

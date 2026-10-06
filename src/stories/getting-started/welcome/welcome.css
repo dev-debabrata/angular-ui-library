@@ -19,8 +19,71 @@
   min-height: 600px;
 }
 
+/* The dark gradient shows until the banner has loaded */
 .hero {
+  position: relative;
+  overflow: hidden;
   background: radial-gradient(ellipse at top, #1e1b4b 0%, #0b1020 60%, #020617 100%);
+}
+
+/* ---- hero background: the NexPrime banner (public/nexprime-hero.svg: NP mark, wordmark, tagline, light rays),
+   filling the hero behind the particles, with a dark wash so the title and buttons read on top of it */
+.hero__bg {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* The banner's tagline (bottom band) turns light gray: the band removes the banner's color behind it */
+.hero__bg::before {
+  content: '';
+  position: absolute;
+  inset: auto 0 0;
+  height: 24%;
+  backdrop-filter: grayscale(1) brightness(0.8);
+  mask: linear-gradient(to top, #000 55%, transparent);
+}
+
+/* Extra shade over the banner's wordmark (right of center) and tagline (bottom) so they stay in the background */
+.hero__bg::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 58% 32% at 68% 47%, rgb(2 6 23 / 0.72), transparent 80%),
+    linear-gradient(to top, rgb(2 6 23 / 0.78), transparent 24%),
+    radial-gradient(ellipse 60% 55% at 50% 50%, rgb(2 6 23 / 0.6), rgb(2 6 23 / 0.25));
+}
+
+.hero__banner {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Phones only see a narrow slice: zoom in on the NP mark (at 23% / 46% of the banner) so the wordmark and tagline
+   fall outside, instead of showing half of them */
+@media (max-width: 640px) {
+  .hero__banner {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: auto;
+    max-width: none;
+    height: 180%;
+    translate: -23% -46%;
+  }
+
+  /* The wordmark and tagline are cropped out here: keep only the base wash, not the NP mark shaded or gray */
+  .hero__bg::before {
+    display: none;
+  }
+
+  .hero__bg::after {
+    background: radial-gradient(ellipse 60% 55% at 50% 50%, rgb(2 6 23 / 0.6), rgb(2 6 23 / 0.25));
+  }
 }
 
 .hero__inner {
@@ -60,9 +123,29 @@
   --np-anim-delay: 0.08s;
 }
 
-/* Brighter gradient on the dark hero */
-.hero__title .gradient-text {
-  background-image: linear-gradient(120deg, #a5b4fc, #f0abfc 55%, #7dd3fc);
+/* White title with one band of gradient color that sweeps from the first word to the last, then starts again at the
+   first. The image is 3× the text's width with the band in its middle: at 100% the band sits just left of the text,
+   at 0% just right of it, so each pass enters at "Build" and leaves after "faster". On an inner span, so the h1's
+   fade-up entrance animation stays; the band crosses the line break as one */
+.hero__shine {
+  background: linear-gradient(90deg, #fff 40%, #a5b4fc 44%, #f0abfc 50%, #7dd3fc 56%, #fff 60%) 100%
+    50% / 300% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: hero-shine 4s linear infinite;
+}
+
+@keyframes hero-shine {
+  to {
+    background-position: 0% 50%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero__shine {
+    animation: none;
+  }
 }
 
 .hero__lead {
@@ -503,6 +586,17 @@ h3 {
   text-decoration: none;
 }
 
+.quickstart__text code {
+  padding: 2px 7px;
+  border: 1px solid var(--ui-border);
+  border-radius: var(--ui-radius-sm);
+  background: var(--ui-surface);
+  color: var(--ui-primary);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.85em;
+  white-space: nowrap;
+}
+
 .code {
   overflow: hidden;
   border: 1px solid #1e293b;
@@ -585,6 +679,15 @@ h3 {
   color: var(--ui-text-subtle);
   font-size: 13px;
   text-align: center;
+}
+
+.footer__credit {
+  margin: 6px 0 0;
+
+  b {
+    color: var(--ui-text-muted);
+    font-weight: 600;
+  }
 }
 
 /* Grid items may shrink below their content (wide code, charts) instead of overflowing the page */

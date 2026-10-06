@@ -1,12 +1,10 @@
 import type { Meta, StoryObj } from '@storybook/angular-vite';
 
-import { SkeletonComponent } from './skeleton.component';
+import { SKELETON_PRESETS, SKELETON_VARIANTS, SkeletonComponent } from './skeleton.component';
+import { appearanceStories } from '../../../utils/appearance-stories';
 
 /** <np-skeleton> with the given attributes, following the story's animation arg */
 const sk = (attrs: string) => `<np-skeleton ${attrs} [animation]="animation" />`;
-const lines = (...widths: string[]) =>
-  `<div style="flex: 1; display: grid; gap: 8px">${widths.map((w) => sk(w)).join('')}</div>`;
-const radius = 'borderRadius="var(--ui-radius)"';
 
 const meta: Meta<SkeletonComponent> = {
   title: 'Components/Feedback/Skeleton',
@@ -15,6 +13,8 @@ const meta: Meta<SkeletonComponent> = {
   argTypes: {
     shape: { control: 'select', options: ['rectangle', 'circle'] },
     animation: { control: 'select', options: ['wave', 'pulse', 'none'] },
+    variant: { control: 'select', options: SKELETON_VARIANTS },
+    preset: { control: 'select', options: ['', ...SKELETON_PRESETS] },
   },
   args: { shape: 'rectangle', width: '100%', height: '1rem', animation: 'wave' },
 };
@@ -38,69 +38,46 @@ export const Shapes: Story = {
   }),
 };
 
-export const CardLoading: Story = {
+export const Pulse: Story = { args: { animation: 'pulse', height: '2rem' } };
+
+/** `duration` sets the speed of one wave or pulse cycle */
+export const Duration: Story = { args: { preset: 'text', duration: '3s' } };
+
+/** `preset` lays out a whole loading state: text (`lines`), avatar, list, card or table (`columns`) */
+export const Presets: Story = {
   render: (args) => ({
-    props: args,
+    props: { ...args, presets: SKELETON_PRESETS },
     template: `
-      <div style="max-width: 360px; padding: 20px; border: 1px solid var(--ui-border); border-radius: var(--ui-radius-lg); background: var(--ui-surface); box-shadow: var(--ui-shadow)">
-        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px">
-          ${sk('shape="circle" size="44px"')}
-          ${lines('width="60%" height="12px"', 'width="40%" height="10px"')}
-        </div>
-        ${sk(`height="160px" ${radius}`)}
-        <div style="margin: 16px 0">${lines('height="10px"', 'height="10px"', 'width="75%" height="10px"')}</div>
-        <div style="display: flex; justify-content: flex-end; gap: 8px">
-          ${sk(`width="80px" height="34px" ${radius}`).repeat(2)}
-        </div>
+      <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 32px">
+        @for (preset of presets; track preset) {
+          <div style="display: grid; align-content: start; gap: 10px">
+            <code style="color: var(--ui-text-muted); font-size: 12px">{{ preset }}</code>
+            <np-skeleton [preset]="preset" [animation]="animation" />
+          </div>
+        }
       </div>
     `,
   }),
 };
 
-export const ListLoading: Story = {
+/** Every `variant` on a colorful background (glass is frosted): default, soft, gradient and glass */
+export const Variants: Story = {
   render: (args) => ({
-    props: { ...args, rows: [1, 2, 3, 4] },
+    props: { ...args, variants: SKELETON_VARIANTS },
     template: `
-      <ul style="max-width: 420px; margin: 0; padding: 0; list-style: none; display: grid; gap: 16px">
-        @for (row of rows; track row) {
-          <li style="display: flex; align-items: center; gap: 12px">
-            ${sk('shape="circle" size="40px"')}
-            ${lines('width="50%" height="12px"', 'width="85%" height="10px"')}
-          </li>
+      <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 24px; padding: 24px; border-radius: var(--ui-radius-lg); background: radial-gradient(circle at 15% 20%, color-mix(in srgb, var(--ui-primary) 28%, transparent), transparent 55%), radial-gradient(circle at 85% 80%, color-mix(in srgb, var(--ui-accent) 28%, transparent), transparent 55%), var(--ui-surface-muted)">
+        @for (v of variants; track v) {
+          <div style="display: grid; gap: 10px">
+            <code style="color: var(--ui-text-muted); font-size: 12px">{{ v }}</code>
+            <np-skeleton preset="avatar" [variant]="v" [animation]="animation" />
+          </div>
         }
-      </ul>
+      </div>
     `,
   }),
 };
 
-export const TableLoading: Story = {
-  render: (args) => ({
-    props: { ...args, rows: [1, 2, 3, 4, 5], cols: [1, 2, 3, 4] },
-    template: `
-      <table style="width: 100%; max-width: 560px; border-collapse: collapse">
-        <thead>
-          <tr>
-            @for (col of cols; track col) {
-              <th style="padding: 10px 12px; border-bottom: 1px solid var(--ui-border-strong)">
-                <np-skeleton width="60%" height="12px" animation="none" />
-              </th>
-            }
-          </tr>
-        </thead>
-        <tbody>
-          @for (row of rows; track row) {
-            <tr>
-              @for (col of cols; track col) {
-                <td style="padding: 12px; border-bottom: 1px solid var(--ui-border)">
-                  ${sk(`[width]="col === 1 ? '80%' : '60%'" height="10px"`)}
-                </td>
-              }
-            </tr>
-          }
-        </tbody>
-      </table>
-    `,
-  }),
-};
-
-export const Pulse: Story = { args: { animation: 'pulse', height: '2rem' } };
+/** The appearance classes from theme.css (np-color-*, np-shape-*) on the Default example */
+const appearance = appearanceStories(meta, Default);
+export const AppearanceColors = appearance.colors;
+export const AppearanceShapes = appearance.shapes;

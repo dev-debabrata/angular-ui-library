@@ -1,38 +1,39 @@
-# nexprime-ui
+# nexprime
 
 NexPrime: one premium UI system for every framework. 85+ components (forms, tables, charts, dialogs, menus, chat,
-onboarding tours, background effects, Lottie), 1,500+ icons, CSS animations and a light/dark theme.
+onboarding tours, background effects, Lottie), 2,000+ icons, CSS animations and a light/dark theme.
 
-- **Angular 21**: standalone components with signal inputs, SSR-ready.
-- **React, Next.js, Vue, Svelte, plain HTML**: the same components as Web Components (`<np-button>`, `<np-chart>`, …).
+**Docs and live demos: [nexprime-dev.vercel.app](https://nexprime-dev.vercel.app/)**
+
+- **Angular, React, Next.js, Vue, Svelte and plain HTML**: the same components everywhere, as Web Components outside Angular (`<np-button>`, `<np-chart>`, …).
 
 Dark mode: set `data-theme="dark"` on `<html>`.
 
 ## Angular
 
 ```bash
-npm i nexprime-ui @angular/cdk
+npm i nexprime @angular/cdk
 ```
 
 1. Theme, in `src/styles.css`:
 
    ```css
-   @import 'nexprime-ui/styles/theme.css';
+   @import 'nexprime/styles/theme.css';
    ```
 
 2. Icons, in `angular.json` under `build.options.assets` (served at `/icons`, where `<np-icon>` looks for them):
 
    ```json
-   { "glob": "**/*.svg", "input": "node_modules/nexprime-ui/icons", "output": "icons" }
+   { "glob": "**/*.svg", "input": "node_modules/nexprime/icons", "output": "icons" }
    ```
 
-   Optional, the bundled Lottie animations: `{ "glob": "**/*.json", "input": "node_modules/nexprime-ui/lottie", "output": "lottie" }`
+   Optional, the bundled Lottie animations: `{ "glob": "**/*.json", "input": "node_modules/nexprime/lottie", "output": "lottie" }`
 
 3. Use:
 
    ```ts
    import { Component } from '@angular/core';
-   import { ButtonComponent, IconComponent } from 'nexprime-ui';
+   import { ButtonComponent, IconComponent } from 'nexprime';
 
    @Component({
      selector: 'app-root',
@@ -48,22 +49,22 @@ npm i nexprime-ui @angular/cdk
 ## React and Next.js
 
 ```bash
-npm i nexprime-ui
+npm i nexprime
 ```
 
 Angular is bundled inside the Web Components; you don't install it.
 
 ```tsx
 // main.tsx (Next.js: app/layout.tsx)
-import 'nexprime-ui/styles/theme.css';
+import 'nexprime/styles/theme.css';
 ```
 
 ```tsx
 'use client'; // Next.js only
 import { useMemo, useState } from 'react';
-import { NexPrime, setIconsUrl } from 'nexprime-ui/react';
+import { NexPrime, setIconsUrl } from 'nexprime/react';
 
-setIconsUrl('https://cdn.jsdelivr.net/npm/nexprime-ui/icons/'); // or copy node_modules/nexprime-ui/icons to public/icons
+setIconsUrl('https://cdn.jsdelivr.net/npm/nexprime/icons/'); // or copy node_modules/nexprime/icons to public/icons
 
 const datasets = [{ label: 'Sales', data: [120, 150, 170] }];
 
@@ -84,12 +85,12 @@ export function Dashboard() {
   and 19. Strings, numbers and booleans are attributes; arrays, objects and functions go in `props`; outputs go in
   `on` (the value is `event.detail`). Keep `props` and `on` stable (constants or `useMemo`).
 - Elements that only take attributes can be written as plain tags (`<np-icon name="rocket" />`); TypeScript accepts
-  every `np-*` tag once `nexprime-ui/react` is imported somewhere. Without the wrapper, call `loadNexPrime()` once.
+  every `np-*` tag once `nexprime/react` is imported somewhere. Without the wrapper, call `loadNexPrime()` once.
 
 ## Vue 3
 
 ```bash
-npm i nexprime-ui
+npm i nexprime
 ```
 
 ```ts
@@ -99,9 +100,9 @@ vue({ template: { compilerOptions: { isCustomElement: (tag) => tag.startsWith('n
 
 ```ts
 // main.ts
-import 'nexprime-ui/styles/theme.css';
-import 'nexprime-ui/elements';
-window.NEXPRIME_ICONS_URL = 'https://cdn.jsdelivr.net/npm/nexprime-ui/icons/';
+import 'nexprime/styles/theme.css';
+import 'nexprime/elements';
+window.NEXPRIME_ICONS_URL = 'https://cdn.jsdelivr.net/npm/nexprime/icons/';
 ```
 
 ```vue
@@ -117,11 +118,11 @@ Vue passes arrays and objects as properties. Use kebab-case event names (`@value
 ## Plain HTML (no build step)
 
 ```html
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nexprime-ui/styles/theme.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nexprime/styles/theme.css" />
 <script>
-  window.NEXPRIME_ICONS_URL = 'https://cdn.jsdelivr.net/npm/nexprime-ui/icons/';
+  window.NEXPRIME_ICONS_URL = 'https://cdn.jsdelivr.net/npm/nexprime/icons/';
 </script>
-<script type="module" src="https://cdn.jsdelivr.net/npm/nexprime-ui/elements/nexprime.js"></script>
+<script type="module" src="https://cdn.jsdelivr.net/npm/nexprime/elements/nexprime.js"></script>
 
 <np-button primary label="Save"></np-button>
 <np-chart id="sales" type="bar"></np-chart>

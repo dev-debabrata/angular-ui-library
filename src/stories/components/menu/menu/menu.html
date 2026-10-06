@@ -2,10 +2,14 @@
   <div
     class="menu mi-panel"
     role="menu"
+    [class]="'mi-look-' + variant()"
     [class.mi-float]="popup()"
+    [class.mi-kbd]="shortcuts()"
+    [npMenuPopover]="popup()"
     [style.top.px]="position()?.top"
     [style.left.px]="position()?.left"
   >
+    <div class="menu-slot"><ng-content select="[menuHeader]" /></div>
     @for (item of model(); track $index) {
       @if (item.items && !item.separator) {
         <div class="menu-group" role="presentation">{{ item.label }}</div>
@@ -16,5 +20,6 @@
         <np-menu-item [item]="item" (click)="select($event, item)" />
       }
     }
+    <div class="menu-slot"><ng-content select="[menuFooter]" /></div>
   </div>
 }

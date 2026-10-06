@@ -16,6 +16,27 @@ export type Size = 'small' | 'medium' | 'large';
 
 export const SIZES: Size[] = ['small', 'medium', 'large'];
 
+/** The np-color-* appearance classes in theme.css, also Button's severities */
+export const APPEARANCE_COLORS = [
+  'primary',
+  'secondary',
+  'success',
+  'info',
+  'warning',
+  'danger',
+  'help',
+  'contrast',
+] as const;
+export type AppearanceColor = (typeof APPEARANCE_COLORS)[number];
+
+/** Field styles for inputs (the ui-field--* classes in theme.css); outlined is the default look */
+export const FIELD_VARIANTS = ['outlined', 'filled', 'underline', 'floating'] as const;
+export type FieldVariant = (typeof FIELD_VARIANTS)[number];
+
+/** The np-shape-* appearance classes in theme.css, also Button's shapes */
+export const APPEARANCE_SHAPES = ['pill', 'rounded', 'square'] as const;
+export type AppearanceShape = (typeof APPEARANCE_SHAPES)[number];
+
 export interface User {
   name: string;
 }

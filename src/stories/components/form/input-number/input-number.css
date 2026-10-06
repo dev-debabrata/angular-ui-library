@@ -19,10 +19,42 @@
   .input-number--vertical & {
     text-align: center;
   }
+  .input-number--split & {
+    padding-inline: 46px;
+    text-align: center;
+  }
   /* Room for the small arrows inside the right edge */
   .input-number--stacked & {
     padding-right: 40px;
   }
+  .input-number--inline & {
+    padding-right: 72px;
+  }
+  .input-number--icon & {
+    padding-left: 38px;
+  }
+}
+
+/* Leading icon inside the input */
+.input-number__icon {
+  position: absolute;
+  left: 12px;
+  z-index: 1;
+  color: var(--ui-text-subtle);
+  pointer-events: none;
+  transition: color var(--ui-ease);
+
+  .input-number:focus-within & {
+    color: var(--ui-primary);
+  }
+}
+
+/* The floating label starts after the icon or the − button */
+.ui-field--floating:has(.input-number--icon) > .ui-label {
+  left: 34px;
+}
+.ui-field--floating:has(.input-number--split) > .ui-label {
+  left: 42px;
 }
 
 /* horizontal: − input +, vertical: + above, − below */
@@ -30,6 +62,46 @@
   flex-direction: column;
   align-items: stretch;
   width: 120px;
+}
+
+/* Split: − and + sit inside both ends of the field, as round soft buttons */
+.input-number__side {
+  position: absolute;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border: none;
+  border-radius: var(--ui-radius-full);
+  background: var(--ui-primary-soft);
+  color: var(--ui-primary);
+  cursor: pointer;
+  transition:
+    background var(--ui-ease),
+    color var(--ui-ease),
+    box-shadow var(--ui-ease);
+
+  &:first-child {
+    left: 6px;
+  }
+  &:last-child {
+    right: 6px;
+  }
+  &:hover:not(:disabled) {
+    background: var(--ui-gradient);
+    color: #fff;
+  }
+  &:focus-visible {
+    outline: none;
+    box-shadow: var(--ui-ring);
+  }
+  &:disabled {
+    background: var(--ui-surface-sunken);
+    color: var(--ui-text-subtle);
+    cursor: not-allowed;
+  }
 }
 
 .input-number__spinner {
@@ -73,4 +145,36 @@
     opacity: 0.5;
     cursor: not-allowed;
   }
+}
+
+/* Inline: − + side by side inside the right edge */
+.input-number--inline .input-number__spinner {
+  inset: 6px 6px 6px auto;
+  flex-direction: row;
+  gap: 4px;
+  width: auto;
+  border: none;
+  border-radius: 0;
+}
+
+.input-number--inline .input-number__spin {
+  width: 28px;
+  border-radius: var(--ui-radius-sm);
+  background: var(--ui-surface-sunken);
+
+  & + & {
+    border-top: none;
+  }
+  &:focus-visible {
+    box-shadow: var(--ui-ring);
+  }
+}
+
+/* Meter: where the value sits between min and max (--fill) */
+.input-number__meter {
+  height: 4px;
+  border-radius: var(--ui-radius-full);
+  background:
+    var(--ui-gradient) no-repeat 0 / var(--fill) 100%,
+    var(--ui-surface-sunken);
 }

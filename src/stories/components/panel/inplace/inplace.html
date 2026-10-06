@@ -1,8 +1,31 @@
 @if (active()) {
-  <div class="content">
+  <div class="content" (keydown.escape)="(closable() || editable()) && close()">
+    @if (editable()) {
+      <input
+        #field
+        class="ui-control"
+        [value]="value()"
+        [placeholder]="placeholder()"
+        [attr.aria-label]="placeholder()"
+        (keydown.enter)="close(field.value)"
+      />
+      <button
+        type="button"
+        class="ui-btn ui-btn--primary ui-btn--sm ui-btn--icon"
+        aria-label="Save"
+        (click)="close(field.value)"
+      >
+        <np-icon name="check" [size]="16" />
+      </button>
+    }
     <ng-content select="[inplaceContent]" />
-    @if (closable()) {
-      <button type="button" class="ui-close" aria-label="Close" (click)="close()">
+    @if (closable() || editable()) {
+      <button
+        type="button"
+        [class]="editable() ? 'ui-btn ui-btn--sm ui-btn--icon' : 'ui-close'"
+        [attr.aria-label]="editable() ? 'Cancel' : 'Close'"
+        (click)="close()"
+      >
         <np-icon name="x" [size]="16" />
       </button>
     }
@@ -11,7 +34,9 @@
   <div
     class="display"
     role="button"
+    [class]="'display--' + variant()"
     [class.display--disabled]="disabled()"
+    [class.display--empty]="editable() && !value()"
     [attr.tabindex]="disabled() ? null : 0"
     [attr.aria-disabled]="disabled() || null"
     (click)="open()"
@@ -19,5 +44,9 @@
     (keydown.space)="open($event)"
   >
     <ng-content select="[inplaceDisplay]" />
+    {{ editable() ? value() || placeholder() : '' }}
+    @if (icon()) {
+      <np-icon class="display__icon" [name]="icon()" [size]="14" />
+    }
   </div>
 }

@@ -357,9 +357,10 @@ video {
     max-width: none;
   }
 
-  :root np-toast :is(.toast--top-right, .toast--top-left, .toast--bottom-right, .toast--bottom-left) {
+  :root np-toast :is([class*='toast--top-'], [class*='toast--bottom-']) {
     left: 12px;
     right: 12px;
+    width: auto;
   }
 
   :root np-table .table-filter {

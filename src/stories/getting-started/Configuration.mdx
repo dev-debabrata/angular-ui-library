@@ -1,0 +1,300 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+
+<Meta title="Getting Started/Configuration" />
+
+# Configuration
+
+NexPrime is styled with CSS variables from one stylesheet, so you configure it with CSS, the same way in every
+framework. Set up the package first (**Installation**).
+
+## Theme
+
+Load the theme once, before your own styles:
+
+<table>
+  <thead>
+    <tr>
+      <th>Where</th>
+      <th>How</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Angular (<code>src/styles.css</code>)</td>
+      <td>
+        <code>{"@import 'nexprime/styles/theme.css';"}</code>
+      </td>
+    </tr>
+    <tr>
+      <td>React, Next.js, Vue, Svelte</td>
+      <td>
+        <code>{"import 'nexprime/styles/theme.css';"}</code>
+      </td>
+    </tr>
+    <tr>
+      <td>Plain HTML</td>
+      <td>
+        <code>{'<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nexprime/styles/theme.css" />'}</code>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+It defines the design tokens (`--ui-*`), the shared form and button classes (`.ui-btn`, `.ui-field`, …) and the
+`np-anim-*` animations.
+
+## Dark mode
+
+Set `data-theme="dark"` on `<html>`. Every component switches: the neutral colors, borders, shadows and tones have
+dark values, and the brand colors stay as they are.
+
+```html
+<html data-theme="dark"></html>
+```
+
+```ts
+// Toggle it, e.g. from a switch, and follow the system setting by default
+const dark = matchMedia('(prefers-color-scheme: dark)').matches;
+document.documentElement.dataset['theme'] = dark ? 'dark' : 'light';
+```
+
+## Brand colors
+
+Override three variables after the theme. The soft background (`--ui-primary-soft`), focus ring and gradient are
+derived from them, so they follow automatically, in light and dark mode:
+
+```css
+:root {
+  --ui-primary: #14b8a6; /* buttons, links, selected states */
+  --ui-primary-hover: #0d9488;
+  --ui-accent: #0ea5e9; /* the gradient goes from primary to accent */
+}
+```
+
+The theme menu in this Storybook's toolbar tries the built-in palettes: Indigo (default, `#6366f1` → `#a855f7`),
+Violet, Purple, Fuchsia, Pink, Rose, Red, Orange, Amber, Green, Emerald, Teal, Cyan, Sky, Blue, Slate, Navy,
+Midnight, Plum, Wine, Brown, Forest, Ocean and Graphite.
+
+## Color and shape per component
+
+Add an appearance class to **any** component (or a wrapper around several) to recolor or reshape it and everything
+inside it. It works the same in Angular, React (`className`), Vue and HTML:
+
+```html
+<np-select class="np-color-success np-shape-rounded" label="Status" />
+<np-button class="np-color-danger" primary label="Delete" />
+<div class="np-shape-square">… every component in here has square corners …</div>
+```
+
+<table>
+  <thead>
+    <tr>
+      <th>Class</th>
+      <th>Values</th>
+      <th>What it changes</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>
+        <code>np-color-*</code>
+      </td>
+      <td>
+        <code>primary</code>{' '}<code>secondary</code>{' '}<code>success</code>{' '}<code>info</code>{' '}<code>warning</code>{' '}
+        <code>danger</code>{' '}<code>help</code>{' '}<code>contrast</code>
+      </td>
+      <td>The brand color: selected states, focus ring, gradient, checked toggles and checkboxes, progress, links</td>
+    </tr>
+    <tr>
+      <td>
+        <code>np-shape-*</code>
+      </td>
+      <td>
+        <code>pill</code>{' '}<code>rounded</code>{' '}<code>square</code>
+      </td>
+      <td>The corner radius of fields, buttons, chips, badges, tracks and cards</td>
+    </tr>
+  </tbody>
+</table>
+
+Components with their own color input (Badge and Alert `variant`, Tag `severity`, Button `severity`) keep that color.
+The **Playground** has a color and shape picker that works on every component.
+
+**Button** also has its own options: `severity` (the 8 colors above), `variant` (`solid` | `outlined` | `text` |
+`soft`), `shape` (`pill` | `rounded` | `square`), `icon` with `iconPos`, `loading` and `disabled`.
+
+## Design tokens
+
+All of them can be overridden on `:root` (or on any element, to restyle one area):
+
+<table>
+  <thead>
+    <tr>
+      <th>Group</th>
+      <th>Variables</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Brand</td>
+      <td>
+        <code>--ui-primary</code>{' '}<code>--ui-primary-hover</code>{' '}<code>--ui-accent</code>{' '}<code>--ui-gradient</code>{' '}
+        <code>--ui-primary-soft</code>{' '}<code>--ui-primary-ring</code>
+      </td>
+    </tr>
+    <tr>
+      <td>Text</td>
+      <td>
+        <code>--ui-text</code>{' '}<code>--ui-text-muted</code>{' '}<code>--ui-text-subtle</code>
+      </td>
+    </tr>
+    <tr>
+      <td>Surfaces</td>
+      <td>
+        <code>--ui-surface</code>{' '}<code>--ui-surface-muted</code>{' '}<code>--ui-surface-sunken</code>{' '}
+        <code>--ui-border</code>{' '}<code>--ui-border-strong</code>
+      </td>
+    </tr>
+    <tr>
+      <td>Status</td>
+      <td>
+        <code>--ui-success</code>{' '}<code>--ui-warning</code>{' '}<code>--ui-danger</code>{' '}<code>--ui-info</code>{' '}<code>--ui-help</code>
+      </td>
+    </tr>
+    <tr>
+      <td>Shape</td>
+      <td>
+        <code>--ui-radius-sm</code> (6px) <code>--ui-radius</code> (10px) <code>--ui-radius-lg</code> (16px)
+      </td>
+    </tr>
+    <tr>
+      <td>Depth</td>
+      <td>
+        <code>--ui-shadow-sm</code>{' '}<code>--ui-shadow</code>{' '}<code>--ui-shadow-lg</code>{' '}<code>--ui-ring</code>
+      </td>
+    </tr>
+    <tr>
+      <td>Motion</td>
+      <td>
+        <code>--ui-ease</code> (160ms, used by hovers and transitions)
+      </td>
+    </tr>
+    <tr>
+      <td>Font</td>
+      <td>
+        <code>--ui-font</code> (Inter, then the system font)
+      </td>
+    </tr>
+    <tr>
+      <td>Charts</td>
+      <td>
+        <code>--ui-chart-1</code> … <code>--ui-chart-8</code> (series colors, in order)
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+```css
+/* Square corners and your own font */
+:root {
+  --ui-radius-sm: 2px;
+  --ui-radius: 4px;
+  --ui-radius-lg: 6px;
+  --ui-font: 'Poppins', system-ui, sans-serif;
+}
+```
+
+The theme doesn't download a font: load Inter (or the font you set in `--ui-font`) in your page, or the system font
+is used.
+
+## Icons
+
+`<np-icon name="house" />`, and every component that shows an icon, loads `<name>.svg` from an icons folder at
+runtime. The package ships all 1,500+ Lucide icons in `nexprime/icons`. Serve them in one of two ways:
+
+- **From your app**, at `/icons` (the default location):
+  - Angular, in `angular.json` assets: `{ "glob": "**/*.svg", "input": "node_modules/nexprime/icons", "output": "icons" }`
+  - Vite, Next.js and others: copy `node_modules/nexprime/icons` to `public/icons`.
+- **From the CDN**, with no copying: set the folder once, before the first icon renders:
+
+  ```ts
+  window.NEXPRIME_ICONS_URL = 'https://cdn.jsdelivr.net/npm/nexprime/icons/';
+  // React and Next.js: setIconsUrl(...) from 'nexprime/react'
+  ```
+
+**Your own icons:** put `.svg` files in the same folder (e.g. `public/icons/my-logo.svg`) and use
+`<np-icon name="my-logo" />`. Outline icons that use `currentColor` also get the `duotone`, `gradient`, `soft` and
+`solid` variants. The **Icons** page lets you search, customize and copy every icon.
+
+## Lottie animations
+
+`<np-lottie src="…">` plays any Lottie `.json` or `.lottie` URL. The starter animations from the **NexLottie** page are
+in `nexprime/lottie`. Serve that folder like the icons (Angular assets:
+`{ "glob": "**/*.json", "input": "node_modules/nexprime/lottie", "output": "lottie" }`), or use the CDN:
+
+```html
+<np-lottie src="https://cdn.jsdelivr.net/npm/nexprime/lottie/success.json"></np-lottie>
+```
+
+## CSS animations
+
+`theme.css` includes the `np-anim-*` classes. They work on any element, not only NexPrime components:
+
+```html
+<div class="np-anim-fade-up" style="--np-anim-duration: 600ms; --np-anim-delay: 150ms">Hello</div>
+```
+
+<table>
+  <thead>
+    <tr>
+      <th>Variable</th>
+      <th>What it changes</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>
+        <code>--np-anim-duration</code>
+      </td>
+      <td>Length of one run</td>
+    </tr>
+    <tr>
+      <td>
+        <code>--np-anim-delay</code>
+      </td>
+      <td>Wait before it starts (stagger lists with it)</td>
+    </tr>
+    <tr>
+      <td>
+        <code>--np-anim-ease</code>
+      </td>
+      <td>Timing function</td>
+    </tr>
+    <tr>
+      <td>
+        <code>--np-anim-repeat</code>
+      </td>
+      <td>
+        How many times it runs (<code>infinite</code> to loop)
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+The **Animations** page previews every class and copies its code. All animations, effects and Lottie players stop
+when the user turns on reduced motion (`prefers-reduced-motion`).
+
+## Confirm dialogs
+
+- **Angular:** inject `ConfirmationService` from `'nexprime'` and call
+  `confirm({ header, message, accept, reject })`. Put `<np-confirm-dialog />` (or `<np-confirm-popup />` with
+  `target: event.currentTarget`) in your template once.
+- **Web Components:** put `<np-confirm-dialog>` on the page and call
+  `window.NexPrime.confirm({ header, message, accept, reject })`.
+
+## Server-side rendering
+
+- **Angular SSR**: every component renders on the server and hydrates; browser-only work (icons, charts' sizes,
+  effects, Lottie) starts after hydration.
+- **Next.js, Nuxt, SvelteKit, Astro**: load the elements in the browser only (the React wrapper does this for you;
+  elsewhere, import `nexprime/elements` in an `onMount`/client-only script).

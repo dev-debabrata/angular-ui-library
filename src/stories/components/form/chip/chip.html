@@ -1,11 +1,36 @@
 @if (visible()) {
-  <span class="chip" [class.chip--image]="image()" [class.chip--disabled]="disabled()">
+  <span
+    class="chip"
+    [class]="'chip--' + variant() + ' chip--' + size() + (tone() ? ' tone-' + tone() : '')"
+    [class.chip--image]="image()"
+    [class.chip--selectable]="selectable()"
+    [class.chip--selected]="selectable() && selected()"
+    [class.chip--disabled]="disabled()"
+  >
+    @if (selectable()) {
+      <!-- The whole chip is the toggle; the remove button sits next to it -->
+      <button
+        type="button"
+        class="chip__toggle"
+        [attr.aria-label]="label()"
+        [attr.aria-pressed]="selected()"
+        [disabled]="disabled()"
+        (click)="selected.set(!selected())"
+      ></button>
+    }
     @if (image()) {
       <img class="chip__image" [src]="image()" alt="" />
+    } @else if (selectable() && selected()) {
+      <np-icon class="chip__icon chip__check" name="check" [size]="14" />
+    } @else if (variant() === 'dot') {
+      <span class="chip__dot" [class.chip__dot--pulse]="pulse()" aria-hidden="true"></span>
     } @else if (icon()) {
       <np-icon class="chip__icon" [name]="icon()" [size]="14" />
     }
     <span class="chip__label">{{ label() }}</span>
+    @if (count() !== '') {
+      <span class="chip__count">{{ count() }}</span>
+    }
     @if (removable()) {
       <button
         type="button"

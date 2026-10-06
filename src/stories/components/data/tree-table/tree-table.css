@@ -1,25 +1,92 @@
+.tree-table-filter {
+  margin-bottom: 12px;
+}
+
 .tree-table-wrapper {
-  overflow-x: auto;
+  --tt-py: 12px;
+  --tt-px: 18px;
+  --tt-indent: 24px;
+  --tt-head-bg: var(--ui-surface-muted);
+  --tt-row-border: 1px solid var(--ui-border);
+  overflow: auto;
   border: 1px solid var(--ui-border);
   border-radius: var(--ui-radius-lg);
   background: var(--ui-surface);
   box-shadow: var(--ui-shadow);
+  font-size: 14px;
+}
+
+.tree-table--small {
+  --tt-py: 7px;
+  --tt-px: 12px;
+  --tt-indent: 18px;
+  font-size: 13px;
+}
+
+.tree-table--large {
+  --tt-py: 16px;
+  --tt-px: 22px;
+  font-size: 15px;
+}
+
+.tree-table--striped tbody tr:nth-child(even) {
+  --tt-stripe: var(--ui-surface-muted);
+}
+
+.tree-table--bordered :is(th, td):not(:last-child) {
+  border-right: 1px solid var(--ui-border);
+}
+
+/* Lines: a guide per ancestor level, through its 26px toggler's center */
+.tree-table--lines td:first-child {
+  background: repeating-linear-gradient(
+      to right,
+      transparent 0 13px,
+      color-mix(in srgb, currentColor 18%, transparent) 0 14px,
+      transparent 0 var(--tt-indent)
+    )
+    var(--tt-px) 0 / calc(var(--level) * var(--tt-indent)) 100% no-repeat;
+}
+
+.tree-table--minimal {
+  --tt-head-bg: transparent;
+  --tt-row-border: none;
+  border: none;
+  background: none;
+  box-shadow: none;
+
+  & th {
+    border-bottom: 2px solid var(--ui-border);
+  }
+}
+
+.tree-table--glass {
+  --tt-head-bg: color-mix(in srgb, var(--ui-surface) 45%, transparent);
+  border-color: color-mix(in srgb, var(--ui-surface) 60%, transparent);
+  background: color-mix(in srgb, var(--ui-surface) 65%, transparent);
+  backdrop-filter: blur(16px) saturate(160%);
+
+  & th {
+    backdrop-filter: blur(16px);
+  }
 }
 
 .tree-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 14px;
 
   th,
   td {
-    padding: 12px 18px;
+    padding: var(--tt-py) var(--tt-px);
     text-align: left;
-    border-bottom: 1px solid var(--ui-border);
+    border-bottom: var(--tt-row-border);
   }
 
   th {
-    background: var(--ui-surface-muted);
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    background: var(--tt-head-bg);
     color: var(--ui-text-muted);
     font-size: 12px;
     font-weight: 600;
@@ -31,6 +98,7 @@
 
   tbody tr {
     outline: none;
+    background: var(--tt-stripe, none);
     transition:
       background var(--ui-ease),
       color var(--ui-ease);
@@ -62,6 +130,7 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
+  padding-left: calc(var(--level) * var(--tt-indent));
   font-weight: 500;
   white-space: nowrap;
 }
@@ -74,7 +143,7 @@
   height: 26px;
   padding: 0;
   border: none;
-  border-radius: 50%;
+  border-radius: var(--ui-radius-full);
   background: none;
   color: inherit;
   opacity: 0.7;
@@ -101,6 +170,31 @@
 
 .toggler--spacer {
   pointer-events: none;
+}
+
+.checkbox {
+  display: grid;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  box-sizing: border-box;
+  border: 2px solid var(--ui-border-strong);
+  border-radius: var(--ui-radius-sm);
+  background: var(--ui-surface);
+  color: #fff;
+  transition:
+    background var(--ui-ease),
+    border-color var(--ui-ease);
+
+  tr:hover & {
+    border-color: var(--ui-primary);
+  }
+
+  &:not(.checkbox--false) {
+    border-color: transparent !important;
+    background: var(--ui-gradient);
+    box-shadow: 0 2px 8px color-mix(in srgb, var(--ui-primary) 35%, transparent);
+  }
 }
 
 .node-icon {

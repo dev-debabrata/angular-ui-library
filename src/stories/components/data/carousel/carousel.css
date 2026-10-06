@@ -3,6 +3,7 @@
 }
 
 .carousel {
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: 14px;
@@ -15,6 +16,7 @@
 }
 
 .carousel__body {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 10px;
@@ -22,12 +24,14 @@
 
 .carousel__nav {
   flex: none;
-  border-radius: 50%;
+  border-radius: var(--ui-radius-full);
 }
 
+/* --peek pads in the neighbors (overflow clips at the padding edge) */
 .carousel__viewport {
   flex: 1;
   min-width: 0;
+  padding: var(--peek, 0);
   overflow: hidden;
   touch-action: pan-y;
 }
@@ -35,17 +39,104 @@
 .carousel__track {
   display: flex;
   gap: var(--gap);
+  transform: translateX(calc(var(--first) * -1 * (100% + var(--gap)) / var(--visible)));
   transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-.carousel__item {
+/* Every slide: template wrappers or, in the Web Component, the child elements */
+.carousel__track > ::ng-deep * {
   flex: 0 0 calc((100% - (var(--visible) - 1) * var(--gap)) / var(--visible));
   min-width: 0;
+  min-height: 0;
+  transition: 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.carousel__track > ::ng-deep [aria-hidden='true'] {
+  opacity: var(--off-opacity, 1);
+  transform: var(--off-transform, none);
+}
+
+.carousel--vertical {
+  .carousel__body,
+  .carousel__track {
+    flex-direction: column;
+  }
+
+  .carousel__viewport {
+    width: 100%;
+    touch-action: pan-x;
+  }
+
+  .carousel__track {
+    height: 100%;
+    transform: translateY(calc(var(--first) * -1 * (100% + var(--gap)) / var(--visible)));
+  }
+}
+
+.carousel--peek {
+  --peek: 0 10%;
+  --off-opacity: 0.45;
+  --off-transform: scale(0.92);
+}
+
+.carousel--coverflow {
+  --peek: 12px 18%;
+}
+
+/* --offset: distance to the center slide; --far: its absolute value, capped at 1 */
+.carousel--coverflow .carousel__track > ::ng-deep * {
+  --far: min(1, max(var(--offset), -1 * var(--offset)));
+  opacity: calc(1 - var(--far) * 0.45);
+  transform: perspective(1000px) rotateY(calc(clamp(-1, var(--offset), 1) * -32deg))
+    scale(calc(1 - var(--far) * 0.18));
+}
+
+/* Fade: all slides in one grid cell */
+.carousel--fade {
+  --off-opacity: 0;
+
+  .carousel__track {
+    display: grid;
+    transform: none;
+  }
+}
+
+.carousel--fade .carousel__track > ::ng-deep * {
+  grid-area: 1 / 1;
+}
+
+.carousel--glass {
+  .carousel__nav,
+  .carousel__dots {
+    position: absolute;
+    z-index: 1;
+    background: color-mix(in srgb, var(--ui-surface) 55%, transparent);
+    backdrop-filter: blur(12px) saturate(1.6);
+  }
+
+  .carousel__nav {
+    inset: 50% auto auto 12px;
+    translate: 0 -50%;
+
+    &:last-child {
+      inset-inline: auto 12px;
+    }
+  }
+
+  .carousel__dots {
+    inset: auto auto 12px 50%;
+    padding: 6px 12px;
+    border: 1px solid color-mix(in srgb, var(--ui-surface) 45%, transparent);
+    border-radius: var(--ui-radius-full);
+    box-shadow: var(--ui-shadow);
+    translate: -50% 0;
+  }
 }
 
 .carousel__dots {
   display: flex;
   justify-content: center;
+  align-items: center;
   gap: 8px;
 }
 
@@ -54,7 +145,7 @@
   height: 8px;
   padding: 0;
   border: none;
-  border-radius: 999px;
+  border-radius: var(--ui-radius-full);
   background: var(--ui-border-strong);
   cursor: pointer;
   transition:
@@ -78,8 +169,54 @@
   background: var(--ui-gradient);
 }
 
+/* Bars: the current one fills over the autoplay interval */
+.carousel__dots--bars .carousel__dot {
+  width: 28px;
+  height: 4px;
+
+  &.carousel__dot--active {
+    background:
+      var(--ui-gradient) 0 / 100% 100% no-repeat,
+      var(--ui-border-strong);
+  }
+}
+
+.carousel--playing .carousel__dots--bars .carousel__dot--active {
+  animation: carousel-fill var(--interval) linear;
+}
+
+.carousel__count {
+  color: var(--ui-text-muted);
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+
+  b {
+    color: var(--ui-text);
+  }
+}
+
+.carousel__progress {
+  width: min(240px, 60%);
+  height: 4px;
+  border-radius: var(--ui-radius-full);
+  background:
+    var(--ui-gradient) 0 / var(--fill) 100% no-repeat,
+    var(--ui-border);
+  transition: background-size 0.5s ease;
+}
+
+@keyframes carousel-fill {
+  from {
+    background-size:
+      0 100%,
+      auto;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .carousel__track {
+  .carousel *,
+  .carousel__track > ::ng-deep * {
     transition: none;
+    animation: none !important;
   }
 }
