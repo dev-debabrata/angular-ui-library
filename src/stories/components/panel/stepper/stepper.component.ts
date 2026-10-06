@@ -1,7 +1,7 @@
 import { Component, input, numberAttribute } from '@angular/core';
 
 @Component({
-  selector: 'nex-stepper',
+  selector: 'np-stepper',
   templateUrl: './stepper.html',
   styleUrl: './stepper.css',
 })

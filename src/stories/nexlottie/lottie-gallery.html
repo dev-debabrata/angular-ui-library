@@ -4,7 +4,7 @@
     <h1>NexLottie</h1>
     <p class="subtitle">
       {{ animations().length }} Lottie animations in <code>src/stories/nexlottie/files/</code>,
-      played with <code>&lt;nex-lottie&gt;</code>. Download any animation from LottieFiles (<code
+      played with <code>&lt;np-lottie&gt;</code>. Download any animation from LottieFiles (<code
         >.json</code
       >
       or <code>.lottie</code>), or export one from After Effects, drop it into that folder and it
@@ -27,12 +27,12 @@
   </form>
 
   <div class="toolbar">
-    <nex-search-input
+    <np-search-input
       class="search"
       placeholder="Search animations..."
       (search)="query.set($event)"
     />
-    <nex-button-toggle
+    <np-button-toggle
       size="small"
       ariaLabel="Category"
       [options]="categories()"
@@ -74,7 +74,7 @@
         [attr.aria-label]="a.name"
         (click)="selected.set(a)"
       >
-        <nex-lottie
+        <np-lottie
           [data]="a.data ?? null"
           [speed]="speed()"
           [hover]="hoverOnly()"
@@ -91,7 +91,7 @@
   <div #end></div>
 
   @if (selected(); as a) {
-    <nex-lottie-detail
+    <np-lottie-detail
       [animation]="a"
       [related]="related()"
       (closed)="selected.set(null)"

@@ -7,8 +7,10 @@
   margin: 0 auto 24px;
 }
 
+/* Grows from 0, so the Preview button stays on its right even on phones */
 .link .ui-control {
-  flex: 1 1 320px;
+  flex: 1 1 0;
+  min-width: 0;
 }
 
 .link__error {

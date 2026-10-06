@@ -3,7 +3,7 @@ import { Component, computed, input } from '@angular/core';
 import type { Size } from '../../../utils/types';
 
 @Component({
-  selector: 'nex-avatar',
+  selector: 'np-avatar',
   templateUrl: './avatar.html',
   styleUrl: './avatar.css',
 })

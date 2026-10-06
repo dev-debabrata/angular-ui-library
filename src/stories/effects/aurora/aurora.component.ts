@@ -18,11 +18,11 @@ import { THEME_COLOR_VARS, localPoint } from '../canvas-effect';
  * animation, so it renders on the server; the blobs can drift towards the pointer. Still with reduced motion.
  */
 @Component({
-  selector: 'nex-aurora',
+  selector: 'np-aurora',
   templateUrl: './aurora.html',
   styleUrl: './aurora.css',
   host: {
-    class: 'nex-effect',
+    class: 'np-effect',
     '[style.--aurora-duration.s]': '20 / (speed() || 1)',
     '[style.--aurora-blur.px]': 'blur()',
     '[style.--aurora-opacity]': 'opacity()',

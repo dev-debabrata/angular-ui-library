@@ -60,7 +60,7 @@ export const Sizes: Story = {
     template: `
       <div style="display: flex; flex-direction: column; align-items: flex-start; gap: 16px">
         @for (s of sizes; track s) {
-          <nex-button-toggle [options]="options" [value]="value" [size]="s" [ariaLabel]="s" />
+          <np-button-toggle [options]="options" [value]="value" [size]="s" [ariaLabel]="s" />
         }
       </div>
     `,

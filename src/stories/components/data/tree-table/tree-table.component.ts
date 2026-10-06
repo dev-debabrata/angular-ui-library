@@ -15,7 +15,7 @@ const expandedKeysOf = (nodes: TreeNode[]): string[] =>
   nodes.flatMap((n) => [...(n.expanded ? [n.key] : []), ...expandedKeysOf(n.children ?? [])]);
 
 @Component({
-  selector: 'nex-tree-table',
+  selector: 'np-tree-table',
   imports: [IconComponent],
   templateUrl: './tree-table.html',
   styleUrl: './tree-table.css',

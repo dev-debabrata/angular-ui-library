@@ -77,7 +77,7 @@
   cursor: progress;
 }
 
-/* Listening and speaking: gradient button (rings/glow come from nex-anim-ripple/-glow) */
+/* Listening and speaking: gradient button (rings/glow come from np-anim-ripple/-glow) */
 .voice--listening .voice__mic,
 .voice--speaking .voice__mic {
   background: var(--ui-gradient);

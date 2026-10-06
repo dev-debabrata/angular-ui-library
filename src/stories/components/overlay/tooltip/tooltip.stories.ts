@@ -22,9 +22,9 @@ const meta: Meta<TooltipComponent> = {
     props: args,
     template: `
       <div style="padding: 60px 120px; display: inline-block">
-        <nex-tooltip [text]="text" [position]="position">
-          <storybook-button label="Hover me" />
-        </nex-tooltip>
+        <np-tooltip [text]="text" [position]="position">
+          <np-button label="Hover me" />
+        </np-tooltip>
       </div>
     `,
   }),

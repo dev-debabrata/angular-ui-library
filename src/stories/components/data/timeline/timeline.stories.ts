@@ -55,7 +55,7 @@ export const CustomContent: Story = {
   render: (args) => ({
     props: args,
     template: `
-      <nex-timeline [value]="value" [align]="align" [layout]="layout">
+      <np-timeline [value]="value" [align]="align" [layout]="layout">
         <ng-template #content let-event>
           <div style="display: inline-block; max-width: 260px; padding: 14px 16px; border: 1px solid var(--ui-border);
             border-radius: var(--ui-radius); background: var(--ui-surface); box-shadow: var(--ui-shadow); text-align: left">
@@ -64,7 +64,7 @@ export const CustomContent: Story = {
             <p style="margin: 8px 0 0; color: var(--ui-text-muted)">{{ event.description }}</p>
           </div>
         </ng-template>
-      </nex-timeline>
+      </np-timeline>
     `,
   }),
 };

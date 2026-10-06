@@ -165,7 +165,7 @@
   }
 }
 
-/* Embedded in another panel (e.g. Calendar with showTime): <nex-time-picker class="time-picker--flat"> */
+/* Embedded in another panel (e.g. Calendar with showTime): <np-time-picker class="time-picker--flat"> */
 :host(.time-picker--flat) .time-picker-panel {
   padding: 0;
   border: none;

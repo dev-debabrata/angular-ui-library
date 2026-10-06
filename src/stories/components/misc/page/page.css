@@ -1,4 +1,4 @@
-.storybook-page {
+.np-page {
   max-width: 600px;
   margin: 0 auto;
   padding: 48px 20px;
@@ -6,7 +6,7 @@
   line-height: 24px;
 }
 
-.storybook-page h2 {
+.np-page h2 {
   margin: 0 0 4px;
   background: var(--ui-gradient);
   background-clip: text;
@@ -17,25 +17,25 @@
   line-height: 1.1;
 }
 
-.storybook-page p,
-.storybook-page li {
+.np-page p,
+.np-page li {
   color: var(--ui-text-muted);
 }
 
-.storybook-page p,
-.storybook-page ul {
+.np-page p,
+.np-page ul {
   margin: 1em 0;
 }
 
-.storybook-page ul {
+.np-page ul {
   padding-left: 30px;
 }
 
-.storybook-page li {
+.np-page li {
   margin-bottom: 8px;
 }
 
-.storybook-page a {
+.np-page a {
   color: inherit;
 }
 

@@ -8,9 +8,9 @@ import { BottomSheetComponent } from './bottom-sheet.component';
 /** Trigger button + sheet with the story's args bound; `body` goes inside the sheet */
 const sheet = <A extends object>(args: A, trigger: string, body: string) => `
   <button type="button" class="ui-btn ui-btn--primary" (click)="visible = true">${trigger}</button>
-  <nex-bottom-sheet [(visible)]="visible" ${argsToTemplate(args, { exclude: ['visible' as keyof A] })}>
+  <np-bottom-sheet [(visible)]="visible" ${argsToTemplate(args, { exclude: ['visible' as keyof A] })}>
     ${body}
-  </nex-bottom-sheet>
+  </np-bottom-sheet>
 `;
 
 /** Material-style action list rows */
@@ -30,7 +30,7 @@ const actionList = `
                  border-radius: var(--ui-radius); background: none; font: inherit; text-align: left; cursor: pointer">
           <span style="display: grid; place-items: center; width: 40px; height: 40px; border-radius: 50%;
                        background: var(--ui-primary-soft); color: var(--ui-primary)">
-            <nex-icon [name]="a[0]" [size]="18" />
+            <np-icon [name]="a[0]" [size]="18" />
           </span>
           <span style="display: flex; flex-direction: column">
             <b style="font-size: 15px">{{ a[1] }}</b>

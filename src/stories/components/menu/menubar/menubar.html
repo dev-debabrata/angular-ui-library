@@ -7,7 +7,7 @@
     [attr.aria-expanded]="mobileOpen()"
     (click)="mobileOpen.set(!mobileOpen())"
   >
-    <nex-icon name="menu" [size]="20" />
+    <np-icon name="menu" [size]="20" />
   </button>
   <ng-container
     [ngTemplateOutlet]="list"
@@ -29,7 +29,7 @@
   >
     @for (item of items; track $index) {
       <li role="none" (mouseenter)="hover(item, depth)">
-        <nex-menu-item
+        <np-menu-item
           [item]="item"
           [chevron]="depth ? 'chevron-right' : 'chevron-down'"
           [open]="path.isOpen(item, depth)"

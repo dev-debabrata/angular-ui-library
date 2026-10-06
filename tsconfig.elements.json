@@ -5,5 +5,5 @@
     "outDir": "./out-tsc/elements",
     "types": []
   },
-  "files": ["src/elements/nexui.ts"]
+  "files": ["src/elements/nexprime.ts"]
 }

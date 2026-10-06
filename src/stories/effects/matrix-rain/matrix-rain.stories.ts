@@ -22,13 +22,13 @@ type Story = StoryObj<MatrixRainComponent>;
 
 /** Classic green digital rain */
 export const Default: Story = {
-  render: demo('nex-matrix-rain', { height: '460px', background: BACKGROUNDS.black }),
+  render: demo('np-matrix-rain', { height: '460px', background: BACKGROUNDS.black }),
 };
 
 /** In theme colors, behind hero content */
 export const Hero: Story = {
   args: { color: '#818cf8', fade: 0.12, fontSize: 14 },
-  render: demo('nex-matrix-rain', {
+  render: demo('np-matrix-rain', {
     height: '460px',
     background: BACKGROUNDS.ink,
     content: heroCopy({ title: 'Code that ships', text: 'Developer tools for modern teams' }),
@@ -38,5 +38,5 @@ export const Hero: Story = {
 /** Binary only, bigger and slower */
 export const Binary: Story = {
   args: { characters: '01', fontSize: 22, speed: 0.6, color: '#38bdf8' },
-  render: demo('nex-matrix-rain', { height: '400px', background: BACKGROUNDS.black }),
+  render: demo('np-matrix-rain', { height: '400px', background: BACKGROUNDS.black }),
 };

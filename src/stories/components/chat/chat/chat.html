@@ -1,7 +1,7 @@
 <section class="chat" [style.height]="height()" [attr.aria-label]="title() || 'Chat'">
   @if (title()) {
     <header class="chat__header">
-      <nex-avatar [src]="avatar()" [name]="title()" status="online" />
+      <np-avatar [src]="avatar()" [name]="title()" status="online" />
       <div>
         <b class="chat__title">{{ title() }}</b>
         @if (subtitle()) {
@@ -22,7 +22,7 @@
         @if (m.from === 'them') {
           <span class="chat__avatar">
             @if (row.last) {
-              <nex-avatar size="small" [src]="m.avatar ?? (m.author ? '' : avatar())" [name]="m.author ?? title()" />
+              <np-avatar size="small" [src]="m.avatar ?? (m.author ? '' : avatar())" [name]="m.author ?? title()" />
             }
           </span>
         }
@@ -35,7 +35,7 @@
             <span class="chat__meta">
               {{ formatTime(m.time) }}
               @if (m.from === 'me' && m.status) {
-                <nex-icon
+                <np-icon
                   [name]="m.status === 'read' ? 'check-check' : 'check'"
                   [size]="14"
                   [label]="m.status"
@@ -51,7 +51,7 @@
 
     @if (typing()) {
       <div class="chat__row chat__row--first">
-        <span class="chat__avatar"><nex-avatar size="small" [src]="avatar()" [name]="title()" /></span>
+        <span class="chat__avatar"><np-avatar size="small" [src]="avatar()" [name]="title()" /></span>
         <div class="chat__bubble chat__bubble--last chat__typing" aria-label="Typing">
           <i></i><i></i><i></i>
         </div>
@@ -76,7 +76,7 @@
       aria-label="Send"
       [disabled]="disabled() || !draft().trim()"
     >
-      <nex-icon name="send-horizontal" [size]="18" />
+      <np-icon name="send-horizontal" [size]="18" />
     </button>
   </form>
 </section>

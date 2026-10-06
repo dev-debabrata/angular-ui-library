@@ -12,7 +12,7 @@ import { ChatComponent, type ChatMessage } from './chat.component';
 const at = (minutesAgo: number) => new Date(Date.now() - minutesAgo * 60_000);
 
 const conversation: ChatMessage[] = [
-  { from: 'them', text: 'Hi! 👋 Thanks for reaching out to NexUI support.', time: at(12) },
+  { from: 'them', text: 'Hi! 👋 Thanks for reaching out to NexPrime support.', time: at(12) },
   { from: 'them', text: 'How can I help you today?', time: at(12) },
   {
     from: 'me',
@@ -41,7 +41,7 @@ const meta: Meta<ChatComponent> = {
   tags: ['autodocs'],
   args: {
     messages: conversation,
-    title: 'Ava from NexUI',
+    title: 'Ava from NexPrime',
     subtitle: 'Online',
     avatar: 'https://i.pravatar.cc/80?img=47',
     send: fn(),
@@ -79,7 +79,7 @@ export const LiveReply: Story = {
           }, 1400);
         },
       },
-      template: `<nex-chat ${argsToTemplate(args, { exclude: ['messages', 'send'] })}
+      template: `<np-chat ${argsToTemplate(args, { exclude: ['messages', 'send'] })}
         [(messages)]="messages" [typing]="typing()" (send)="onSend()" />`,
     };
   },

@@ -32,7 +32,7 @@ const renderWith =
   (actions: ConfirmDemoAction[]): Story['render'] =>
   (args) => ({
     props: { ...args, actions },
-    template: `<nex-confirm-dialog [key]="key" /><nex-confirm-dialog-demo [actions]="actions" />`,
+    template: `<np-confirm-dialog [key]="key" /><np-confirm-dialog-demo [actions]="actions" />`,
   });
 
 export const Default: Story = {

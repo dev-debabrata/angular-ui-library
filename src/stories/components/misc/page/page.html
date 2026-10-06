@@ -1,11 +1,11 @@
 <article>
-  <storybook-header
+  <np-header
     [user]="user()"
-    (onLogin)="logIn()"
-    (onLogout)="user.set(null)"
-    (onCreateAccount)="logIn()"
+    (login)="logIn()"
+    (logout)="user.set(null)"
+    (createAccount)="logIn()"
   />
-  <section class="storybook-page">
+  <section class="np-page">
     <h2>Pages in Storybook</h2>
     <p>
       We recommend building UIs with a

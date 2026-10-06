@@ -1,7 +1,7 @@
 import { Component, booleanAttribute, input, model } from '@angular/core';
 
 @Component({
-  selector: 'nex-checkbox',
+  selector: 'np-checkbox',
   templateUrl: './checkbox.html',
   styleUrl: './checkbox.css',
 })

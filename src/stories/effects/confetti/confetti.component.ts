@@ -24,7 +24,7 @@ interface Piece extends Point {
  * loop) between bursts, and does nothing when the user prefers reduced motion.
  */
 @Component({
-  selector: 'nex-confetti',
+  selector: 'np-confetti',
   templateUrl: './confetti.html',
   styleUrl: './confetti.css',
 })

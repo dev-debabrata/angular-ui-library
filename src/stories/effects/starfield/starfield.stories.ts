@@ -21,7 +21,7 @@ type Story = StoryObj<StarfieldComponent>;
 
 /** Hover to jump to warp speed; the pointer steers */
 export const Warp: Story = {
-  render: demo('nex-starfield', {
+  render: demo('np-starfield', {
     height: '480px',
     background: BACKGROUNDS.space,
     content: heroCopy({
@@ -35,13 +35,13 @@ export const Warp: Story = {
 /** Calm drifting dots, no streaks */
 export const Calm: Story = {
   args: { trails: false, speed: 0.4, warpOnHover: false, count: 500 },
-  render: demo('nex-starfield', { height: '420px', background: BACKGROUNDS.black }),
+  render: demo('np-starfield', { height: '420px', background: BACKGROUNDS.black }),
 };
 
 /** Theme-colored stars on the Aurora gradient */
 export const Gradient: Story = {
   args: { color: '#e0e7ff', count: 250 },
-  render: demo('nex-starfield', {
+  render: demo('np-starfield', {
     height: '420px',
     background: 'var(--ui-gradient)',
     content: heroCopy({ buttonClass: 'ui-btn' }),

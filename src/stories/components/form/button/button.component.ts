@@ -3,7 +3,7 @@ import { Component, booleanAttribute, input, output } from '@angular/core';
 import type { Size } from '../../../utils/types';
 
 @Component({
-  selector: 'storybook-button',
+  selector: 'np-button',
   templateUrl: './button.html',
   styleUrl: './button.css',
 })
@@ -21,5 +21,5 @@ export class ButtonComponent {
   readonly label = input('Button');
 
   /** Optional click handler */
-  readonly onClick = output<Event>();
+  readonly clicked = output<Event>();
 }

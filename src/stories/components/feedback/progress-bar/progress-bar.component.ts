@@ -3,7 +3,7 @@ import { Component, booleanAttribute, computed, input, numberAttribute } from '@
 import type { Tone } from '../../../utils/types';
 
 @Component({
-  selector: 'nex-progress-bar',
+  selector: 'np-progress-bar',
   templateUrl: './progress-bar.html',
   styleUrl: './progress-bar.css',
 })

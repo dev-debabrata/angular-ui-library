@@ -1,0 +1,418 @@
+/* Tablet and mobile layout for the whole Storybook: the NexPrime site (top bar, Welcome, Components, Icons, Animations,
+   NexLottie), shared overlays, and Storybook's docs pages. Loaded by .storybook/preview.ts and src/styles.css.
+
+   Breakpoints: tablet <= 1024px, mobile <= 640px, small phones <= 400px (the top bar switches at 760px).
+
+   Component styles are scoped by Angular (`.links[_ngcontent-…]`), so every override here starts with
+   `:root <host-tag>` and repeats the component's own classes: that is one class and one element more specific,
+   and wins without !important. Angular also scopes each part of a descendant selector (`.hero p` becomes
+   `.hero[…] p[…]`), so overrides of those repeat one class (`.hero.hero p`). Global classes (.gallery-page,
+   .icon-gallery) only need the `:root` prefix. */
+
+img,
+video {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Button toggles with many options (the gallery filters) scroll sideways instead of widening the page */
+:root np-button-toggle {
+  display: inline-block;
+  max-width: 100%;
+}
+
+:root np-button-toggle .toggle-group:not(.toggle-group--vertical) {
+  max-width: 100%;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+:root np-button-toggle .toggle-group::-webkit-scrollbar {
+  display: none;
+}
+
+:root np-button-toggle .toggle-button {
+  flex: none;
+}
+
+/* ============================== Tablet (<= 1024px) ============================== */
+@media (max-width: 1024px) {
+  /* ---- top bar ---- */
+  :root np-landing-nav .nav {
+    gap: 16px;
+    padding: 0 20px;
+  }
+
+  :root np-landing-nav .links.links a {
+    padding: 8px 9px;
+  }
+
+  /* ---- Welcome ---- */
+  :root np-welcome-page .hero__inner {
+    padding: 96px 24px 120px;
+  }
+
+  :root np-welcome-page .section {
+    padding: 80px 24px;
+  }
+
+  :root np-welcome-page .section__head {
+    margin-bottom: 40px;
+  }
+
+  :root np-welcome-page .quickstart {
+    gap: 32px;
+  }
+
+  /* ---- Components catalog ---- */
+  :root np-components-catalog .hero {
+    padding: 64px 0 56px;
+  }
+
+  :root np-components-catalog .cards--grid {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  }
+
+  /* ---- Icons, Animations, NexLottie ---- */
+  :root .gallery-page {
+    padding: 32px 24px 200px;
+  }
+
+  :root .gallery-page .gallery-hero {
+    padding: 32px 0 28px;
+  }
+
+  :root np-lottie-gallery .grid {
+    grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  }
+}
+
+/* =================== Top bar on phones and small tablets (<= 760px) =================== */
+/* The section links move to a second row that scrolls sideways, instead of disappearing */
+@media (max-width: 760px) {
+  :root np-landing-nav .nav {
+    flex-wrap: wrap;
+    gap: 6px 12px;
+    height: auto;
+    padding: 10px 16px 0;
+  }
+
+  :root np-landing-nav .links {
+    display: flex;
+    flex: 1 0 100%;
+    order: 3;
+    margin: 0 -16px;
+    padding: 0 12px 8px;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  :root np-landing-nav .links::-webkit-scrollbar {
+    display: none;
+  }
+
+  :root np-landing-nav .links.links a {
+    flex: none;
+    white-space: nowrap;
+  }
+
+  :root np-landing-nav .tools {
+    margin-left: auto;
+  }
+
+  :root np-landing-nav .get-started {
+    padding: 7px 12px;
+    font-size: 13px;
+  }
+}
+
+/* ============================== Mobile (<= 640px) ============================== */
+@media (max-width: 640px) {
+  /* ---- Welcome ---- */
+  :root np-welcome-page .hero,
+  :root np-welcome-page .hero__particles {
+    min-height: 520px;
+  }
+
+  :root np-welcome-page .hero__inner {
+    gap: 18px;
+    padding: 72px 16px 96px;
+  }
+
+  /* Slightly smaller buttons, so both fit side by side */
+  :root np-welcome-page :is(.hero__cta, .hero__ghost, .cta__primary) {
+    padding: 10px 16px;
+    font-size: 14px;
+  }
+
+  /* Two columns of stats; the fifth spans both */
+  :root np-welcome-page .stats {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 18px 0;
+    margin: -40px 16px 0;
+    padding: 20px 8px;
+  }
+
+  :root np-welcome-page .stat.stat + .stat {
+    border-left: 0;
+  }
+
+  :root np-welcome-page .stat.stat:nth-child(even) {
+    border-left: 1px solid var(--ui-border);
+  }
+
+  :root np-welcome-page .stat:last-child:nth-child(odd) {
+    grid-column: 1 / -1;
+  }
+
+  :root np-welcome-page .section {
+    padding: 64px 16px;
+  }
+
+  :root np-welcome-page .section__head {
+    margin-bottom: 32px;
+  }
+
+  :root np-welcome-page .section__head.section__head p,
+  :root np-welcome-page .quickstart__text.quickstart__text p,
+  :root np-welcome-page .cta.cta p {
+    font-size: 16px;
+  }
+
+  /* minmax(290px) would overflow a 320px screen */
+  :root np-welcome-page .features,
+  :root np-welcome-page .explore {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 14px;
+  }
+
+  :root np-welcome-page .feature {
+    padding: 20px;
+  }
+
+  :root np-welcome-page .bento {
+    gap: 14px;
+  }
+
+  :root np-welcome-page .tile {
+    padding: 18px;
+  }
+
+  :root np-welcome-page .explore__preview {
+    height: 130px;
+  }
+
+  :root np-welcome-page .code.code pre {
+    padding: 16px;
+    font-size: 12px;
+  }
+
+  :root np-welcome-page .cta {
+    padding: 44px 20px;
+    border-radius: 20px;
+  }
+
+  /* ---- Components catalog ---- */
+  :root np-components-catalog .catalog {
+    padding: 0 16px 64px;
+  }
+
+  :root np-components-catalog .hero {
+    gap: 14px;
+    padding: 44px 0 36px;
+  }
+
+  :root np-components-catalog .hero.hero p {
+    font-size: 16px;
+  }
+
+  :root np-components-catalog .search {
+    width: 100%;
+  }
+
+  :root np-components-catalog .group {
+    margin-top: 40px;
+  }
+
+  :root np-components-catalog h2 {
+    margin-bottom: 14px;
+    font-size: 24px;
+  }
+
+  :root np-components-catalog .cards--grid,
+  :root np-components-catalog .cards--compact {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  :root np-components-catalog .cards--list {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  :root np-components-catalog .card {
+    gap: 8px;
+    padding: 6px 6px 12px;
+    border-radius: 14px;
+  }
+
+  :root np-components-catalog .name {
+    font-size: 14px;
+  }
+
+  /* ---- Icons, Animations, NexLottie ---- */
+  :root .gallery-page {
+    padding: 20px 16px 200px;
+  }
+
+  :root .gallery-page .gallery-hero {
+    gap: 12px;
+    padding: 20px 0;
+  }
+
+  :root .gallery-page .subtitle {
+    font-size: 15px;
+  }
+
+  /* Sticky toolbar: search on its own row, controls wrap below */
+  :root .gallery-page .toolbar {
+    gap: 12px;
+    padding: 12px;
+  }
+
+  :root .gallery-page .search {
+    flex-basis: 100%;
+  }
+
+  :root .gallery-page .control input {
+    width: 100px;
+  }
+
+  /* A control holding a button toggle (Icons' Style) gets its own row, so the toggle can scroll inside it */
+  :root .gallery-page .control:has(np-button-toggle) {
+    flex-basis: 100%;
+    min-width: 0;
+  }
+
+  /* The details panel becomes a bottom sheet */
+  :root .gallery-page .panel {
+    left: 0;
+    bottom: 0;
+    flex-direction: column;
+    gap: 14px;
+    box-sizing: border-box;
+    width: 100%;
+    max-height: 75vh;
+    padding: 16px;
+    overflow-y: auto;
+    border-width: 1px 0 0;
+    border-radius: var(--ui-radius-lg) var(--ui-radius-lg) 0 0;
+    transform: none;
+    animation-name: np-sheet-in;
+  }
+
+  :root .gallery-page .preview {
+    align-self: center;
+  }
+
+  :root .icon-gallery .grid {
+    grid-template-columns: repeat(auto-fill, minmax(max(76px, calc(var(--size) + 40px)), 1fr));
+    gap: 8px;
+  }
+
+  :root .icon-gallery .preview {
+    width: 96px;
+    height: 96px;
+  }
+
+  :root np-animation-gallery .grid {
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 10px;
+  }
+
+  :root np-animation-gallery .stage {
+    height: 96px;
+  }
+
+  :root np-lottie-gallery .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  :root np-lottie-gallery .card {
+    padding: 8px;
+  }
+
+  /* ---- Shared overlays ---- */
+  :root np-dialog .dialog-mask {
+    padding: 12px;
+  }
+
+  /* Dialogs set their width inline; on phones they use the full width */
+  :root np-dialog .dialog:not(.dialog--maximized) {
+    width: 100% !important;
+  }
+
+  :root np-toast .toast {
+    min-width: 0;
+    max-width: none;
+  }
+
+  :root np-toast :is(.toast--top-right, .toast--top-left, .toast--bottom-right, .toast--bottom-left) {
+    left: 12px;
+    right: 12px;
+  }
+
+  :root np-table .table-filter {
+    max-width: none;
+  }
+
+  /* ---- Storybook docs pages ---- */
+  .sbdocs.sbdocs-wrapper {
+    padding: 32px 14px 64px;
+  }
+
+  .sbdocs .docs-story {
+    overflow-x: auto;
+  }
+
+  /* The props table scrolls sideways instead of cutting off its last columns (docs-theme.css clips it) */
+  .sbdocs .docblock-argstable {
+    display: block;
+    overflow-x: auto;
+  }
+
+  .sbdocs .sbdocs-subtitle {
+    font-size: 15px;
+  }
+
+  .sbdocs .docblock-source pre {
+    font-size: 12px;
+  }
+}
+
+/* ============================== Small phones (<= 400px) ============================== */
+@media (max-width: 400px) {
+  /* "Get Started" is also on the Welcome page; the logo, links and tools keep the row */
+  :root np-landing-nav .get-started {
+    display: none;
+  }
+
+  :root np-landing-nav .brand {
+    font-size: 18px;
+  }
+
+  :root np-components-catalog .cards--compact {
+    gap: 8px;
+  }
+
+  :root .gallery-page .toolbar {
+    position: static;
+  }
+}
+
+@keyframes np-sheet-in {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+}

@@ -24,7 +24,7 @@ export const AllVariants: Story = {
     template: `
       <div style="display: flex; gap: 8px">
         @for (tone of tones; track tone) {
-          <nex-badge [variant]="tone" [label]="tone" [pill]="pill" />
+          <np-badge [variant]="tone" [label]="tone" [pill]="pill" />
         }
       </div>
     `,

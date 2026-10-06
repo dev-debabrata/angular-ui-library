@@ -1,5 +1,5 @@
 <style>
-  /* Sidebar colors follow NexUI's light/dark mode and theme color: manager.ts sets data-theme and --ui-primary on
+  /* Sidebar colors follow NexPrime's light/dark mode and theme color: manager.ts sets data-theme and --ui-primary on
      this page too */
   :root {
     --nav-text: #1e293b;
@@ -16,6 +16,35 @@
     --nav-box-bg: #0f172a;
     --nav-box-border: #334155;
   }
+  /* Sidebar background (Storybook's appBg: its default light color, and the dark one in theme-tools.ts) */
+  :root {
+    --nav-bg: #f6f9fc;
+  }
+  :root[data-theme='dark'] {
+    --nav-bg: #0b1222;
+  }
+
+  /* The logo row and the search stay put while the list scrolls under them. The sidebar content has 16px top /
+     12px side padding and 16px gaps; the negative margins and matching padding keep the layout where it was and
+     let the background cover the full width */
+  #storybook-sidebar-region div:has(> .sidebar-header),
+  #storybook-sidebar-region div:has(> .search-field) {
+    position: sticky;
+    z-index: 2;
+    margin: -16px -12px 0;
+    padding: 16px 12px 0;
+    background: var(--nav-bg);
+  }
+  #storybook-sidebar-region div:has(> .sidebar-header) {
+    top: 0;
+  }
+  /* Right under the logo row (16px padding + 42px row) */
+  #storybook-sidebar-region div:has(> .search-field) {
+    top: 58px;
+    margin-bottom: -12px;
+    padding-bottom: 12px;
+  }
+
   /* PrimeNG-style sidebar: top-level rows (group headings and root pages like Icons) get a bold label and a
      boxed icon; groups get a chevron. Icons are Lucide SVG masks, so they follow the text color.
      Restart Storybook after editing. */
@@ -79,7 +108,9 @@
   }
   /* Hidden: "expand all" next to groups and the "⌃ K" hint in the search box (the shortcut still works) */
   .search-field > code,
-  .sidebar-subheading .sidebar-subheading-action {
+  .sidebar-subheading .sidebar-subheading-action,
+  .sidebar-item[data-item-id='getting-started-welcome--welcome'],
+  .sidebar-item[data-item-id='getting-started-welcome'] {
     display: none !important;
   }
   :is(.sidebar-subheading [data-action='collapse-root'], .sidebar-item:not([data-parent-id]) > a) {
@@ -164,9 +195,11 @@
     box-shadow: 0 6px 16px -8px var(--nav-accent);
   }
 
-  /* Toolbar: NexUI's search / mode / color buttons only. manager.ts hides the other tools by id; this one is built
+  /* Toolbar: NexPrime's search / mode / color buttons only. manager.ts hides the other tools by id; this one is built
      into the toolbar and has none */
-  button[aria-label='Show addon panel'] {
+  button[aria-label='Show addon panel'],
+  /* Landing pages (manager.ts sets data-np-layout) have no toolbar */
+  [data-np-layout='landing'] [data-testid='sb-preview-toolbar'] {
     display: none !important;
   }
 

@@ -1,7 +1,7 @@
 import { Component, booleanAttribute, input, model, numberAttribute } from '@angular/core';
 
 @Component({
-  selector: 'nex-textarea',
+  selector: 'np-textarea',
   templateUrl: './textarea.html',
   styleUrl: './textarea.css',
 })

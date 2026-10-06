@@ -3,7 +3,7 @@ import { Component, effect, input, model, numberAttribute } from '@angular/core'
 import { TONE_ICONS, type Tone } from '../../../utils/types';
 
 @Component({
-  selector: 'nex-toast',
+  selector: 'np-toast',
   templateUrl: './toast.html',
   styleUrl: './toast.css',
 })

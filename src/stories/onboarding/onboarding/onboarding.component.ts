@@ -52,7 +52,7 @@ interface Rect {
  * Call start() (e.g. from a "Restart" button) or set `autoStart` with a `storageKey` to show it once per browser.
  */
 @Component({
-  selector: 'nex-onboarding',
+  selector: 'np-onboarding',
   imports: [IconComponent],
   templateUrl: './onboarding.html',
   styleUrl: './onboarding.css',

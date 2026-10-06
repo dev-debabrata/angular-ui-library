@@ -10,7 +10,7 @@ export interface Confirmation {
   rejectLabel?: string;
   /** Color of the accept button */
   acceptTone?: 'primary' | 'danger';
-  /** Element to anchor to. Set it for <nex-confirm-popup>, leave it empty for <nex-confirm-dialog> */
+  /** Element to anchor to. Set it for <np-confirm-popup>, leave it empty for <np-confirm-dialog> */
   target?: EventTarget | null;
   accept?: () => void;
   reject?: () => void;
@@ -18,7 +18,7 @@ export interface Confirmation {
   key?: string;
 }
 
-/** Opens <nex-confirm-dialog> and <nex-confirm-popup>. Only one confirmation is active at a time */
+/** Opens <np-confirm-dialog> and <np-confirm-popup>. Only one confirmation is active at a time */
 @Injectable({ providedIn: 'root' })
 export class ConfirmationService {
   private readonly active = signal<Confirmation | null>(null);

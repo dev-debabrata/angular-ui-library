@@ -7,12 +7,12 @@
   },
   "newProjectRoot": "projects",
   "projects": {
-    "angular-ui-library": {
+    "nexprime-ui": {
       "projectType": "application",
       "schematics": {},
       "root": "",
       "sourceRoot": "src",
-      "prefix": "nex",
+      "prefix": "np",
       "architect": {
         "build": {
           "builder": "@angular/build:application",
@@ -48,19 +48,10 @@
             },
             "ssr": {
               "entry": "src/server.ts"
-            },
-            "allowedCommonJsDependencies": [
-              "lottie-web"
-            ]
+            }
           },
           "configurations": {
             "production": {
-              "fileReplacements": [
-                {
-                  "replace": "src/environments/environment.ts",
-                  "with": "src/environments/environment.prod.ts"
-                }
-              ],
               "budgets": [
                 {
                   "type": "initial",
@@ -69,8 +60,8 @@
                 },
                 {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "10kB",
-                  "maximumError": "20kB"
+                  "maximumWarning": "4kB",
+                  "maximumError": "10kB"
                 }
               ],
               "outputHashing": "all"
@@ -87,10 +78,10 @@
           "builder": "@angular/build:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "angular-ui-library:build:production"
+              "buildTarget": "nexprime-ui:build:production"
             },
             "development": {
-              "buildTarget": "angular-ui-library:build:development"
+              "buildTarget": "nexprime-ui:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -102,7 +93,7 @@
           "builder": "@storybook/angular-vite:start-storybook",
           "options": {
             "configDir": ".storybook",
-            "browserTarget": "angular-ui-library:build",
+            "browserTarget": "nexprime-ui:build",
             "port": 6006
           }
         },
@@ -110,15 +101,15 @@
           "builder": "@storybook/angular-vite:build-storybook",
           "options": {
             "configDir": ".storybook",
-            "browserTarget": "angular-ui-library:build",
+            "browserTarget": "nexprime-ui:build",
             "outputDir": "storybook-static"
           }
         },
         "build-elements": {
           "builder": "@angular/build:application",
           "options": {
-            "outputPath": "dist/nexui-elements",
-            "browser": "src/elements/nexui.ts",
+            "outputPath": "dist/nexprime-elements",
+            "browser": "src/elements/nexprime.ts",
             "index": false,
             "tsConfig": "tsconfig.elements.json",
             "styles": [
@@ -143,25 +134,22 @@
                 "maximumWarning": "1mb",
                 "maximumError": "2mb"
               }
-            ],
-            "allowedCommonJsDependencies": [
-              "lottie-web"
             ]
           }
         }
       }
     },
-    "nexui": {
+    "nexprime-lib": {
       "projectType": "library",
-      "root": "src/stories",
-      "sourceRoot": "src/stories",
-      "prefix": "nex",
+      "root": "src",
+      "sourceRoot": "src",
+      "prefix": "np",
       "architect": {
         "build": {
           "builder": "@angular/build:ng-packagr",
           "options": {
-            "project": "src/stories/ng-package.json",
-            "tsConfig": "src/stories/tsconfig.lib.json"
+            "project": "src/ng-package.json",
+            "tsConfig": "tsconfig.lib.json"
           }
         }
       }

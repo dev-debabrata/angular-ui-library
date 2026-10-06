@@ -30,13 +30,13 @@ export const Group: Story = {
     props: args,
     template: `
       <div style="display: flex; flex-wrap: wrap; gap: 8px; max-width: 420px">
-        <nex-chip label="Action" />
-        <nex-chip label="Comedy" icon="sparkles" />
-        <nex-chip label="Favorites" icon="heart" [removable]="true" (remove)="remove($event)" />
-        <nex-chip label="Amy Elsner" image="https://i.pravatar.cc/64?img=5" [removable]="true" (remove)="remove($event)" />
-        <nex-chip label="Asiya Javayant" image="https://i.pravatar.cc/64?img=9" />
-        <nex-chip label="Fast" icon="zap" [removable]="true" (remove)="remove($event)" />
-        <nex-chip label="Archived" [disabled]="true" [removable]="true" />
+        <np-chip label="Action" />
+        <np-chip label="Comedy" icon="sparkles" />
+        <np-chip label="Favorites" icon="heart" [removable]="true" (remove)="remove($event)" />
+        <np-chip label="Amy Elsner" image="https://i.pravatar.cc/64?img=5" [removable]="true" (remove)="remove($event)" />
+        <np-chip label="Asiya Javayant" image="https://i.pravatar.cc/64?img=9" />
+        <np-chip label="Fast" icon="zap" [removable]="true" (remove)="remove($event)" />
+        <np-chip label="Archived" [disabled]="true" [removable]="true" />
       </div>
     `,
   }),

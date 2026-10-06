@@ -1,0 +1,6 @@
+<div class="ripple" aria-hidden="true">
+  @for (i of ringList(); track i) {
+    <span class="ripple__ring" [style.--i]="i"></span>
+  }
+</div>
+<div class="np-effect__content"><ng-content /></div>

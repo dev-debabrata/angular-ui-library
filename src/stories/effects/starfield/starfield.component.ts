@@ -1,6 +1,6 @@
 import { Component, booleanAttribute, input, numberAttribute } from '@angular/core';
 
-import { CanvasEffect, type Point } from '../canvas-effect';
+import { CanvasEffect, circle, pathSteps, type Point } from '../canvas-effect';
 
 interface Star extends Point {
   /** Depth: 1 is far away, near 0 is passing the viewer */
@@ -15,7 +15,7 @@ const LEVELS = 6;
  * and hovering can jump to warp speed. With reduced motion it shows a still frame.
  */
 @Component({
-  selector: 'nex-starfield',
+  selector: 'np-starfield',
   templateUrl: './starfield.html',
   styleUrl: './starfield.css',
 })
@@ -83,7 +83,7 @@ export class StarfieldComponent extends CanvasEffect {
     const streaks = this.trails() && !this.reduced;
     const tail = 0.0035 * this.speed() * this.boost * 6;
     const f = Math.max(this.width, this.height) * 0.5;
-    const paths = Array.from({ length: LEVELS }, () => new Path2D());
+    const paths = pathSteps(LEVELS);
     for (const s of this.stars) {
       const near = 1 - s.z;
       const path = paths[Math.min(LEVELS - 1, Math.floor(near * LEVELS))];
@@ -95,8 +95,7 @@ export class StarfieldComponent extends CanvasEffect {
         path.lineTo(x, y);
       } else {
         const r = (near * 2.4 + 0.3) / 2 + 0.3;
-        path.moveTo(x + r, y);
-        path.arc(x, y, r, 0, Math.PI * 2);
+        circle(path, x, y, r);
       }
     }
     paths.forEach((path, k) => {

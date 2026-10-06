@@ -1,5 +1,5 @@
-/* Not encapsulated (see icon.component.ts), so every selector is scoped under .nex-icon */
-.nex-icon {
+/* Not encapsulated (see icon.component.ts), so every selector is scoped under .np-icon */
+.np-icon {
   display: inline-flex;
   flex-shrink: 0;
   align-items: center;
@@ -19,43 +19,43 @@
   }
 
   /* Closed shapes are marked by markClosedShapes() */
-  &.nex-icon--duotone .nex-closed {
+  &.np-icon--duotone .np-closed {
     fill: currentColor;
     fill-opacity: 0.2;
   }
 
-  &.nex-icon--gradient svg {
-    stroke: url(#nex-icon-gradient);
+  &.np-icon--gradient svg {
+    stroke: url(#np-icon-gradient);
   }
 
   /* Tiles: the icon sits inside a rounded square of the full size */
-  &.nex-icon--soft,
-  &.nex-icon--solid {
+  &.np-icon--soft,
+  &.np-icon--solid {
     border-radius: 28%;
   }
 
-  &.nex-icon--soft > span,
-  &.nex-icon--solid > span {
+  &.np-icon--soft > span,
+  &.np-icon--solid > span {
     width: 58%;
     height: 58%;
   }
 
-  &.nex-icon--soft {
+  &.np-icon--soft {
     background: color-mix(in srgb, currentColor 14%, transparent);
     color: var(--ui-primary);
   }
 
   /* Gradient tile by default; a color set on the icon (style="color: …") becomes the tile color */
-  &.nex-icon--solid {
+  &.np-icon--solid {
     background: var(--ui-gradient);
     box-shadow: var(--ui-shadow-sm);
   }
 
-  &.nex-icon--solid[style*='color'] {
+  &.np-icon--solid[style*='color'] {
     background: currentColor;
   }
 
-  &.nex-icon--solid > span {
+  &.np-icon--solid > span {
     color: #fff;
   }
 }

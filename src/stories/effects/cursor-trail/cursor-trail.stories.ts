@@ -22,7 +22,7 @@ type Story = StoryObj<CursorTrailComponent>;
 
 /** Move the pointer: sparkles follow it and fade */
 export const Sparkles: Story = {
-  render: demo('nex-cursor-trail', {
+  render: demo('np-cursor-trail', {
     height: '420px',
     background: BACKGROUNDS.ink,
     content: heroCopy(),
@@ -32,7 +32,7 @@ export const Sparkles: Story = {
 /** Soft dots on a light page */
 export const Dots: Story = {
   args: { shape: 'dot', size: 12, life: 30 },
-  render: demo('nex-cursor-trail', {
+  render: demo('np-cursor-trail', {
     height: '420px',
     background: 'var(--ui-surface-muted)',
     content: heroCopy({
@@ -51,5 +51,5 @@ export const Rainbow: Story = {
     life: 70,
     size: 9,
   },
-  render: demo('nex-cursor-trail', { height: '420px', background: BACKGROUNDS.black }),
+  render: demo('np-cursor-trail', { height: '420px', background: BACKGROUNDS.black }),
 };

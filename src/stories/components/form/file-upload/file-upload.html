@@ -18,7 +18,7 @@
       [disabled]="disabled() || uploading()"
       (click)="fileInput.click()"
     >
-      <nex-icon
+      <np-icon
         [name]="uploading() ? 'refresh-cw' : 'upload'"
         [size]="16"
         [class.spin]="uploading()"
@@ -31,7 +31,7 @@
       </button>
     }
     @if (items()[0]?.status === 'completed') {
-      <nex-icon class="done" name="circle-check" [size]="18" label="Uploaded" />
+      <np-icon class="done" name="circle-check" [size]="18" label="Uploaded" />
     }
   </div>
 } @else {
@@ -43,7 +43,7 @@
         [disabled]="disabled()"
         (click)="fileInput.click()"
       >
-        <nex-icon name="plus" [size]="16" /> {{ chooseLabel() }}
+        <np-icon name="plus" [size]="16" /> {{ chooseLabel() }}
       </button>
       @if (!auto()) {
         <button
@@ -52,7 +52,7 @@
           [disabled]="disabled() || !pending().length || uploading()"
           (click)="uploadPending()"
         >
-          <nex-icon name="upload" [size]="16" /> {{ uploadLabel() }}
+          <np-icon name="upload" [size]="16" /> {{ uploadLabel() }}
         </button>
       }
       <button
@@ -61,18 +61,18 @@
         [disabled]="disabled() || !items().length"
         (click)="cancel()"
       >
-        <nex-icon name="x" [size]="16" /> {{ cancelLabel() }}
+        <np-icon name="x" [size]="16" /> {{ cancelLabel() }}
       </button>
     </div>
 
     @if (uploading()) {
-      <nex-progress-bar class="progress" [value]="progress()" />
+      <np-progress-bar class="progress" [value]="progress()" />
     }
 
     @if (messages().length) {
       <ul class="messages" role="alert">
         @for (message of messages(); track $index) {
-          <li><nex-icon name="circle-alert" [size]="14" /> {{ message }}</li>
+          <li><np-icon name="circle-alert" [size]="14" /> {{ message }}</li>
         }
       </ul>
     }
@@ -93,14 +93,14 @@
                 @if (item.url) {
                   <img [src]="item.url" alt="" />
                 } @else {
-                  <nex-icon name="file-text" [size]="22" />
+                  <np-icon name="file-text" [size]="22" />
                 }
               </span>
               <span class="meta">
                 <b class="ellipsis" [title]="item.file.name">{{ item.file.name }}</b>
                 <small>{{ formatSize(item.file.size) }}</small>
               </span>
-              <nex-badge [label]="item.status" [variant]="statusTones[item.status]" [pill]="true" />
+              <np-badge [label]="item.status" [variant]="statusTones[item.status]" [pill]="true" />
               <button
                 type="button"
                 class="ui-close"
@@ -108,14 +108,14 @@
                 [attr.aria-label]="'Remove ' + item.file.name"
                 (click)="removeItem(item)"
               >
-                <nex-icon name="x" [size]="16" />
+                <np-icon name="x" [size]="16" />
               </button>
             </li>
           }
         </ul>
       } @else {
         <button type="button" class="empty" [disabled]="disabled()" (click)="fileInput.click()">
-          <span class="empty-icon"><nex-icon name="cloud-upload" [size]="28" /></span>
+          <span class="empty-icon"><np-icon name="cloud-upload" [size]="28" /></span>
           <b>Drag and drop files here</b>
           <small>or click to browse</small>
         </button>

@@ -14,7 +14,7 @@ export interface TableColumn {
 export type TableRow = Record<string, unknown>;
 
 @Component({
-  selector: 'nex-table',
+  selector: 'np-table',
   imports: [SearchInputComponent],
   templateUrl: './table.html',
   styleUrl: './table.css',

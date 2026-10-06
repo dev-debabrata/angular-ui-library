@@ -21,6 +21,28 @@ export const THEME_COLOR_VARS = ['--ui-primary', '--ui-accent', '--ui-chart-5', 
 /** Chart colors for Confetti (--ui-chart-6, a dark green, is left out) */
 export const CHART_COLOR_VARS = [1, 2, 3, 4, 5, 7, 8].map((i) => `--ui-chart-${i}`);
 
+/** `n` empty paths, to draw many items in a few batches (one per depth, size or opacity step) */
+export const pathSteps = (n: number) => Array.from({ length: n }, () => new Path2D());
+
+/** Adds a full circle to a path; the moveTo keeps it from joining the previous one */
+export function circle(path: Path2D, x: number, y: number, r: number) {
+  path.moveTo(x + r, y);
+  path.arc(x, y, r, 0, Math.PI * 2);
+}
+
+/** Fills each batch at its own opacity (`alpha(k)` for path k), in order, then restores full opacity */
+export function fillSteps(
+  ctx: CanvasRenderingContext2D,
+  paths: Path2D[],
+  alpha: (k: number) => number,
+) {
+  paths.forEach((path, k) => {
+    ctx.globalAlpha = alpha(k);
+    ctx.fill(path);
+  });
+  ctx.globalAlpha = 1;
+}
+
 /** Pointer position relative to an element's top-left corner */
 export function localPoint(el: HTMLElement, e: PointerEvent): Point {
   const rect = el.getBoundingClientRect();
@@ -36,7 +58,7 @@ export function localPoint(el: HTMLElement, e: PointerEvent): Point {
  *
  * Subclasses provide `seed`, `step` and `draw`; their template is a `<canvas>` plus the projected content.
  */
-@Directive({ host: { class: 'nex-effect' } })
+@Directive({ host: { class: 'np-effect' } })
 export abstract class CanvasEffect {
   protected readonly host: HTMLElement = inject(ElementRef).nativeElement;
   private readonly destroyRef = inject(DestroyRef);
@@ -86,6 +108,16 @@ export abstract class CanvasEffect {
   protected onPointerMove(_at: Point) {}
 
   protected onPointerLeave() {}
+
+  /** The pointer's horizontal position from -1 (left edge) to 1 (right edge); 0 when it's not over the effect */
+  protected pointerX() {
+    return this.pointer ? (this.pointer.x / this.width) * 2 - 1 : 0;
+  }
+
+  /** How many items `perArea` per 1000×600 px means at the current size, so density is size-independent */
+  protected countFor(perArea: number, min = 1, max = Infinity) {
+    return Math.max(min, Math.min(max, Math.round((perArea * this.width * this.height) / 600_000)));
+  }
 
   /** A CSS custom property (or 'color' for the text color) of the host, cached */
   protected cssValue(name: string) {

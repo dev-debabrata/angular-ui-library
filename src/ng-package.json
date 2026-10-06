@@ -1,0 +1,14 @@
+{
+  "$schema": "../node_modules/ng-packagr/ng-package.schema.json",
+  "dest": "../dist/nexprime-lib",
+  "lib": {
+    "entryFile": "public-api.ts"
+  },
+  "allowedNonPeerDependencies": ["fflate", "lottie-web"],
+  "assets": [
+    { "input": "stories/styles", "glob": "{theme,animations}.css", "output": "styles" },
+    { "input": "stories/icons/svg", "glob": "**/*.svg", "output": "icons" },
+    { "input": "stories/icons/svg", "glob": "LICENSE-lucide.txt", "output": "icons" },
+    { "input": "stories/nexlottie/files", "glob": "**/*.json", "output": "lottie" }
+  ]
+}

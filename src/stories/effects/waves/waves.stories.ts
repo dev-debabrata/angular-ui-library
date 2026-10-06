@@ -22,13 +22,13 @@ type Story = StoryObj<WavesComponent>;
 
 /** Theme-colored lines; they swell under the pointer */
 export const Lines: Story = {
-  render: demo('nex-waves', { height: '440px', background: BACKGROUNDS.ink, content: heroCopy() }),
+  render: demo('np-waves', { height: '440px', background: BACKGROUNDS.ink, content: heroCopy() }),
 };
 
 /** Translucent layers on a light page */
 export const Filled: Story = {
   args: { variant: 'filled', waves: 3, amplitude: 28 },
-  render: demo('nex-waves', {
+  render: demo('np-waves', {
     height: '420px',
     background: 'var(--ui-surface)',
     content: heroCopy({
@@ -47,5 +47,5 @@ export const Ocean: Story = {
     amplitude: 22,
     speed: 0.7,
   },
-  render: demo('nex-waves', { height: '400px', background: 'linear-gradient(#0c4a6e,#082f49)' }),
+  render: demo('np-waves', { height: '400px', background: 'linear-gradient(#0c4a6e,#082f49)' }),
 };

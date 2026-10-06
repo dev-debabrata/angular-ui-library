@@ -1,7 +1,7 @@
 import { Component, booleanAttribute, input, model } from '@angular/core';
 
 @Component({
-  selector: 'nex-text-input',
+  selector: 'np-text-input',
   templateUrl: './text-input.html',
   styleUrl: './text-input.css',
 })

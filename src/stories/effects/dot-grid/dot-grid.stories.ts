@@ -22,7 +22,7 @@ type Story = StoryObj<DotGridComponent>;
 
 /** Move over it to bulge the grid; click to send a ripple */
 export const Default: Story = {
-  render: demo('nex-dot-grid', {
+  render: demo('np-dot-grid', {
     height: '440px',
     background: 'var(--ui-surface-muted)',
     content: heroCopy({
@@ -36,7 +36,7 @@ export const Default: Story = {
 /** Glowing dots on a dark page */
 export const Dark: Story = {
   args: { color: '#a5b4fc', gap: 22, size: 1.4, strength: 14 },
-  render: demo('nex-dot-grid', {
+  render: demo('np-dot-grid', {
     height: '440px',
     background: BACKGROUNDS.ink,
     content: heroCopy(),
@@ -46,5 +46,5 @@ export const Dark: Story = {
 /** Large, sparse dots with a wide reach */
 export const Sparse: Story = {
   args: { gap: 44, size: 3, radius: 220, strength: 18, color: 'var(--ui-primary)' },
-  render: demo('nex-dot-grid', { height: '400px', background: 'var(--ui-surface)' }),
+  render: demo('np-dot-grid', { height: '400px', background: 'var(--ui-surface)' }),
 };

@@ -20,7 +20,7 @@ type Story = StoryObj<SpotlightComponent>;
 
 /** A soft glow follows the pointer behind the content */
 export const Glow: Story = {
-  render: demo('nex-spotlight', {
+  render: demo('np-spotlight', {
     height: '460px',
     background: BACKGROUNDS.ink,
     content: heroCopy(),
@@ -30,7 +30,7 @@ export const Glow: Story = {
 /** Flashlight: everything outside the light is dark */
 export const Flashlight: Story = {
   args: { dim: true, size: 360, color: 'rgb(255 255 255 / 0.12)' },
-  render: demo('nex-spotlight', {
+  render: demo('np-spotlight', {
     height: '460px',
     background: BACKGROUNDS.night,
     content: heroCopy({
@@ -50,13 +50,13 @@ export const Cards: Story = {
     template: `
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px">
         @for (card of cards; track card) {
-          <nex-spotlight [size]="size" [color]="color"
+          <np-spotlight [size]="size" [color]="color"
             style="border:1px solid var(--ui-border);border-radius:var(--ui-radius-lg);background:var(--ui-surface)">
             <div style="padding:28px;font-family:var(--ui-font)">
               <h3 style="margin:0 0 6px;color:var(--ui-text)">{{ card }}</h3>
               <p style="margin:0;color:var(--ui-text-muted)">Hover me: the glow follows your pointer.</p>
             </div>
-          </nex-spotlight>
+          </np-spotlight>
         }
       </div>`,
   }),

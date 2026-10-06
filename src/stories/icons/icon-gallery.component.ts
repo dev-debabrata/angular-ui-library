@@ -22,8 +22,10 @@ import {
 } from '../components/media/icon/icon.component';
 import { SearchInputComponent } from '../components/form/search-input/search-input.component';
 import { copyToClipboard } from '../utils/clipboard';
+import { elementCode, FRAMEWORKS, type ElementCode, type Framework } from '../utils/framework-code';
 import { downloadBlob } from '../utils/download';
 import { renderInBatches } from '../utils/render-in-batches';
+import { FrameworkCodeComponent } from '../getting-started/framework-code/framework-code.component';
 import { VERSION } from '../getting-started/landing';
 
 export interface GalleryIcon {
@@ -39,10 +41,11 @@ type Settings = typeof DEFAULTS;
 
 /** Storybook page that lists every icon, like lucide.dev: search, customize, click to copy */
 @Component({
-  selector: 'nex-icon-gallery',
+  selector: 'np-icon-gallery',
   imports: [
     ButtonComponent,
     ButtonToggleComponent,
+    FrameworkCodeComponent,
     IconComponent,
     NgTemplateOutlet,
     SearchInputComponent,
@@ -100,23 +103,26 @@ export class IconGalleryComponent {
     this.settings().color === DEFAULTS.color ? null : this.settings().color,
   );
 
-  /** Copyable code for the selected icon, with the current settings applied */
+  /** Copyable code for the selected icon in every framework, with the current settings applied */
   protected readonly code = computed(() => {
     const icon = this.selected();
     if (!icon) return null;
     const { size, strokeWidth, variant } = this.settings();
     const color = this.color();
-    const attrs = [
-      `name="${icon.name}"`,
-      size !== 20 && `[size]="${size}"`,
-      strokeWidth !== DEFAULTS.strokeWidth && `[strokeWidth]="${strokeWidth}"`,
-      variant !== 'outline' && `variant="${variant}"`,
-      color && `[style.color]="'${color}'"`,
-    ];
-    return {
-      angular: `<nex-icon ${attrs.filter(Boolean).join(' ')} />`,
-      svg: toSvgFile(icon.svg, this.settings(), color),
+    const element: ElementCode = {
+      tag: 'icon',
+      inputs: {
+        name: icon.name,
+        size: size !== 20 && size,
+        strokeWidth: strokeWidth !== DEFAULTS.strokeWidth && strokeWidth,
+        variant: variant !== 'outline' && variant,
+      },
+      style: color ? { color } : {},
     };
+    const snippets = Object.fromEntries(
+      FRAMEWORKS.map(({ value }) => [value, elementCode(value, element)]),
+    ) as Record<Framework, string>;
+    return { snippets, svg: toSvgFile(icon.svg, this.settings(), color) };
   });
 
   protected update<K extends keyof Settings>(key: K, value: Settings[K]) {
@@ -131,10 +137,10 @@ export class IconGalleryComponent {
     this.selected.update((current) => (current?.name === icon.name ? null : icon));
   }
 
-  protected async copy(kind: 'angular' | 'svg') {
-    await copyToClipboard(this.code()![kind]);
-    this.copied.set(kind);
-    setTimeout(() => this.copied() === kind && this.copied.set(''), 1500);
+  protected async copySvg() {
+    await copyToClipboard(this.code()!.svg);
+    this.copied.set('svg');
+    setTimeout(() => this.copied() === 'svg' && this.copied.set(''), 1500);
   }
 
   protected download() {

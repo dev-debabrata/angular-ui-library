@@ -4,7 +4,7 @@ import { HeaderComponent } from '../header/header.component';
 import type { User } from '../../../utils/types';
 
 @Component({
-  selector: 'storybook-page',
+  selector: 'np-page',
   imports: [HeaderComponent],
   templateUrl: './page.html',
   styleUrl: './page.css',

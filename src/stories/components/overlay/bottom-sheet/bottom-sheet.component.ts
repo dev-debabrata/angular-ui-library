@@ -4,7 +4,7 @@ let nextId = 0;
 
 /** Panel that slides up from the bottom of the screen. Drag the handle down, press Escape or click the backdrop to close */
 @Component({
-  selector: 'nex-bottom-sheet',
+  selector: 'np-bottom-sheet',
   host: { '(document:keydown.escape)': 'dismissable() && close()' },
   templateUrl: './bottom-sheet.html',
   styleUrl: './bottom-sheet.css',

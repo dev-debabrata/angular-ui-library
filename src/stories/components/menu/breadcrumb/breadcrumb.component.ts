@@ -6,7 +6,7 @@ export interface BreadcrumbItem {
 }
 
 @Component({
-  selector: 'nex-breadcrumb',
+  selector: 'np-breadcrumb',
   templateUrl: './breadcrumb.html',
   styleUrl: './breadcrumb.css',
 })

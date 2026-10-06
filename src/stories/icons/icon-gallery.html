@@ -9,7 +9,7 @@
   </header>
 
   <div class="toolbar">
-    <nex-search-input
+    <np-search-input
       class="search"
       [placeholder]="'Search ' + icons().length + ' icons...'"
       (search)="query.set($event)"
@@ -31,7 +31,7 @@
     }
     <div class="control">
       <span>Style</span>
-      <nex-button-toggle
+      <np-button-toggle
         size="small"
         ariaLabel="Icon style"
         [options]="variants"
@@ -49,7 +49,7 @@
       />
     </label>
     @if (isCustomized()) {
-      <storybook-button size="small" label="Reset" (onClick)="reset()" />
+      <np-button size="small" label="Reset" (clicked)="reset()" />
     }
   </div>
 
@@ -95,20 +95,14 @@
             ×
           </button>
         </div>
-        <pre><code>{{ code.angular }}</code></pre>
+        <np-framework-code [code]="code.snippets" angularImport="IconComponent" />
         <div class="actions">
-          <storybook-button
-            size="small"
-            [primary]="true"
-            [label]="copied() === 'angular' ? 'Copied!' : 'Copy Angular'"
-            (onClick)="copy('angular')"
-          />
-          <storybook-button
+          <np-button
             size="small"
             [label]="copied() === 'svg' ? 'Copied!' : 'Copy SVG'"
-            (onClick)="copy('svg')"
+            (clicked)="copySvg()"
           />
-          <storybook-button size="small" label="Download" (onClick)="download()" />
+          <np-button size="small" label="Download" (clicked)="download()" />
         </div>
       </div>
     </aside>
@@ -117,7 +111,7 @@
 
 <!-- One icon with the current settings, shared by the grid and the preview -->
 <ng-template #iconTpl let-icon let-size="size">
-  <nex-icon
+  <np-icon
     [name]="icon.name"
     [svg]="icon.svg"
     [size]="size"

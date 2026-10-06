@@ -26,7 +26,7 @@ const meta: Meta<ScrollTopComponent> = {
   render: (args) => ({
     props: { ...args, paragraphs: Array.from({ length: 20 }, (_, i) => i + 1) },
     template: scroller(
-      `<nex-scroll-top [target]="box" [threshold]="threshold" [position]="position ?? 'right'"
+      `<np-scroll-top [target]="box" [threshold]="threshold" [position]="position ?? 'right'"
          [progress]="progress ?? true" [icon]="icon ?? 'chevron-up'" />`,
     ),
   }),

@@ -1,0 +1,44 @@
+/* Layout comes from .np-effect in theme.css; the rays sit behind the content */
+:host {
+  --rays-color: color-mix(in srgb, var(--ui-primary) 55%, white);
+  isolation: isolate;
+}
+
+.rays {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+/* A tall blurred bar hanging from the top center, rotated to its angle and swaying around it */
+.rays__ray {
+  position: absolute;
+  top: -15%;
+  left: 50%;
+  width: var(--w);
+  height: 130%;
+  margin-left: calc(var(--w) / -2);
+  background: linear-gradient(to bottom, var(--rays-color), transparent 85%);
+  border-radius: 50%;
+  filter: blur(22px);
+  transform: rotate(var(--angle));
+  transform-origin: 50% 0;
+  animation: rays-sway var(--rays-duration) ease-in-out infinite alternate;
+}
+
+@keyframes rays-sway {
+  from {
+    transform: rotate(calc(var(--angle) - 5deg));
+  }
+  to {
+    transform: rotate(calc(var(--angle) + 5deg));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rays__ray {
+    animation: none;
+  }
+}

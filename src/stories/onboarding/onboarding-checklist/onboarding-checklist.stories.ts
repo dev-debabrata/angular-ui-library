@@ -70,7 +70,7 @@ export const WithTour: Story = {
       },
       template: `
         <div style="display: flex; gap: 32px; align-items: flex-start; flex-wrap: wrap; font-family: var(--ui-font)">
-          <nex-onboarding-checklist ${argsToTemplate(args, { exclude: ['tasks', 'showMe'] })}
+          <np-onboarding-checklist ${argsToTemplate(args, { exclude: ['tasks', 'showMe'] })}
             [(tasks)]="list" (showMe)="show($event, ob)" />
           <div style="display: grid; gap: 12px">
             <button id="ck-project" class="ui-btn ui-btn--primary">+ New project</button>
@@ -78,7 +78,7 @@ export const WithTour: Story = {
             <button id="ck-connect" class="ui-btn">Integrations</button>
           </div>
         </div>
-        <nex-onboarding #ob [steps]="tour()" doneLabel="Done" (finished)="finish()" />
+        <np-onboarding #ob [steps]="tour()" doneLabel="Done" (finished)="finish()" />
       `,
     };
   },

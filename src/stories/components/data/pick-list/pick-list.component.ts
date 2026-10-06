@@ -24,7 +24,7 @@ import { SearchInputComponent } from '../../form/search-input/search-input.compo
 export type ListSide = 'source' | 'target';
 
 @Component({
-  selector: 'nex-pick-list',
+  selector: 'np-pick-list',
   imports: [
     NgTemplateOutlet,
     CdkDrag,

@@ -10,7 +10,7 @@ const POSITIONS = ['top-right', 'top-left', 'bottom-right', 'bottom-left'];
 const bound = `[max]="max" [dot]="dot" [showZero]="showZero" [hidden]="hidden" [severity]="severity" [position]="position" [size]="size"`;
 /** Badge on a 26px icon. `attrs` are extra bindings */
 const badge = (value: string, icon: string, attrs = '[severity]="severity"') =>
-  `<nex-overlay-badge [value]="${value}" ${attrs}><nex-icon name="${icon}" [size]="26" /></nex-overlay-badge>`;
+  `<np-overlay-badge [value]="${value}" ${attrs}><np-icon name="${icon}" [size]="26" /></np-overlay-badge>`;
 /** Story that renders `content` in a flex row */
 const row = (content: string): Story => ({
   render: (args) => ({
@@ -64,9 +64,9 @@ export const Sizes: Story = row(
 
 /** Works on any content: avatars, buttons */
 export const OnAvatarAndButton: Story = row(`
-  <nex-overlay-badge [dot]="true" severity="success" position="bottom-right"><nex-avatar name="Jane Doe" size="large" /></nex-overlay-badge>
-  <nex-overlay-badge [value]="3" [severity]="severity"><nex-avatar name="Alex Lee" /></nex-overlay-badge>
-  <nex-overlay-badge [value]="value" [severity]="severity">
-    <button type="button" class="ui-btn"><nex-icon name="shopping-cart" [size]="16" /> Cart</button>
-  </nex-overlay-badge>
+  <np-overlay-badge [dot]="true" severity="success" position="bottom-right"><np-avatar name="Jane Doe" size="large" /></np-overlay-badge>
+  <np-overlay-badge [value]="3" [severity]="severity"><np-avatar name="Alex Lee" /></np-overlay-badge>
+  <np-overlay-badge [value]="value" [severity]="severity">
+    <button type="button" class="ui-btn"><np-icon name="shopping-cart" [size]="16" /> Cart</button>
+  </np-overlay-badge>
 `);

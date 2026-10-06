@@ -25,9 +25,9 @@ const products: Product[] = [
 /** Binds every set arg; `source`/`target` use two-way binding so moves persist in the story */
 const pickList = (args: Record<string, unknown>, content = '') => ({
   props: args,
-  template: `<nex-pick-list [(source)]="source" [(target)]="target" ${argsToTemplate(args, {
+  template: `<np-pick-list [(source)]="source" [(target)]="target" ${argsToTemplate(args, {
     exclude: ['source', 'target', 'sourceChange', 'targetChange'],
-  })}>${content}</nex-pick-list>`,
+  })}>${content}</np-pick-list>`,
 });
 
 const meta: Meta<PickListComponent<Product>> = {

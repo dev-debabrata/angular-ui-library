@@ -10,12 +10,12 @@
     class="voice__mic"
     [attr.aria-label]="status()"
     [attr.aria-pressed]="state() === 'listening'"
-    [class.nex-anim-ripple]="state() === 'listening'"
-    [class.nex-anim-glow]="state() === 'speaking'"
+    [class.np-anim-ripple]="state() === 'listening'"
+    [class.np-anim-glow]="state() === 'speaking'"
     [disabled]="state() === 'processing'"
     (click)="toggle()"
   >
-    <nex-icon [class.nex-anim-spin]="state() === 'processing'" [name]="micIcon()" [size]="30" />
+    <np-icon [class.np-anim-spin]="state() === 'processing'" [name]="micIcon()" [size]="30" />
   </button>
 
   <p class="voice__status" aria-live="polite">{{ status() }}</p>
@@ -42,18 +42,18 @@
     @for (m of messages(); track $index) {
       <div class="voice__msg" [class.voice__msg--me]="m.from === 'me'">
         @if (m.from === 'them') {
-          <span class="voice__who"><nex-icon name="bot" [size]="14" /></span>
+          <span class="voice__who"><np-icon name="bot" [size]="14" /></span>
         }
         <p class="voice__bubble">{{ m.text }}</p>
         @if (m.from === 'me') {
-          <span class="voice__who voice__who--me"><nex-icon name="user" [size]="12" /></span>
+          <span class="voice__who voice__who--me"><np-icon name="user" [size]="12" /></span>
         }
       </div>
     }
     @if (state() === 'listening' && transcript() && !typed) {
       <div class="voice__msg voice__msg--me">
         <p class="voice__bubble voice__bubble--live">{{ transcript() }}</p>
-        <span class="voice__who voice__who--me"><nex-icon name="user" [size]="12" /></span>
+        <span class="voice__who voice__who--me"><np-icon name="user" [size]="12" /></span>
       </div>
     }
   </div>

@@ -1,4 +1,4 @@
-/* Layout comes from .nex-effect in theme.css (canvas over the content); the text color tints the sparkles (colors come from [colors] or the theme) */
+/* Layout comes from .np-effect in theme.css (canvas over the content); the text color tints the sparkles (colors come from [colors] or the theme) */
 :host {
   color: var(--ui-primary);
 }

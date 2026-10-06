@@ -4,17 +4,9 @@
       @let p = plot();
       @for (tick of p.ticks; track tick) {
         @if (showGrid()) {
-          <line
-            class="grid"
-            [attr.x1]="p.x0"
-            [attr.x2]="p.x1"
-            [attr.y1]="p.y(tick)"
-            [attr.y2]="p.y(tick)"
-          />
+          <line class="grid" [attr.x1]="p.x0" [attr.x2]="p.x1" [attr.y1]="p.y(tick)" [attr.y2]="p.y(tick)" />
         }
-        <text class="tick tick--y" [attr.x]="p.x0 - 10" [attr.y]="p.y(tick)">
-          {{ format()(tick) }}
-        </text>
+        <text class="tick tick--y" [attr.x]="p.x0 - 10" [attr.y]="p.y(tick)">{{ format()(tick) }}</text>
       }
       @for (label of labels(); track $index) {
         <text class="tick tick--x" [attr.x]="p.cx($index)" [attr.y]="p.y1 + 18">{{ label }}</text>
@@ -52,13 +44,7 @@
         @if (hover() !== null) {
           @for (s of series(); track $index) {
             @if (s.points[hover()!]; as point) {
-              <circle
-                class="dot"
-                [attr.cx]="point[0]"
-                [attr.cy]="point[1]"
-                r="5"
-                [style.fill]="s.color"
-              />
+              <circle class="dot" [attr.cx]="point[0]" [attr.cy]="point[1]" r="5" [style.fill]="s.color" />
             }
           }
         }
@@ -85,9 +71,7 @@
         />
       }
       @if (type() === 'doughnut') {
-        <text class="total" [attr.x]="width() / 2" [attr.y]="height() / 2 - 4">
-          {{ format()(total()) }}
-        </text>
+        <text class="total" [attr.x]="width() / 2" [attr.y]="height() / 2 - 4">{{ format()(total()) }}</text>
         <text class="total-label" [attr.x]="width() / 2" [attr.y]="height() / 2 + 16">Total</text>
       }
     }
@@ -113,29 +97,20 @@
   </ul>
 }
 
-<!-- thead/tbody written out: the browser adds tbody itself, which would break hydration -->
 <table class="ui-visually-hidden">
-  <caption>
-    {{
-      ariaLabel()
-    }}
-  </caption>
-  <thead>
+  <caption>{{ ariaLabel() }}</caption>
+  <tr>
+    <th></th>
+    @for (d of datasets(); track $index) {
+      <th>{{ d.label }}</th>
+    }
+  </tr>
+  @for (label of labels(); track $index; let i = $index) {
     <tr>
-      <th></th>
+      <th>{{ label }}</th>
       @for (d of datasets(); track $index) {
-        <th>{{ d.label }}</th>
+        <td>{{ format()(valueAt(d, i)) }}</td>
       }
     </tr>
-  </thead>
-  <tbody>
-    @for (label of labels(); track $index; let i = $index) {
-      <tr>
-        <th>{{ label }}</th>
-        @for (d of datasets(); track $index) {
-          <td>{{ format()(valueAt(d, i)) }}</td>
-        }
-      </tr>
-    }
-  </tbody>
+  }
 </table>

@@ -37,7 +37,7 @@ const meta: Meta<CarouselComponent> = {
   args: { items: products, numVisible: 3, numScroll: 1, pageChange: fn() },
   render: (args) => ({
     props: args,
-    template: `<nex-carousel ${argsToTemplate(args)}>${productCard}</nex-carousel>`,
+    template: `<np-carousel ${argsToTemplate(args)}>${productCard}</np-carousel>`,
   }),
 };
 
@@ -62,7 +62,7 @@ export const ImageSlider: Story = {
   render: (args) => ({
     props: args,
     template: `
-      <nex-carousel ${argsToTemplate(args)}>
+      <np-carousel ${argsToTemplate(args)}>
         <ng-template let-item let-i="index">
           <div style="position: relative; overflow: hidden; border-radius: var(--ui-radius-lg)">
             <img [src]="'https://picsum.photos/seed/aurora-' + item + '/1200/500'" [alt]="item"
@@ -73,7 +73,7 @@ export const ImageSlider: Story = {
             </span>
           </div>
         </ng-template>
-      </nex-carousel>
+      </np-carousel>
     `,
   }),
 };

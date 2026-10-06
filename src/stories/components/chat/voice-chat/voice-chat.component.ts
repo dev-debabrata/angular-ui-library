@@ -50,7 +50,7 @@ const STATES: Record<VoiceState, [status: string, icon: string]> = {
  * otherwise listening shows a text box.
  */
 @Component({
-  selector: 'nex-voice-chat',
+  selector: 'np-voice-chat',
   imports: [IconComponent],
   templateUrl: './voice-chat.html',
   styleUrl: './voice-chat.css',

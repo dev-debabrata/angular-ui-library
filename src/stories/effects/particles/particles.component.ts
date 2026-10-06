@@ -1,6 +1,6 @@
 import { Component, booleanAttribute, input, numberAttribute } from '@angular/core';
 
-import { CanvasEffect, type Point } from '../canvas-effect';
+import { CanvasEffect, pathSteps, type Point } from '../canvas-effect';
 
 /** What the particles do near the pointer */
 export type ParticlesInteraction = 'grab' | 'repulse' | 'attract' | 'none';
@@ -18,9 +18,6 @@ interface Particle extends Point {
   r: number;
 }
 
-/** Reference area for `count`: that many particles per 1000 × 600 px, so density stays the same at any size */
-const AREA = 1000 * 600;
-
 /** Lines are drawn in this many opacity steps, one stroke per step instead of one per line */
 const BUCKETS = 8;
 
@@ -29,7 +26,7 @@ const BUCKETS = 8;
  * Projected content sits on top. Shows a still frame when the user prefers reduced motion.
  */
 @Component({
-  selector: 'nex-particles',
+  selector: 'np-particles',
   templateUrl: './particles.html',
   styleUrl: './particles.css',
 })
@@ -67,7 +64,7 @@ export class ParticlesComponent extends CanvasEffect {
   private particles: Particle[] = [];
 
   private target() {
-    return Math.max(8, Math.min(400, Math.round((this.count() * this.width * this.height) / AREA)));
+    return this.countFor(this.count(), 8, 400);
   }
 
   private particle(x: number, y: number): Particle {
@@ -114,7 +111,7 @@ export class ParticlesComponent extends CanvasEffect {
     ctx.clearRect(0, 0, this.width, this.height);
     ctx.fillStyle = ctx.strokeStyle = this.color() || this.textColor();
     ctx.lineWidth = 1;
-    const paths = Array.from({ length: BUCKETS }, () => new Path2D());
+    const paths = pathSteps(BUCKETS);
     /** Adds a line whose strength (0…1) picks its opacity step */
     const line = (strength: number, a: Point, b: Point) => {
       const path = paths[Math.min(BUCKETS - 1, Math.floor(strength * BUCKETS))];
@@ -138,7 +135,7 @@ export class ParticlesComponent extends CanvasEffect {
 
     if (this.pointer && this.interaction() === 'grab') {
       const radius = this.interactionRadius();
-      const grab = Array.from({ length: BUCKETS }, () => new Path2D());
+      const grab = pathSteps(BUCKETS);
       paths.splice(0, BUCKETS, ...grab);
       for (const p of ps) {
         const dx = p.x - this.pointer.x;

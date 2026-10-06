@@ -15,7 +15,7 @@ const RING = 2 * Math.PI * 18;
 
 /** "Get started" checklist: progress ring, tasks to tick off, and a "Show me" link per task (e.g. to start a tour step) */
 @Component({
-  selector: 'nex-onboarding-checklist',
+  selector: 'np-onboarding-checklist',
   imports: [IconComponent],
   templateUrl: './onboarding-checklist.html',
   styleUrl: './onboarding-checklist.css',

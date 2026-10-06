@@ -7,7 +7,7 @@ import { OverlayPanelComponent } from './overlay-panel.component';
 
 /** Story-only helper: the "Share" example for OverlayPanel. Not part of the library */
 @Component({
-  selector: 'nex-overlay-panel-demo',
+  selector: 'np-overlay-panel-demo',
   imports: [AvatarComponent, ButtonComponent, IconComponent, OverlayPanelComponent],
   templateUrl: './overlay-panel-demo.html',
   styleUrl: './overlay-panel-demo.css',

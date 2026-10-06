@@ -66,7 +66,7 @@ export const Default: Story = {
           );
         },
       },
-      template: `<nex-voice-chat ${argsToTemplate(args, { exclude: ['messages', 'utterance'] })}
+      template: `<np-voice-chat ${argsToTemplate(args, { exclude: ['messages', 'utterance'] })}
         [(messages)]="messages" (utterance)="onUtterance($event)" />`,
     };
   },
@@ -99,7 +99,7 @@ export const States: Story = {
     template: `
       <div style="display: grid; gap: 16px">
         @for (s of states; track s) {
-          <nex-voice-chat [state]="s" [messages]="[]" [speak]="false" />
+          <np-voice-chat [state]="s" [messages]="[]" [speak]="false" />
         }
       </div>
     `,

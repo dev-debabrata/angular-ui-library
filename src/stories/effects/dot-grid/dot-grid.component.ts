@@ -1,6 +1,6 @@
 import { Component, booleanAttribute, input, numberAttribute } from '@angular/core';
 
-import { CanvasEffect, type Point } from '../canvas-effect';
+import { CanvasEffect, circle, type Point } from '../canvas-effect';
 
 interface Ripple extends Point {
   age: number;
@@ -17,7 +17,7 @@ const REST = 0.28;
  * It only animates while something is moving, so an idle grid costs nothing.
  */
 @Component({
-  selector: 'nex-dot-grid',
+  selector: 'np-dot-grid',
   templateUrl: './dot-grid.html',
   styleUrl: './dot-grid.css',
 })
@@ -95,8 +95,7 @@ export class DotGridComponent extends CanvasEffect {
           if (k > push) [push, from] = [k, r];
         }
         if (push < 0.005) {
-          resting.moveTo(gx + size, gy);
-          resting.arc(gx, gy, size, 0, Math.PI * 2);
+          circle(resting, gx, gy, size);
           continue;
         }
         const d = Math.hypot(gx - from.x, gy - from.y) || 1;

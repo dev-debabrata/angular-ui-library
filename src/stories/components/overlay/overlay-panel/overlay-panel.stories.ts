@@ -16,7 +16,7 @@ const meta: Meta<OverlayPanelComponent> = {
       story: { inline: false, height: '520px' },
       description: {
         component:
-          'Add `#op` to `<nex-overlay-panel>` and call `op.toggle($event)` from a button. ' +
+          'Add `#op` to `<np-overlay-panel>` and call `op.toggle($event)` from a button. ' +
           'The panel opens under the clicked element and closes on outside click or Escape.',
       },
     },
@@ -31,7 +31,7 @@ const bindings = `[dismissable]="dismissable" [showCloseIcon]="showCloseIcon" (o
 
 /** The "Share" example: a panel with a link, an invite field and a member list */
 export const Default: Story = {
-  render: (args) => ({ props: args, template: `<nex-overlay-panel-demo ${bindings} />` }),
+  render: (args) => ({ props: args, template: `<np-overlay-panel-demo ${bindings} />` }),
 };
 
 export const Basic: Story = {
@@ -39,12 +39,12 @@ export const Basic: Story = {
   render: (args) => ({
     props: args,
     template: `
-      <storybook-button label="Toggle panel" [primary]="true" (onClick)="op.toggle($event)" />
-      <nex-overlay-panel #op ${bindings}>
+      <np-button label="Toggle panel" [primary]="true" (clicked)="op.toggle($event)" />
+      <np-overlay-panel #op ${bindings}>
         <p style="margin: 0; padding-right: 24px; max-width: 260px; line-height: 1.5">
           Any content goes here. Click outside or press Escape to close.
         </p>
-      </nex-overlay-panel>
+      </np-overlay-panel>
     `,
   }),
 };

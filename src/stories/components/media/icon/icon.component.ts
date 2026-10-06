@@ -16,13 +16,13 @@ export const ICON_VARIANTS = ['outline', 'duotone', 'gradient', 'soft', 'solid']
 export type IconVariant = (typeof ICON_VARIANTS)[number];
 
 /** Shared <linearGradient> for the gradient variant, added to the page once */
-const GRADIENT_ID = 'nex-icon-gradient';
+const GRADIENT_ID = 'np-icon-gradient';
 
 /**
  * Adds `attrs` to every closed shape (circle, rect, ellipse, polygon, path ending in "z") that has no fill of its
  * own. The duotone variant fills these shapes with a tint.
  */
-export function markClosedShapes(svg: string, attrs = 'class="nex-closed"') {
+export function markClosedShapes(svg: string, attrs = 'class="np-closed"') {
   return svg.replace(
     /<(?:circle|rect|ellipse|polygon|path(?=[^>]*\bd="[^"]*[zZ]\s*"))\b(?![^>]*\bfill=)/g,
     `$& ${attrs}`,
@@ -31,11 +31,11 @@ export function markClosedShapes(svg: string, attrs = 'class="nex-closed"') {
 
 /**
  * Folder the icon files are loaded from (src/stories/icons/svg is served at icons/). Apps using the Web Components
- * can point it elsewhere, e.g. a CDN, with window.NEXUI_ICONS_URL = 'https://cdn.example.com/nexui/icons/'
+ * can point it elsewhere, e.g. a CDN, with window.NEXPRIME_ICONS_URL = 'https://cdn.example.com/nexprime/icons/'
  */
-const iconsUrl = () => (globalThis as { NEXUI_ICONS_URL?: string }).NEXUI_ICONS_URL ?? 'icons/';
+const iconsUrl = () => (globalThis as { NEXPRIME_ICONS_URL?: string }).NEXPRIME_ICONS_URL ?? 'icons/';
 
-/** Each SVG is downloaded once from /icons (served from src/stories/icons/svg) and shared by every <nex-icon> */
+/** Each SVG is downloaded once from /icons (served from src/stories/icons/svg) and shared by every <np-icon> */
 const cache = new Map<string, Promise<string>>();
 
 function loadSvg(name: string): Promise<string> {
@@ -68,14 +68,14 @@ function addGradient(doc: Document) {
 }
 
 @Component({
-  selector: 'nex-icon',
+  selector: 'np-icon',
   templateUrl: './icon.html',
   styleUrl: './icon.css',
   // Styles must reach the <svg> inserted with innerHTML, which view encapsulation can't target
   encapsulation: ViewEncapsulation.None,
   host: {
-    class: 'nex-icon',
-    '[class]': "'nex-icon--' + variant()",
+    class: 'np-icon',
+    '[class]': "'np-icon--' + variant()",
     '[style.width.px]': 'size()',
     '[style.height.px]': 'size()',
     '[style.--icon-stroke]': 'strokeWidth()',

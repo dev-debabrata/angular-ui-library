@@ -1,6 +1,6 @@
 /* Shared design tokens and utility classes used by every component in src/stories. */
 
-/* nex-anim-* animation classes (Animations page) */
+/* np-anim-* animation classes (Animations page) */
 @import './animations.css';
 
 :root {
@@ -195,6 +195,11 @@ body {
   color: var(--ui-text-subtle);
 }
 
+/* The clear (×) button of search fields */
+input[type='search']::-webkit-search-cancel-button {
+  cursor: pointer;
+}
+
 .ui-control:hover:not(:disabled) {
   border-color: var(--ui-text-subtle);
 }
@@ -382,14 +387,14 @@ select.ui-control {
 
 /* Effects (src/stories/effects): the host is a box with the projected content on top. A canvas effect's canvas
    paints behind the content and never takes clicks (the host listens for the pointer). Give the host a height. */
-.nex-effect {
+.np-effect {
   position: relative;
   display: block;
   overflow: hidden;
   touch-action: pan-y;
 }
 
-.nex-effect__canvas {
+.np-effect__canvas {
   position: absolute;
   inset: 0;
   width: 100%;
@@ -397,12 +402,12 @@ select.ui-control {
   pointer-events: none;
 }
 
-.nex-effect__content {
+.np-effect__content {
   position: relative;
   height: 100%;
 }
 
 /* Effects that draw over the content (Confetti, Cursor Trail) */
-.nex-effect__canvas--front {
+.np-effect__canvas--front {
   z-index: 1;
 }

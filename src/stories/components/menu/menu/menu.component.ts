@@ -5,7 +5,7 @@ import type { MenuItem } from '../../../utils/types';
 import { MenuItemComponent } from '../menu-item/menu-item.component';
 
 @Component({
-  selector: 'nex-menu',
+  selector: 'np-menu',
   imports: [MenuItemComponent],
   templateUrl: './menu.html',
   styleUrl: './menu.css',

@@ -3,7 +3,7 @@ import { Component, input } from '@angular/core';
 import type { Size } from '../../../utils/types';
 
 @Component({
-  selector: 'nex-spinner',
+  selector: 'np-spinner',
   templateUrl: './spinner.html',
   styleUrl: './spinner.css',
 })

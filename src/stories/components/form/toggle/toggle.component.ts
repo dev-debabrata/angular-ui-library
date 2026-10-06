@@ -1,7 +1,7 @@
 import { Component, booleanAttribute, input, model } from '@angular/core';
 
 @Component({
-  selector: 'nex-toggle',
+  selector: 'np-toggle',
   templateUrl: './toggle.html',
   styleUrl: './toggle.css',
 })

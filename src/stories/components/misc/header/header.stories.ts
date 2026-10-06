@@ -8,7 +8,7 @@ const meta: Meta<HeaderComponent> = {
   component: HeaderComponent,
   tags: ['autodocs'],
   parameters: { layout: 'fullscreen' },
-  args: { onLogin: fn(), onLogout: fn(), onCreateAccount: fn() },
+  args: { login: fn(), logout: fn(), createAccount: fn() },
 };
 
 export default meta;

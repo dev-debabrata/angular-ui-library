@@ -53,19 +53,19 @@ const page = (args: object) => `
       </div>
     </section>
     <div id="ob-icons" style="display: flex; gap: 8px; justify-self: start">
-      <button type="button" class="ui-btn ui-btn--icon" aria-label="Edit"><nex-icon name="pencil" [size]="18" /></button>
-      <button type="button" class="ui-btn ui-btn--icon" aria-label="Share"><nex-icon name="share-2" [size]="18" /></button>
-      <button type="button" class="ui-btn ui-btn--icon" aria-label="Delete"><nex-icon name="trash-2" [size]="18" /></button>
+      <button type="button" class="ui-btn ui-btn--icon" aria-label="Edit"><np-icon name="pencil" [size]="18" /></button>
+      <button type="button" class="ui-btn ui-btn--icon" aria-label="Share"><np-icon name="share-2" [size]="18" /></button>
+      <button type="button" class="ui-btn ui-btn--icon" aria-label="Delete"><np-icon name="trash-2" [size]="18" /></button>
     </div>
     <div id="ob-banner" style="padding: 28px 24px; border-radius: var(--ui-radius-lg); background: var(--ui-gradient);
                                color: #fff; font-size: 16px">
       Here we have text with a background
     </div>
     <button id="ob-restart" type="button" class="ui-btn" style="justify-self: center" (click)="tour.start()">
-      <nex-icon name="rotate-ccw" [size]="16" /> Restart onboarding
+      <np-icon name="rotate-ccw" [size]="16" /> Restart onboarding
     </button>
   </div>
-  <nex-onboarding #tour ${argsToTemplate(args)} />
+  <np-onboarding #tour ${argsToTemplate(args)} />
 `;
 
 /**
@@ -112,7 +112,7 @@ export const Welcome: Story = {
     steps: [
       {
         icon: 'sparkles',
-        title: 'Welcome to NexUI',
+        title: 'Welcome to NexPrime',
         text: 'A modern component library for Angular, React and Vue.',
       },
       {

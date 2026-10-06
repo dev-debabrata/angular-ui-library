@@ -31,7 +31,7 @@
   box-shadow: 0 0 0 9999px var(--ob-dim);
 }
 
-/* Beacon mode: a pulsing hotspot (nex-anim-ripple) instead of the dimmed spotlight */
+/* Beacon mode: a pulsing hotspot (np-anim-ripple) instead of the dimmed spotlight */
 .onboarding__beacon {
   position: fixed;
   z-index: 1001;
@@ -185,7 +185,7 @@
   background: rgb(255 255 255 / 0.18);
   box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.35);
   color: #fff;
-  animation: nex-float 3s ease-in-out infinite;
+  animation: np-float 3s ease-in-out infinite;
 }
 
 /* Themes */

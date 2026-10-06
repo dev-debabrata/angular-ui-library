@@ -1,4 +1,4 @@
-<header class="storybook-header">
+<header class="np-header">
   <div>
     <svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
       <g fill="none" fill-rule="evenodd">
@@ -18,14 +18,14 @@
         >Welcome, <b>{{ user.name }}</b
         >!</span
       >
-      <storybook-button size="small" label="Log out" (onClick)="onLogout.emit($event)" />
+      <np-button size="small" label="Log out" (clicked)="logout.emit($event)" />
     } @else {
-      <storybook-button size="small" label="Log in" (onClick)="onLogin.emit($event)" />
-      <storybook-button
+      <np-button size="small" label="Log in" (clicked)="login.emit($event)" />
+      <np-button
         size="small"
         label="Sign up"
         [primary]="true"
-        (onClick)="onCreateAccount.emit($event)"
+        (clicked)="createAccount.emit($event)"
       />
     }
   </div>

@@ -13,7 +13,7 @@ import { IconComponent } from '../../media/icon/icon.component';
 import { type AnchorPosition, anchorPosition } from '../../../utils/anchor-position';
 
 @Component({
-  selector: 'nex-overlay-panel',
+  selector: 'np-overlay-panel',
   imports: [IconComponent],
   exportAs: 'overlayPanel',
   host: {

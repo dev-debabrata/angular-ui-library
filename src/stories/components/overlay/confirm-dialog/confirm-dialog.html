@@ -1,4 +1,4 @@
-<nex-dialog
+<np-dialog
   width="420px"
   [visible]="!!confirmation()"
   [header]="confirmation()?.header ?? 'Confirmation'"
@@ -7,7 +7,7 @@
 >
   @if (confirmation(); as c) {
     <div class="confirm-body">
-      <nex-icon
+      <np-icon
         class="confirm-icon"
         [class.confirm-icon--danger]="c.acceptTone === 'danger'"
         [name]="c.icon ?? 'info'"
@@ -32,4 +32,4 @@
       </button>
     </div>
   }
-</nex-dialog>
+</np-dialog>

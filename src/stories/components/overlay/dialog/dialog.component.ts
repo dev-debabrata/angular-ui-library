@@ -20,7 +20,7 @@ export const DIALOG_POSITIONS: DialogPosition[] = ['center', 'top', 'bottom', 'l
 let nextId = 0;
 
 @Component({
-  selector: 'nex-dialog',
+  selector: 'np-dialog',
   imports: [IconComponent],
   host: { '(document:keydown.escape)': 'onEscape()' },
   templateUrl: './dialog.html',
@@ -58,7 +58,7 @@ export class DialogComponent {
   readonly hide = output<void>();
 
   protected readonly maximized = signal(false);
-  protected readonly headerId = `nex-dialog-${nextId++}`;
+  protected readonly headerId = `np-dialog-${nextId++}`;
   private readonly panel = viewChild<ElementRef<HTMLElement>>('panel');
 
   constructor() {

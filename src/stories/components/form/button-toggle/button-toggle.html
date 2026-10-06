@@ -23,9 +23,9 @@
       (keydown)="onKeydown($event, i)"
     >
       @if (on && showCheck() && option.label) {
-        <nex-icon class="toggle-check" name="check" [size]="16" [strokeWidth]="2.5" />
+        <np-icon class="toggle-check" name="check" [size]="16" [strokeWidth]="2.5" />
       } @else if (option.icon) {
-        <nex-icon [name]="option.icon" [size]="16" />
+        <np-icon [name]="option.icon" [size]="16" />
       }
       {{ option.label }}
     </button>

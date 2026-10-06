@@ -29,7 +29,7 @@ export interface ChatMessage {
 
 /** Messaging panel: grouped bubbles, typing indicator and a composer (Enter sends, Shift+Enter adds a line) */
 @Component({
-  selector: 'nex-chat',
+  selector: 'np-chat',
   imports: [AvatarComponent, IconComponent],
   templateUrl: './chat.html',
   styleUrl: './chat.css',

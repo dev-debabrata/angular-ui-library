@@ -1,0 +1,42 @@
+:host {
+  --beam-from: var(--ui-accent);
+  --beam-to: var(--ui-primary);
+  position: relative;
+  display: block;
+}
+
+/* A ring the width of the border (the padding box is masked out); the beam inside it is only visible there */
+.border-beam {
+  position: absolute;
+  inset: 0;
+  border: var(--beam-width) solid transparent;
+  border-radius: inherit;
+  pointer-events: none;
+  mask:
+    linear-gradient(#000 0 0) padding-box exclude,
+    linear-gradient(#000 0 0) border-box;
+}
+
+/* The beam: a square with a gradient tail that moves along the rounded rectangle */
+.border-beam::after {
+  content: '';
+  position: absolute;
+  width: var(--beam-size);
+  aspect-ratio: 1;
+  background: linear-gradient(to left, var(--beam-from), var(--beam-to), transparent);
+  offset-anchor: 90% 50%;
+  offset-path: rect(0 auto auto 0 round var(--beam-size));
+  animation: border-beam var(--beam-duration) linear var(--beam-delay) infinite;
+}
+
+@keyframes border-beam {
+  to {
+    offset-distance: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .border-beam::after {
+    animation: none;
+  }
+}

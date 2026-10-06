@@ -21,7 +21,7 @@ export const AllSeverities: Story = {
     template: `
       <div style="display: flex; flex-wrap: wrap; gap: 8px">
         @for (severity of severities; track severity) {
-          <nex-tag [severity]="severity" [value]="severity" [icon]="icon" [rounded]="rounded" />
+          <np-tag [severity]="severity" [value]="severity" [icon]="icon" [rounded]="rounded" />
         }
       </div>
     `,
@@ -32,11 +32,11 @@ export const WithIcon: Story = {
   render: () => ({
     template: `
       <div style="display: flex; flex-wrap: wrap; gap: 8px">
-        <nex-tag value="Primary" icon="sparkles" />
-        <nex-tag severity="info" value="Info" icon="info" />
-        <nex-tag severity="success" value="Success" icon="check" />
-        <nex-tag severity="warning" value="Warning" icon="triangle-alert" />
-        <nex-tag severity="danger" value="Danger" icon="circle-alert" />
+        <np-tag value="Primary" icon="sparkles" />
+        <np-tag severity="info" value="Info" icon="info" />
+        <np-tag severity="success" value="Success" icon="check" />
+        <np-tag severity="warning" value="Warning" icon="triangle-alert" />
+        <np-tag severity="danger" value="Danger" icon="circle-alert" />
       </div>
     `,
   }),

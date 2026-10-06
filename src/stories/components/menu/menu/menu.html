@@ -10,10 +10,10 @@
       @if (item.items && !item.separator) {
         <div class="menu-group" role="presentation">{{ item.label }}</div>
         @for (child of item.items; track $index) {
-          <nex-menu-item [item]="child" (click)="select($event, child)" />
+          <np-menu-item [item]="child" (click)="select($event, child)" />
         }
       } @else {
-        <nex-menu-item [item]="item" (click)="select($event, item)" />
+        <np-menu-item [item]="item" (click)="select($event, item)" />
       }
     }
   </div>

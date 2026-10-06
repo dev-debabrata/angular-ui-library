@@ -2,11 +2,10 @@ import { Meta } from '@storybook/addon-docs/blocks';
 
 <Meta title="Getting Started/Use in React, Vue & Angular" />
 
-# Use NexUI in React, Vue & Angular
+# Use NexPrime in React, Vue & Angular
 
-NexUI is written in Angular. **Angular apps** install it from npm (`npm install nexui`, see [Angular](#angular))
-and use the components directly. **React, Vue, Svelte and plain HTML** use the same components as standard
-**Web Components** (custom elements), built from this repo.
+NexPrime is written in Angular. **Angular apps** use the components directly. **React, Next.js, Vue, Svelte and plain
+HTML** use the same components as standard **Web Components** (custom elements), built from this repo.
 
 <table>
   <thead>
@@ -20,10 +19,10 @@ and use the components directly. **React, Vue, Svelte and plain HTML** use the s
     <tr>
       <td>Tag names</td>
       <td>
-        <code>{'<nex-chart>'}</code>
+        <code>{'<np-chart>'}</code>
       </td>
       <td>
-        <code>{'<nexui-chart>'}</code>
+        <code>{'<np-chart>'}</code>
       </td>
     </tr>
     <tr>
@@ -53,28 +52,28 @@ and use the components directly. **React, Vue, Svelte and plain HTML** use the s
 npm run build:elements
 ```
 
-This creates `dist/nexui-elements/browser/`:
+This creates `dist/nexprime-elements/browser/`:
 
-- `nexui.js`: every component, registered as `<nexui-*>` elements (about 116 KB gzipped, includes the Angular runtime once)
-- `styles.css`: the theme (colors, buttons, form fields) and the `nex-anim-*` animations
-- `icons/`: the SVG icons used by `<nexui-icon>` and inside components
+- `nexprime.js`: every component, registered as `<np-*>` elements (about 116 KB gzipped, includes the Angular runtime once)
+- `styles.css`: the theme (colors, buttons, form fields) and the `np-anim-*` animations
+- `icons/`: the SVG icons used by `<np-icon>` and inside components
 
-Copy that folder into your app's public/static folder (for example `public/nexui/`), then load it once:
+Copy that folder into your app's public/static folder (for example `public/nexprime/`), then load it once:
 
 ```html
-<link rel="stylesheet" href="/nexui/styles.css" />
-<script type="module" src="/nexui/nexui.js"></script>
+<link rel="stylesheet" href="/nexprime/styles.css" />
+<script type="module" src="/nexprime/nexprime.js"></script>
 <script>
   // Icons load from "icons/" next to the page by default
-  window.NEXUI_ICONS_URL = '/nexui/icons/';
+  window.NEXPRIME_ICONS_URL = '/nexprime/icons/';
 </script>
 ```
 
-The elements register asynchronously; a `nexui:ready` event fires on `window` when they are ready.
+The elements register asynchronously; a `nexprime:ready` event fires on `window` when they are ready.
 
 ## 2. Rules that apply everywhere
 
-- **Tag names** are the Angular selectors with `nexui-`: `nex-form` → `nexui-form`, `nex-voice-chat` → `nexui-voice-chat`.
+- **Tag names** are the same as in Angular: `<np-form>`, `<np-voice-chat>`, `<np-chart>`.
 - **Strings, numbers and booleans** can be HTML attributes in kebab-case: `num-visible="3"`, `card`, `submit-label="Send"`.
 - **Arrays, objects and functions** (`datasets`, `fields`, `items`, `options`, `format`) must be set as
   **properties**. Vue and React 19 do this for you; in plain JS write `el.fields = [...]`.
@@ -82,15 +81,15 @@ The elements register asynchronously; a `nexui:ready` event fires on `window` wh
   camelCase events are also sent in kebab-case (`valueChange` and `value-change`).
 - **Content**: children are projected once, when the element starts (e.g. Card body, Dialog content, `formBeforeActions`).
 - **Carousel**: without an Angular `<ng-template>`, each **child element is a slide**.
-- **Confirm dialogs**: put `<nexui-confirm-dialog>` (or `-popup`) on the page and call
-  `window.NexUI.confirm({ header, message, accept, reject, target })`.
+- **Confirm dialogs**: put `<np-confirm-dialog>` (or `-popup`) on the page and call
+  `window.NexPrime.confirm({ header, message, accept, reject, target })`.
 
 ## React (19+)
 
 ```jsx
 export function Signup() {
   return (
-    <nexui-form
+    <np-form
       card
       title="Create account"
       submit-label="Sign up"
@@ -103,42 +102,167 @@ export function Signup() {
   );
 }
 
-<nexui-carousel num-visible="3" circular autoplay-interval="3000">
+<np-carousel num-visible="3" circular autoplay-interval="3000">
   {products.map((p) => (
     <div key={p.id}>{p.name}</div>
   ))}
-</nexui-carousel>;
+</np-carousel>;
 ```
 
 React 19 sets object props as properties and `on<event>` props as listeners (`onsubmitted`, `onvalueChange`).
+This needs `nexprime.js` loaded before React renders; with server rendering (Next.js, Remix) use the wrapper below.
 On **React 18**, use a ref: `ref.current.fields = [...]` and `ref.current.addEventListener('submitted', …)`.
 
-TypeScript: declare the tags once, e.g. in `src/nexui.d.ts`:
+TypeScript: declare the tags once, e.g. in `src/nexprime.d.ts`:
 
 ```ts
 import 'react';
 declare module 'react' {
   namespace JSX {
     interface IntrinsicElements {
-      [tag: `nexui-${string}`]: any;
+      [tag: `np-${string}`]: any;
     }
   }
 }
 ```
+
+## Next.js (App Router)
+
+Next.js renders pages on the server and then **hydrates** them, before `nexprime.js` has registered the elements.
+Strings, numbers and booleans work as attributes, but arrays, objects and event handlers that React sets during
+hydration are lost. A small client wrapper solves this: it waits for the element to be defined, then sets the
+properties and listeners. It works in server and client components, and on React 18.
+
+**1.** Copy `dist/nexprime-elements/browser/` to `public/nexprime/` (copy the whole folder: `nexprime.js` loads chunk files
+next to it).
+
+**2.** Load the theme and the elements in `app/layout.tsx`:
+
+```tsx
+import Script from 'next/script';
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <html lang="en">
+      <head>
+        <link rel="stylesheet" href="/nexprime/styles.css" />
+      </head>
+      <body>
+        {children}
+        <Script id="np-config" strategy="beforeInteractive">
+          {`window.NEXPRIME_ICONS_URL = '/nexprime/icons/';`}
+        </Script>
+        {/* After hydration; crossOrigin matches the module request, so the preload is used */}
+        <Script src="/nexprime/nexprime.js" type="module" crossOrigin="anonymous" strategy="afterInteractive" />
+      </body>
+    </html>
+  );
+}
+```
+
+**3.** Add the wrapper, `components/nexprime.tsx`:
+
+```tsx
+'use client';
+import { createElement, useEffect, useRef, type ReactNode } from 'react';
+
+type NexPrimeProps = {
+  /** Element name, e.g. "np-chart" */
+  tag: `np-${string}`;
+  /** Arrays, objects and functions: set as properties once the element is defined */
+  props?: Record<string, unknown>;
+  /** Output events, e.g. { submitted: (e) => save(e.detail) } */
+  on?: Record<string, (event: CustomEvent) => void>;
+  children?: ReactNode;
+  /** Anything else (strings, numbers, booleans, id, className, style) is passed as an attribute */
+  [attribute: string]: unknown;
+};
+
+/** Renders a NexPrime Web Component and gives it its properties and events once nexprime.js has registered it */
+export function NexPrime({ tag, props, on, children, ...attributes }: NexPrimeProps) {
+  const ref = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    let current = true;
+    customElements.whenDefined(tag).then(() => {
+      if (current && ref.current) Object.assign(ref.current, props);
+    });
+    return () => {
+      current = false;
+    };
+  }, [tag, props]);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || !on) return;
+    const listeners = Object.entries(on).map(([name, fn]) => [name, fn as EventListener] as const);
+    for (const [name, fn] of listeners) el.addEventListener(name, fn);
+    return () => {
+      for (const [name, fn] of listeners) el.removeEventListener(name, fn);
+    };
+  }, [on]);
+
+  // The element fills itself in on the client, so its server HTML is only a placeholder
+  return createElement(tag, { ref, ...attributes, suppressHydrationWarning: true }, children);
+}
+```
+
+**4.** Use it. In a **server component**, data can be passed directly:
+
+```tsx
+import { NexPrime } from '@/components/nexprime';
+
+export default function Page() {
+  return (
+    <NexPrime
+      tag="np-chart"
+      type="bar"
+      props={{ labels: ['Q1', 'Q2', 'Q3', 'Q4'], datasets: [{ label: 'Sales', data: [120, 150, 170, 210] }] }}
+    />
+  );
+}
+```
+
+Event handlers are functions, so they need a **client component**:
+
+```tsx
+'use client';
+import { useMemo, useState } from 'react';
+import { NexPrime } from '@/components/nexprime';
+
+// Outside the component, so the same array is reused on every render
+const fields = [
+  { name: 'email', label: 'Email', type: 'email', required: true },
+  { name: 'password', label: 'Password', type: 'password', minLength: 8, required: true },
+];
+
+export function Signup() {
+  const [account, setAccount] = useState<Record<string, unknown> | null>(null);
+  const on = useMemo(() => ({ submitted: (e: CustomEvent) => setAccount(e.detail) }), []);
+  return <NexPrime tag="np-form" card title="Create account" submit-label="Sign up" props={{ fields }} on={on} />;
+}
+```
+
+- Elements that only take attributes can be written directly: `<np-icon name="rocket" size="32" />`.
+- Keep `props` and `on` stable (constants outside the component, `useMemo`): a new object on every render
+  sets the properties and re-adds the listeners each time.
+- Add the TypeScript declaration from the React section (e.g. `nexprime.d.ts` in the project root).
+- **Pages Router**: put the `<link>` and the `beforeInteractive` config script in `pages/_document.tsx`, and the
+  `nexprime.js` script in `pages/_app.tsx`; the wrapper works the same.
 
 ## Vue 3
 
 Tell Vue these are custom elements (`vite.config.ts`):
 
 ```ts
-vue({ template: { compilerOptions: { isCustomElement: (tag) => tag.startsWith('nexui-') } } });
+vue({ template: { compilerOptions: { isCustomElement: (tag) => tag.startsWith('np-') } } });
 ```
 
 ```vue
 <template>
-  <nexui-chart type="bar" :labels="labels" :datasets="datasets" />
-  <nexui-button-toggle :options="options" :value="period" @value-change="period = $event.detail" />
-  <nexui-chat title="Support" :messages="messages" @send="reply($event.detail)" />
+  <np-chart type="bar" :labels="labels" :datasets="datasets" />
+  <np-button-toggle :options="options" :value="period" @value-change="period = $event.detail" />
+  <np-chat title="Support" :messages="messages" @send="reply($event.detail)" />
 </template>
 ```
 
@@ -146,48 +270,23 @@ Vue passes arrays and objects as properties automatically. Use the kebab-case ev
 
 ## Angular
 
-Angular apps (21+) install the **`nexui`** npm package and use the components directly, no Web Components needed.
-
-**1. Install**
-
-```bash
-npm install nexui
-```
-
-**2. Add the theme** to your global styles (`src/styles.css`):
-
-```css
-@import 'nexui/styles/theme.css';
-```
-
-**3. Serve the icons** at `/icons`, so `<nex-icon name="…">` can load them. In `angular.json`, under
-`build.options.assets`:
-
-```json
-{ "glob": "*.svg", "input": "node_modules/nexui/icons", "output": "icons" }
-```
-
-**4. Import** components from `nexui` and add them to your component's `imports`:
+Use the components directly (no Web Components needed): copy or import them from `src/stories/components/`
+and add them to your component's `imports`:
 
 ```ts
-import { ChartComponent, FormComponent } from 'nexui';
-
 @Component({
   imports: [ChartComponent, FormComponent],
-  template: `<nex-chart type="line" [labels]="labels" [datasets]="data" />`,
+  template: `<np-chart type="line" [labels]="labels" [datasets]="data" />`,
 })
 ```
 
-Shared types (`Tone`, `MenuItem`, `TreeNode`, …) and `ConfirmationService` come from `nexui` too. Dark mode is
-`data-theme="dark"` on `<html>`.
-
-Building the package from this repo: `npm run build:lib` writes it to `dist/nexui/`. Publish with
-`cd dist/nexui && npm publish`, or try it locally first with `npm pack` and `npm install ./nexui-0.1.0.tgz`.
+Import `src/stories/styles/theme.css` in your global styles and serve `src/stories/icons/svg` at `/icons`
+(see `angular.json` in this repo).
 
 ## Plain HTML
 
 ```html
-<nexui-chart id="sales" type="line"></nexui-chart>
+<np-chart id="sales" type="line"></np-chart>
 <script>
   const chart = document.getElementById('sales');
   chart.labels = ['Q1', 'Q2', 'Q3', 'Q4'];
@@ -197,16 +296,16 @@ Building the package from this repo: `npm run build:lib` writes it to `dist/nexu
 
 ## Available elements
 
-`nexui-accordion` `nexui-alert` `nexui-animate-on-scroll` `nexui-avatar` `nexui-badge` `nexui-bottom-sheet`
-`nexui-breadcrumb` `nexui-button-toggle` `nexui-calendar` `nexui-card` `nexui-carousel` `nexui-chart`
-`nexui-chat` `nexui-checkbox` `nexui-chip` `nexui-confirm-dialog` `nexui-confirm-popup` `nexui-dialog`
-`nexui-file-upload` `nexui-form` `nexui-helpful` `nexui-icon` `nexui-image-upload` `nexui-inplace`
-`nexui-input-number` `nexui-input-otp` `nexui-lottie` `nexui-mega-menu` `nexui-menu` `nexui-menubar` `nexui-modal` `nexui-onboarding` `nexui-onboarding-checklist`
-`nexui-overlay-badge` `nexui-overlay-panel` `nexui-pagination` `nexui-panel-menu` `nexui-particles` `nexui-aurora` `nexui-confetti` `nexui-cursor-trail` `nexui-dot-grid` `nexui-matrix-rain` `nexui-spotlight` `nexui-starfield` `nexui-waves` `nexui-pick-list`
-`nexui-progress-bar` `nexui-radio-group` `nexui-rating` `nexui-scroll-top` `nexui-search-input` `nexui-select` `nexui-skeleton`
-`nexui-spinner` `nexui-stepper` `nexui-table` `nexui-tabs` `nexui-tag` `nexui-text-input` `nexui-textarea`
-`nexui-tiered-menu` `nexui-time-picker` `nexui-timeline` `nexui-toast` `nexui-toggle` `nexui-tooltip`
-`nexui-tree` `nexui-tree-table` `nexui-voice-chat`
+`np-accordion` `np-alert` `np-animate-on-scroll` `np-avatar` `np-badge` `np-bottom-sheet`
+`np-breadcrumb` `np-button` `np-button-toggle` `np-header` `np-page` `np-calendar` `np-card` `np-carousel` `np-chart`
+`np-chat` `np-checkbox` `np-chip` `np-confirm-dialog` `np-confirm-popup` `np-dialog`
+`np-file-upload` `np-form` `np-helpful` `np-icon` `np-image-upload` `np-inplace`
+`np-input-number` `np-input-otp` `np-lottie` `np-mega-menu` `np-menu` `np-menubar` `np-modal` `np-onboarding` `np-onboarding-checklist`
+`np-overlay-badge` `np-overlay-panel` `np-pagination` `np-panel-menu` `np-particles` `np-aurora` `np-confetti` `np-cursor-trail` `np-dot-grid` `np-matrix-rain` `np-spotlight` `np-starfield` `np-waves` `np-meteors` `np-fireflies` `np-retro-grid` `np-border-beam` `np-ripple` `np-snow` `np-bubbles` `np-flickering-grid` `np-light-rays` `np-grain` `np-dot-wave` `np-dot-ribbon` `np-pick-list`
+`np-progress-bar` `np-radio-group` `np-rating` `np-scroll-top` `np-search-input` `np-select` `np-skeleton`
+`np-spinner` `np-stepper` `np-table` `np-tabs` `np-tag` `np-text-input` `np-textarea`
+`np-tiered-menu` `np-time-picker` `np-timeline` `np-toast` `np-toggle` `np-tooltip`
+`np-tree` `np-tree-table` `np-voice-chat`
 
 Each component's **Docs** page lists its inputs (properties/attributes) and outputs (events).
 

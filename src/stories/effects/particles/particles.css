@@ -1,4 +1,4 @@
-/* Layout comes from .nex-effect in theme.css; the dots take the text color unless [color] is set */
+/* Layout comes from .np-effect in theme.css; the dots take the text color unless [color] is set */
 :host {
   color: var(--ui-primary);
 }

@@ -2,23 +2,12 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <title>NexUI — Next-generation UI</title>
+    <title>NexPrime — One UI system for every framework</title>
     <base href="/" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="icon" type="image/svg+xml" href="favicon.svg" />
-    <script>
-      // The saved light/dark mode and theme color (.storybook/nexui-theme.ts), before the page shows. A link from
-      // Storybook brings its mode in the hash (main.ts saves it, with the color)
-      try {
-        const saved = JSON.parse(localStorage.getItem('nexui-theme') ?? '{}');
-        const linked = new URLSearchParams(location.hash.slice(1)).get('theme');
-        if ((linked ?? saved.theme) === 'dark') document.documentElement.dataset.theme = 'dark';
-        for (const [name, value] of Object.entries(saved.vars ?? {}))
-          document.documentElement.style.setProperty(name, value);
-      } catch {}
-    </script>
   </head>
   <body>
-    <nex-root></nex-root>
+    <np-root></np-root>
   </body>
 </html>

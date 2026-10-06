@@ -15,7 +15,7 @@ export type { GalleryAnimation } from './gallery-animation';
 
 /** Storybook page that plays every Lottie file in src/stories/lottie: search, preview, copy code, download */
 @Component({
-  selector: 'nex-lottie-gallery',
+  selector: 'np-lottie-gallery',
   imports: [ButtonToggleComponent, LottieComponent, LottieDetailComponent, SearchInputComponent],
   templateUrl: './lottie-gallery.html',
   styleUrl: './lottie-gallery.css',

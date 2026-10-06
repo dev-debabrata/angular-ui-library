@@ -1,0 +1,49 @@
+/* Layout comes from .np-effect in theme.css; the rings sit behind the content */
+:host {
+  --ripple-color: var(--ui-primary);
+  isolation: isolate;
+}
+
+.ripple {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  /* Fade out towards the edges */
+  mask-image: radial-gradient(circle at center, #000 30%, transparent 75%);
+}
+
+/* Each ring is a bit bigger and fainter than the one inside it, and pulses slightly later */
+.ripple__ring {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: calc(var(--ripple-size) + var(--i) * var(--ripple-step));
+  aspect-ratio: 1;
+  border: 1px solid
+    color-mix(in srgb, var(--ripple-color) max(6%, calc(45% - var(--i) * 4%)), transparent);
+  border-radius: 50%;
+  background: color-mix(
+    in srgb,
+    var(--ripple-color) max(1%, calc(14% - var(--i) * 1.5%)),
+    transparent
+  );
+  transform: translate(-50%, -50%);
+  animation: ripple 3.4s var(--ui-ease) calc(var(--i) * 0.06s) infinite;
+}
+
+@keyframes ripple {
+  0%,
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(0.9);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ripple__ring {
+    animation: none;
+  }
+}

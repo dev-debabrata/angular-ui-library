@@ -54,10 +54,10 @@ const meta: Meta<MenubarComponent> = {
   render: (args) => ({
     props: args,
     template: `
-      <nex-menubar [model]="model" (itemClick)="itemClick($event)">
+      <np-menubar [model]="model" (itemClick)="itemClick($event)">
         <strong menubarStart style="font-size: 16px; background: var(--ui-gradient); -webkit-background-clip: text; color: transparent">Aurora</strong>
-        <nex-search-input menubarEnd placeholder="Search" />
-      </nex-menubar>
+        <np-search-input menubarEnd placeholder="Search" />
+      </np-menubar>
     `,
   }),
 };

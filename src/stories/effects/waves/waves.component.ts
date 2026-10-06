@@ -15,7 +15,7 @@ const STEP = 8;
  * With reduced motion it shows a still frame.
  */
 @Component({
-  selector: 'nex-waves',
+  selector: 'np-waves',
   templateUrl: './waves.html',
   styleUrl: './waves.css',
 })

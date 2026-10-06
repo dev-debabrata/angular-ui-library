@@ -1,7 +1,7 @@
 import { Component, computed, input, model, numberAttribute } from '@angular/core';
 
 @Component({
-  selector: 'nex-pagination',
+  selector: 'np-pagination',
   templateUrl: './pagination.html',
   styleUrl: './pagination.css',
 })

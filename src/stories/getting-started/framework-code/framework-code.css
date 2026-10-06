@@ -1,0 +1,59 @@
+:host {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+}
+
+.bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-width: 0;
+}
+
+pre {
+  overflow-x: auto;
+  margin: 0;
+  padding: 12px 14px;
+  border-radius: var(--ui-radius);
+  background: #0f172a;
+  color: #e2e8f0;
+  font-size: 13px;
+}
+
+code {
+  padding: 0;
+  background: none;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+.setup {
+  margin: 0;
+  color: var(--ui-text-muted);
+  font-size: 12px;
+}
+
+.setup a {
+  color: var(--ui-primary);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.setup a:hover {
+  text-decoration: underline;
+}
+
+.setup a:focus-visible {
+  outline: none;
+  border-radius: 4px;
+  box-shadow: var(--ui-ring);
+}
+
+/* Secondary: the one-time setup, quieter than the snippet */
+.setup__code {
+  padding: 8px 12px;
+  background: var(--ui-surface-sunken);
+  color: var(--ui-text);
+  font-size: 12px;
+}

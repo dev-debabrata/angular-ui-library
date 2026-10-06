@@ -63,7 +63,7 @@ function arcPath(cx: number, cy: number, r: number, inner: number, a0: number, a
 
 /** SVG chart without dependencies: line, area, bar (grouped or stacked), pie and doughnut */
 @Component({
-  selector: 'nex-chart',
+  selector: 'np-chart',
   templateUrl: './chart.html',
   styleUrl: './chart.css',
 })

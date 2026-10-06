@@ -1,0 +1,12 @@
+<div class="rays" aria-hidden="true">
+  @for (ray of rayList(); track ray.i) {
+    <span
+      class="rays__ray"
+      [style.--angle.deg]="ray.angle"
+      [style.--w.px]="ray.width"
+      [style.animation-delay.s]="ray.delay"
+      [style.opacity]="ray.opacity"
+    ></span>
+  }
+</div>
+<div class="np-effect__content"><ng-content /></div>

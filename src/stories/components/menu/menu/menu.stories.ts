@@ -42,8 +42,8 @@ export const Popup: Story = {
   render: (args) => ({
     props: args,
     template: `
-      <storybook-button label="Show menu" [primary]="true" (onClick)="menu.toggle($event)" />
-      <nex-menu #menu [model]="model" [popup]="true" (itemClick)="itemClick($event)" />
+      <np-button label="Show menu" [primary]="true" (clicked)="menu.toggle($event)" />
+      <np-menu #menu [model]="model" [popup]="true" (itemClick)="itemClick($event)" />
     `,
   }),
 };

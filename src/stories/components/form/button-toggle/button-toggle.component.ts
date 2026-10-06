@@ -15,7 +15,7 @@ export interface ToggleOption<T = unknown> {
 
 /** Group of joined buttons: pick one option, or several with `multiple` */
 @Component({
-  selector: 'nex-button-toggle',
+  selector: 'np-button-toggle',
   imports: [IconComponent],
   templateUrl: './button-toggle.html',
   styleUrl: './button-toggle.css',

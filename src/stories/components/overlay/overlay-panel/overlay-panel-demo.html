@@ -1,9 +1,9 @@
 <button type="button" class="ui-btn ui-btn--primary" (click)="op.toggle($event)">
-  <nex-icon name="share-2" [size]="16" />
+  <np-icon name="share-2" [size]="16" />
   Share
 </button>
 
-<nex-overlay-panel
+<np-overlay-panel
   #op
   ariaLabel="Share this document"
   [dismissable]="dismissable()"
@@ -17,7 +17,7 @@
       <div class="share-row">
         <input class="ui-control" [value]="url" readonly aria-label="Document link" />
         <button type="button" class="ui-btn ui-btn--icon" aria-label="Copy link" (click)="copy()">
-          <nex-icon name="copy" [size]="16" />
+          <np-icon name="copy" [size]="16" />
         </button>
       </div>
     </div>
@@ -26,7 +26,7 @@
       <label class="ui-label" for="invite-member">Invite Member</label>
       <div class="share-row">
         <input id="invite-member" class="ui-control" placeholder="Email address" />
-        <storybook-button label="Invite" [primary]="true" size="small" />
+        <np-button label="Invite" [primary]="true" size="small" />
       </div>
     </div>
 
@@ -35,18 +35,18 @@
       <ul class="share-members">
         @for (member of members; track member.email) {
           <li>
-            <nex-avatar [name]="member.name" size="small" />
+            <np-avatar [name]="member.name" size="small" />
             <span class="share-person">
               <strong>{{ member.name }}</strong>
               <span>{{ member.email }}</span>
             </span>
             <span class="share-role">
               {{ member.role }}
-              <nex-icon name="chevron-down" [size]="14" />
+              <np-icon name="chevron-down" [size]="14" />
             </span>
           </li>
         }
       </ul>
     </div>
   </div>
-</nex-overlay-panel>
+</np-overlay-panel>

@@ -1,50 +1,50 @@
 /*
- * NexUI animations: add class="nex-anim-<name>" to any element.
+ * NexPrime animations: add class="np-anim-<name>" to any element.
  * Tune one element (or a whole container) with CSS variables:
- *   --nex-anim-duration  --nex-anim-delay  --nex-anim-ease  --nex-anim-repeat (a number or infinite)
+ *   --np-anim-duration  --np-anim-delay  --np-anim-ease  --np-anim-repeat (a number or infinite)
  * Sections below are the categories on the Animations page, which reads this file, so new classes show up there.
  */
-[class*='nex-anim-'] {
-  animation-duration: var(--nex-anim-duration, 0.7s);
-  animation-delay: var(--nex-anim-delay, 0s);
-  animation-timing-function: var(--nex-anim-ease, cubic-bezier(0.22, 1, 0.36, 1));
-  animation-iteration-count: var(--nex-anim-repeat, 1);
+[class*='np-anim-'] {
+  animation-duration: var(--np-anim-duration, 0.7s);
+  animation-delay: var(--np-anim-delay, 0s);
+  animation-timing-function: var(--np-anim-ease, cubic-bezier(0.22, 1, 0.36, 1));
+  animation-iteration-count: var(--np-anim-repeat, 1);
   animation-fill-mode: both;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  [class*='nex-anim-'],
-  [class*='nex-anim-']::after {
+  [class*='np-anim-'],
+  [class*='np-anim-']::after {
     animation: none !important;
   }
 }
 
 /* === Entrance === */
 
-.nex-anim-fade-up {
-  animation-name: nex-fade-up;
+.np-anim-fade-up {
+  animation-name: np-fade-up;
 }
-@keyframes nex-fade-up {
+@keyframes np-fade-up {
   from {
     opacity: 0;
     translate: 0 24px;
   }
 }
 
-.nex-anim-fade-down {
-  animation-name: nex-fade-down;
+.np-anim-fade-down {
+  animation-name: np-fade-down;
 }
-@keyframes nex-fade-down {
+@keyframes np-fade-down {
   from {
     opacity: 0;
     translate: 0 -24px;
   }
 }
 
-.nex-anim-blur-in {
-  animation-name: nex-blur-in;
+.np-anim-blur-in {
+  animation-name: np-blur-in;
 }
-@keyframes nex-blur-in {
+@keyframes np-blur-in {
   from {
     opacity: 0;
     filter: blur(12px);
@@ -52,20 +52,20 @@
   }
 }
 
-.nex-anim-zoom-in {
-  animation-name: nex-zoom-in;
+.np-anim-zoom-in {
+  animation-name: np-zoom-in;
 }
-@keyframes nex-zoom-in {
+@keyframes np-zoom-in {
   from {
     opacity: 0;
     scale: 0.6;
   }
 }
 
-.nex-anim-pop {
-  animation-name: nex-pop;
+.np-anim-pop {
+  animation-name: np-pop;
 }
-@keyframes nex-pop {
+@keyframes np-pop {
   0% {
     opacity: 0;
     scale: 0.4;
@@ -79,31 +79,31 @@
   }
 }
 
-.nex-anim-flip-in {
-  animation-name: nex-flip-in;
+.np-anim-flip-in {
+  animation-name: np-flip-in;
 }
-@keyframes nex-flip-in {
+@keyframes np-flip-in {
   from {
     opacity: 0;
     transform: perspective(600px) rotateY(-90deg);
   }
 }
 
-.nex-anim-swing-in {
+.np-anim-swing-in {
   transform-origin: top center;
-  animation-name: nex-swing-in;
+  animation-name: np-swing-in;
 }
-@keyframes nex-swing-in {
+@keyframes np-swing-in {
   from {
     opacity: 0;
     transform: perspective(600px) rotateX(-90deg);
   }
 }
 
-.nex-anim-rotate-in {
-  animation-name: nex-rotate-in;
+.np-anim-rotate-in {
+  animation-name: np-rotate-in;
 }
-@keyframes nex-rotate-in {
+@keyframes np-rotate-in {
   from {
     opacity: 0;
     rotate: -180deg;
@@ -111,30 +111,30 @@
   }
 }
 
-.nex-anim-slide-in-left {
-  animation-name: nex-slide-in-left;
+.np-anim-slide-in-left {
+  animation-name: np-slide-in-left;
 }
-@keyframes nex-slide-in-left {
+@keyframes np-slide-in-left {
   from {
     opacity: 0;
     translate: -60px 0;
   }
 }
 
-.nex-anim-slide-in-right {
-  animation-name: nex-slide-in-right;
+.np-anim-slide-in-right {
+  animation-name: np-slide-in-right;
 }
-@keyframes nex-slide-in-right {
+@keyframes np-slide-in-right {
   from {
     opacity: 0;
     translate: 60px 0;
   }
 }
 
-.nex-anim-drop {
-  animation-name: nex-drop;
+.np-anim-drop {
+  animation-name: np-drop;
 }
-@keyframes nex-drop {
+@keyframes np-drop {
   0% {
     opacity: 0;
     translate: 0 -120px;
@@ -148,10 +148,10 @@
   }
 }
 
-.nex-anim-reveal {
-  animation-name: nex-reveal;
+.np-anim-reveal {
+  animation-name: np-reveal;
 }
-@keyframes nex-reveal {
+@keyframes np-reveal {
   from {
     clip-path: circle(0% at 50% 50%);
   }
@@ -160,10 +160,10 @@
   }
 }
 
-.nex-anim-unfold {
-  animation-name: nex-unfold;
+.np-anim-unfold {
+  animation-name: np-unfold;
 }
-@keyframes nex-unfold {
+@keyframes np-unfold {
   from {
     clip-path: inset(0 0 100% 0);
   }
@@ -174,20 +174,20 @@
 
 /* === Attention === */
 
-.nex-anim-pulse {
-  animation-name: nex-pulse;
+.np-anim-pulse {
+  animation-name: np-pulse;
 }
-@keyframes nex-pulse {
+@keyframes np-pulse {
   50% {
     scale: 1.08;
   }
 }
 
-.nex-anim-heartbeat {
-  animation-duration: var(--nex-anim-duration, 1.3s);
-  animation-name: nex-heartbeat;
+.np-anim-heartbeat {
+  animation-duration: var(--np-anim-duration, 1.3s);
+  animation-name: np-heartbeat;
 }
-@keyframes nex-heartbeat {
+@keyframes np-heartbeat {
   14%,
   42% {
     scale: 1.18;
@@ -198,10 +198,10 @@
   }
 }
 
-.nex-anim-wiggle {
-  animation-name: nex-wiggle;
+.np-anim-wiggle {
+  animation-name: np-wiggle;
 }
-@keyframes nex-wiggle {
+@keyframes np-wiggle {
   20% {
     rotate: -12deg;
   }
@@ -216,11 +216,11 @@
   }
 }
 
-.nex-anim-jelly {
-  animation-duration: var(--nex-anim-duration, 0.9s);
-  animation-name: nex-jelly;
+.np-anim-jelly {
+  animation-duration: var(--np-anim-duration, 0.9s);
+  animation-name: np-jelly;
 }
-@keyframes nex-jelly {
+@keyframes np-jelly {
   30% {
     scale: 1.25 0.75;
   }
@@ -238,10 +238,10 @@
   }
 }
 
-.nex-anim-shake {
-  animation-name: nex-shake;
+.np-anim-shake {
+  animation-name: np-shake;
 }
-@keyframes nex-shake {
+@keyframes np-shake {
   10%,
   30%,
   50%,
@@ -257,11 +257,11 @@
   }
 }
 
-.nex-anim-tada {
-  animation-duration: var(--nex-anim-duration, 1s);
-  animation-name: nex-tada;
+.np-anim-tada {
+  animation-duration: var(--np-anim-duration, 1s);
+  animation-name: np-tada;
 }
-@keyframes nex-tada {
+@keyframes np-tada {
   10%,
   20% {
     scale: 0.9;
@@ -282,12 +282,12 @@
   }
 }
 
-.nex-anim-swing {
+.np-anim-swing {
   transform-origin: top center;
-  animation-duration: var(--nex-anim-duration, 1s);
-  animation-name: nex-swing;
+  animation-duration: var(--np-anim-duration, 1s);
+  animation-name: np-swing;
 }
-@keyframes nex-swing {
+@keyframes np-swing {
   20% {
     rotate: 15deg;
   }
@@ -302,11 +302,11 @@
   }
 }
 
-.nex-anim-bounce {
-  animation-duration: var(--nex-anim-duration, 1s);
-  animation-name: nex-bounce;
+.np-anim-bounce {
+  animation-duration: var(--np-anim-duration, 1s);
+  animation-name: np-bounce;
 }
-@keyframes nex-bounce {
+@keyframes np-bounce {
   0%,
   20%,
   53%,
@@ -327,42 +327,42 @@
 
 /* === Loop === */
 
-.nex-anim-float {
-  animation: nex-float var(--nex-anim-duration, 3s) var(--nex-anim-ease, ease-in-out)
-    var(--nex-anim-delay, 0s) var(--nex-anim-repeat, infinite) both;
+.np-anim-float {
+  animation: np-float var(--np-anim-duration, 3s) var(--np-anim-ease, ease-in-out)
+    var(--np-anim-delay, 0s) var(--np-anim-repeat, infinite) both;
 }
-@keyframes nex-float {
+@keyframes np-float {
   50% {
     translate: 0 -10px;
   }
 }
 
-.nex-anim-breathe {
-  animation: nex-breathe var(--nex-anim-duration, 3s) var(--nex-anim-ease, ease-in-out)
-    var(--nex-anim-delay, 0s) var(--nex-anim-repeat, infinite) both;
+.np-anim-breathe {
+  animation: np-breathe var(--np-anim-duration, 3s) var(--np-anim-ease, ease-in-out)
+    var(--np-anim-delay, 0s) var(--np-anim-repeat, infinite) both;
 }
-@keyframes nex-breathe {
+@keyframes np-breathe {
   50% {
     opacity: 0.8;
     scale: 1.06;
   }
 }
 
-.nex-anim-spin {
-  animation: nex-spin var(--nex-anim-duration, 1.2s) var(--nex-anim-ease, linear)
-    var(--nex-anim-delay, 0s) var(--nex-anim-repeat, infinite) both;
+.np-anim-spin {
+  animation: np-spin var(--np-anim-duration, 1.2s) var(--np-anim-ease, linear)
+    var(--np-anim-delay, 0s) var(--np-anim-repeat, infinite) both;
 }
-@keyframes nex-spin {
+@keyframes np-spin {
   to {
     rotate: 360deg;
   }
 }
 
-.nex-anim-orbit {
-  animation: nex-orbit var(--nex-anim-duration, 4s) var(--nex-anim-ease, linear)
-    var(--nex-anim-delay, 0s) var(--nex-anim-repeat, infinite) both;
+.np-anim-orbit {
+  animation: np-orbit var(--np-anim-duration, 4s) var(--np-anim-ease, linear)
+    var(--np-anim-delay, 0s) var(--np-anim-repeat, infinite) both;
 }
-@keyframes nex-orbit {
+@keyframes np-orbit {
   from {
     transform: rotate(0) translateX(10px) rotate(0);
   }
@@ -371,11 +371,11 @@
   }
 }
 
-.nex-anim-glow {
-  animation: nex-glow var(--nex-anim-duration, 2.4s) var(--nex-anim-ease, ease-in-out)
-    var(--nex-anim-delay, 0s) var(--nex-anim-repeat, infinite) both;
+.np-anim-glow {
+  animation: np-glow var(--np-anim-duration, 2.4s) var(--np-anim-ease, ease-in-out)
+    var(--np-anim-delay, 0s) var(--np-anim-repeat, infinite) both;
 }
-@keyframes nex-glow {
+@keyframes np-glow {
   0%,
   100% {
     box-shadow: 0 0 10px color-mix(in srgb, var(--ui-accent, #a855f7) 30%, transparent);
@@ -385,11 +385,11 @@
   }
 }
 
-.nex-anim-ripple {
-  animation: nex-ripple var(--nex-anim-duration, 1.6s) var(--nex-anim-ease, ease-out)
-    var(--nex-anim-delay, 0s) var(--nex-anim-repeat, infinite) both;
+.np-anim-ripple {
+  animation: np-ripple var(--np-anim-duration, 1.6s) var(--np-anim-ease, ease-out)
+    var(--np-anim-delay, 0s) var(--np-anim-repeat, infinite) both;
 }
-@keyframes nex-ripple {
+@keyframes np-ripple {
   from {
     box-shadow: 0 0 0 0 color-mix(in srgb, var(--ui-primary, #6366f1) 50%, transparent);
   }
@@ -399,11 +399,11 @@
 }
 
 /* A light sheen sweeps across the element */
-.nex-anim-shimmer {
+.np-anim-shimmer {
   position: relative;
   overflow: hidden;
 }
-.nex-anim-shimmer::after {
+.np-anim-shimmer::after {
   content: '';
   position: absolute;
   inset: 0;
@@ -414,10 +414,10 @@
     transparent 70%
   );
   pointer-events: none;
-  animation: nex-shimmer var(--nex-anim-duration, 1.8s) var(--nex-anim-ease, ease-in-out)
-    var(--nex-anim-delay, 0s) var(--nex-anim-repeat, infinite) both;
+  animation: np-shimmer var(--np-anim-duration, 1.8s) var(--np-anim-ease, ease-in-out)
+    var(--np-anim-delay, 0s) var(--np-anim-repeat, infinite) both;
 }
-@keyframes nex-shimmer {
+@keyframes np-shimmer {
   from {
     translate: -100% 0;
   }
@@ -427,7 +427,7 @@
 }
 
 /* Replaces the element's background with a moving Aurora gradient */
-.nex-anim-aurora {
+.np-anim-aurora {
   background: linear-gradient(
       120deg,
       var(--ui-primary, #6366f1),
@@ -436,21 +436,21 @@
       var(--ui-primary, #6366f1)
     )
     0 50% / 300% 300%;
-  animation: nex-aurora var(--nex-anim-duration, 6s) var(--nex-anim-ease, ease-in-out)
-    var(--nex-anim-delay, 0s) var(--nex-anim-repeat, infinite) both;
+  animation: np-aurora var(--np-anim-duration, 6s) var(--np-anim-ease, ease-in-out)
+    var(--np-anim-delay, 0s) var(--np-anim-repeat, infinite) both;
 }
-@keyframes nex-aurora {
+@keyframes np-aurora {
   50% {
     background-position: 100% 50%;
   }
 }
 
 /* Organic blob shape */
-.nex-anim-morph {
-  animation: nex-morph var(--nex-anim-duration, 8s) var(--nex-anim-ease, ease-in-out)
-    var(--nex-anim-delay, 0s) var(--nex-anim-repeat, infinite) both;
+.np-anim-morph {
+  animation: np-morph var(--np-anim-duration, 8s) var(--np-anim-ease, ease-in-out)
+    var(--np-anim-delay, 0s) var(--np-anim-repeat, infinite) both;
 }
-@keyframes nex-morph {
+@keyframes np-morph {
   0%,
   100% {
     border-radius: 42% 58% 70% 30% / 45% 45% 55% 55%;
@@ -464,11 +464,11 @@
 }
 
 /* Neon sign flicker */
-.nex-anim-flicker {
-  animation: nex-flicker var(--nex-anim-duration, 2.5s) var(--nex-anim-ease, linear)
-    var(--nex-anim-delay, 0s) var(--nex-anim-repeat, infinite) both;
+.np-anim-flicker {
+  animation: np-flicker var(--np-anim-duration, 2.5s) var(--np-anim-ease, linear)
+    var(--np-anim-delay, 0s) var(--np-anim-repeat, infinite) both;
 }
-@keyframes nex-flicker {
+@keyframes np-flicker {
   0%,
   19%,
   21%,
@@ -490,20 +490,20 @@
 
 /* === Exit === */
 
-.nex-anim-fade-out {
-  animation-name: nex-fade-out;
+.np-anim-fade-out {
+  animation-name: np-fade-out;
 }
-@keyframes nex-fade-out {
+@keyframes np-fade-out {
   to {
     opacity: 0;
     translate: 0 16px;
   }
 }
 
-.nex-anim-blur-out {
-  animation-name: nex-blur-out;
+.np-anim-blur-out {
+  animation-name: np-blur-out;
 }
-@keyframes nex-blur-out {
+@keyframes np-blur-out {
   to {
     opacity: 0;
     filter: blur(12px);
@@ -511,20 +511,20 @@
   }
 }
 
-.nex-anim-zoom-out {
-  animation-name: nex-zoom-out;
+.np-anim-zoom-out {
+  animation-name: np-zoom-out;
 }
-@keyframes nex-zoom-out {
+@keyframes np-zoom-out {
   to {
     opacity: 0;
     scale: 0.5;
   }
 }
 
-.nex-anim-slide-out-right {
-  animation-name: nex-slide-out-right;
+.np-anim-slide-out-right {
+  animation-name: np-slide-out-right;
 }
-@keyframes nex-slide-out-right {
+@keyframes np-slide-out-right {
   to {
     opacity: 0;
     translate: 60px 0;

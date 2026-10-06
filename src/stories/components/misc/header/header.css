@@ -1,4 +1,4 @@
-.storybook-header {
+.np-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -8,13 +8,13 @@
   backdrop-filter: blur(8px);
 }
 
-.storybook-header svg,
-.storybook-header h1 {
+.np-header svg,
+.np-header h1 {
   display: inline-block;
   vertical-align: middle;
 }
 
-.storybook-header h1 {
+.np-header h1 {
   margin: 0 0 0 10px;
   background: var(--ui-gradient);
   background-clip: text;
@@ -24,7 +24,7 @@
   letter-spacing: -0.02em;
 }
 
-.storybook-header storybook-button + storybook-button {
+.np-header np-button + np-button {
   margin-left: 10px;
 }
 

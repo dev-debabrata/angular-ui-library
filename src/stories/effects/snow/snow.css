@@ -1,0 +1,4 @@
+/* Layout comes from .np-effect in theme.css (canvas behind the content); the text color tints the flakes */
+:host {
+  color: #fff;
+}

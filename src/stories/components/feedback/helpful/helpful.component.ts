@@ -6,7 +6,7 @@ export type HelpfulVote = 'yes' | 'no';
 
 /** "Was this helpful?" widget: one click records the vote, locks the buttons and shows the counts */
 @Component({
-  selector: 'nex-helpful',
+  selector: 'np-helpful',
   imports: [IconComponent],
   templateUrl: './helpful.html',
   styleUrl: './helpful.css',

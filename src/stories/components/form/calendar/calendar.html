@@ -31,7 +31,7 @@
           [disabled]="disabled()"
           (click)="toggle()"
         >
-          <nex-icon name="calendar" [size]="16" />
+          <np-icon name="calendar" [size]="16" />
         </button>
       }
     </div>
@@ -65,7 +65,7 @@
                   [disabled]="prevDisabled()"
                   (click)="navigate(-1)"
                 >
-                  <nex-icon name="chevron-left" [size]="16" />
+                  <np-icon name="chevron-left" [size]="16" />
                 </button>
                 <div class="calendar-title">
                   <button
@@ -93,7 +93,7 @@
                   [disabled]="nextDisabled()"
                   (click)="navigate(1)"
                 >
-                  <nex-icon name="chevron-right" [size]="16" />
+                  <np-icon name="chevron-right" [size]="16" />
                 </button>
               </div>
 
@@ -160,7 +160,7 @@
             [attr.aria-label]="'Previous ' + page"
             (click)="navigate(-1)"
           >
-            <nex-icon name="chevron-left" [size]="16" />
+            <np-icon name="chevron-left" [size]="16" />
           </button>
           @if (view === 'month') {
             <button
@@ -180,7 +180,7 @@
             [attr.aria-label]="'Next ' + page"
             (click)="navigate(1)"
           >
-            <nex-icon name="chevron-right" [size]="16" />
+            <np-icon name="chevron-right" [size]="16" />
           </button>
         </div>
         <div class="calendar-picker">
@@ -203,7 +203,7 @@
 
       @if (showTime() && selectionMode() === 'single') {
         <div class="calendar-time">
-          <nex-time-picker
+          <np-time-picker
             class="time-picker--flat"
             [value]="timeValue()"
             [hourFormat]="hourFormat()"

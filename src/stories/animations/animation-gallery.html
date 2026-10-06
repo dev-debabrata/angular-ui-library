@@ -3,20 +3,20 @@
     <span class="gallery-version"><i></i>{{ version }}</span>
     <h1>Animations</h1>
     <p class="subtitle">
-    {{ animations().length }} CSS animations. Add <code>class="nex-anim-name"</code> to any element,
-    and tune it with <code>--nex-anim-duration</code>, <code>--nex-anim-delay</code>,
-    <code>--nex-anim-ease</code> and <code>--nex-anim-repeat</code>. Click a card to replay it and
+    {{ animations().length }} CSS animations. Add <code>class="np-anim-name"</code> to any element,
+    and tune it with <code>--np-anim-duration</code>, <code>--np-anim-delay</code>,
+    <code>--np-anim-ease</code> and <code>--np-anim-repeat</code>. Click a card to replay it and
     copy its code.
   </p>
   </header>
 
   <div class="toolbar">
-    <nex-search-input
+    <np-search-input
       class="search"
       placeholder="Search animations..."
       (search)="query.set($event)"
     />
-    <nex-button-toggle
+    <np-button-toggle
       size="small"
       ariaLabel="Category"
       [options]="categories()"
@@ -42,7 +42,7 @@
       Loop all
     </label>
     <button type="button" class="ui-btn ui-btn--sm" (click)="replayAll()">
-      <nex-icon name="rotate-ccw" [size]="14" /> Replay all
+      <np-icon name="rotate-ccw" [size]="14" /> Replay all
     </button>
     @if (duration() !== null) {
       <button type="button" class="ui-btn ui-btn--sm ui-btn--text" (click)="duration.set(null)">
@@ -61,8 +61,8 @@
         (click)="select(a, tile)"
       >
         <span class="stage">
-          <span #tile class="tile" [class]="'nex-anim-' + a.name"
-            ><nex-icon name="sparkles" [size]="26"
+          <span #tile class="tile" [class]="'np-anim-' + a.name"
+            ><np-icon name="sparkles" [size]="26"
           /></span>
         </span>
         <span class="name">{{ a.name }}</span>
@@ -82,35 +82,28 @@
         [style]="vars()"
         (click)="replay(big)"
       >
-        <span #big class="tile tile--big" [class]="'nex-anim-' + selected()!.name">
-          <nex-icon name="sparkles" [size]="40" />
+        <span #big class="tile tile--big" [class]="'np-anim-' + selected()!.name">
+          <np-icon name="sparkles" [size]="40" />
         </span>
       </button>
       <div class="details">
         <div class="head">
-          <h2>nex-anim-{{ selected()!.name }}</h2>
+          <h2>np-anim-{{ selected()!.name }}</h2>
           <button type="button" class="ui-close" aria-label="Close" (click)="selected.set(null)">
             ×
           </button>
         </div>
-        @for (block of codeBlocks; track block.kind) {
-          <div class="snippet">
-            <div class="snippet__head">
-              <span>{{ block.label }}</span>
-              <button
-                type="button"
-                class="ui-btn ui-btn--text ui-btn--sm"
-                (click)="copy(block.kind)"
-              >
-                <nex-icon [name]="copied() === block.kind ? 'check' : 'copy'" [size]="14" />
-                {{ copied() === block.kind ? 'Copied!' : 'Copy ' + block.label }}
-              </button>
-            </div>
-            <pre
-              [class.snippet__css]="block.kind === 'css'"
-            ><code>{{ code[block.kind] }}</code></pre>
+        <np-framework-code [code]="code.markup" />
+        <div class="snippet">
+          <div class="snippet__head">
+            <span>CSS (standalone, if you don’t load the NexPrime styles)</span>
+            <button type="button" class="ui-btn ui-btn--text ui-btn--sm" (click)="copyCss()">
+              <np-icon [name]="copied() === 'css' ? 'check' : 'copy'" [size]="14" />
+              {{ copied() === 'css' ? 'Copied!' : 'Copy CSS' }}
+            </button>
           </div>
-        }
+          <pre class="snippet__css"><code>{{ code.css }}</code></pre>
+        </div>
       </div>
     </aside>
   }

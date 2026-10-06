@@ -1,0 +1,4 @@
+/* Layout comes from .np-effect in theme.css (canvas behind the content); the text color tints the meteors */
+:host {
+  color: #e0e7ff;
+}

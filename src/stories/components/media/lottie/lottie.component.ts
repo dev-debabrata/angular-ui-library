@@ -55,7 +55,7 @@ export async function loadLottie(url: string): Promise<object> {
  * loaded on first use, only in the browser. With "reduce motion" on, the last frame is shown still.
  */
 @Component({
-  selector: 'nex-lottie',
+  selector: 'np-lottie',
   templateUrl: './lottie.html',
   styleUrl: './lottie.css',
   host: {

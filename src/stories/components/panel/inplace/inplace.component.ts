@@ -4,7 +4,7 @@ import { IconComponent } from '../../media/icon/icon.component';
 
 /** Shows `[inplaceDisplay]` content until clicked, then swaps in `[inplaceContent]` */
 @Component({
-  selector: 'nex-inplace',
+  selector: 'np-inplace',
   imports: [IconComponent],
   templateUrl: './inplace.html',
   styleUrl: './inplace.css',

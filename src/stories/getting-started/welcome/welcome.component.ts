@@ -20,30 +20,30 @@ import { AuroraComponent } from '../../effects/aurora/aurora.component';
 import { ParticlesComponent } from '../../effects/particles/particles.component';
 import { StarfieldComponent } from '../../effects/starfield/starfield.component';
 import { copyToClipboard } from '../../utils/clipboard';
-import { PAGES, SECTIONS, VERSION, pageHref } from '../landing';
+import { PAGES, SECTIONS, VERSION, managerHref } from '../landing';
 
 type Snippet = 'angular' | 'elements';
 
 const SNIPPETS: Record<Snippet, string> = {
-  angular: `import { ToggleComponent } from 'nexui';
+  angular: `import { ToggleComponent } from './components/form/toggle/toggle.component';
 
 @Component({
   imports: [ToggleComponent],
-  template: \`<nex-toggle label="Dark mode" [(checked)]="dark" />\`,
+  template: \`<np-toggle label="Dark mode" [(checked)]="dark" />\`,
 })
 export class Settings {
   dark = signal(false);
 }`,
-  elements: `<link rel="stylesheet" href="nexui/styles.css" />
-<script type="module" src="nexui/nexui.js"></script>
+  elements: `<link rel="stylesheet" href="nexprime/styles.css" />
+<script type="module" src="nexprime/nexprime.js"></script>
 
-<nexui-toggle label="Dark mode"></nexui-toggle>
-<nexui-chart type="area"></nexui-chart>`,
+<np-toggle label="Dark mode"></np-toggle>
+<np-chart type="area"></np-chart>`,
 };
 
-/** "Getting Started ▸ Welcome": the NexUI landing page, built from the library's own components and effects */
+/** "Getting Started ▸ Welcome": the NexPrime landing page, built from the library's own components and effects */
 @Component({
-  selector: 'nex-welcome-page',
+  selector: 'np-welcome-page',
   imports: [
     AnimateOnScrollComponent,
     AuroraComponent,
@@ -68,14 +68,14 @@ export class Settings {
 export class WelcomeComponent {
   protected readonly pages = PAGES;
   protected readonly version = VERSION;
-  protected readonly href = pageHref;
+  protected readonly href = managerHref;
 
   protected readonly stats = [
     { value: '60+', label: 'Components' },
     { value: '2,000+', label: 'Icons' },
     { value: '35', label: 'Animations' },
     { value: '230+', label: 'Lottie files' },
-    { value: '9', label: 'Effects' },
+    { value: '21', label: 'Effects' },
   ];
 
   protected readonly features = [
@@ -139,7 +139,7 @@ export class WelcomeComponent {
     { value: 'elements', label: 'React, Vue & HTML' },
   ];
 
-  protected readonly install = 'npm install nexui';
+  protected readonly install = 'git clone <repo> && npm install && npm run storybook';
   protected readonly snippet = signal<Snippet>('angular');
   protected readonly code = computed(() => SNIPPETS[this.snippet()]);
   protected readonly copied = signal('');

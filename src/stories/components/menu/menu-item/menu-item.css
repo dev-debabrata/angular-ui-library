@@ -1,7 +1,7 @@
 /* Not encapsulated (see menu-item.component.ts), so these classes are shared by every menu.
    Row tuning: --mi-pad, --mi-gap, --mi-radius, --mi-ring, --mi-icon (icon color),
    --mi-turn / --mi-turn-ease (open chevron rotation), --mi-lead (-1 puts the chevron first) */
-.nex-menu-item {
+.np-menu-item {
   display: contents;
 }
 
@@ -29,7 +29,7 @@
     background: var(--ui-primary-soft);
     color: var(--ui-primary);
 
-    & .nex-icon {
+    & .np-icon {
       color: inherit;
     }
   }

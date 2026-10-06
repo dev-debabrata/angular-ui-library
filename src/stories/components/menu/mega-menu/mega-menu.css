@@ -33,7 +33,7 @@
 .mega-top {
   position: relative;
 
-  & > nex-menu-item {
+  & > np-menu-item {
     --mi-pad: 9px 14px;
     font-weight: 500;
   }

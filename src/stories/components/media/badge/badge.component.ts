@@ -3,7 +3,7 @@ import { Component, booleanAttribute, input } from '@angular/core';
 import type { Tone } from '../../../utils/types';
 
 @Component({
-  selector: 'nex-badge',
+  selector: 'np-badge',
   templateUrl: './badge.html',
   styleUrl: './badge.css',
 })

@@ -1,0 +1,24 @@
+<div class="bar">
+  <np-button-toggle
+    size="small"
+    ariaLabel="Framework"
+    [options]="frameworks"
+    [showCheck]="false"
+    [value]="framework()"
+    (valueChange)="pick($event)"
+  />
+  <button type="button" class="ui-btn ui-btn--text ui-btn--sm" (click)="copy()">
+    <np-icon [name]="copied() ? 'check' : 'copy'" [size]="14" />
+    {{ copied() ? 'Copied!' : 'Copy' }}
+  </button>
+</div>
+<pre><code>{{ code()[framework()] }}</code></pre>
+<p class="setup">
+  {{ setup().note }}
+  @if (setup().code) {
+    <a [href]="guide" target="_top">Setup guide</a>
+  }
+</p>
+@if (setup().code) {
+  <pre class="setup__code"><code>{{ setup().code }}</code></pre>
+}

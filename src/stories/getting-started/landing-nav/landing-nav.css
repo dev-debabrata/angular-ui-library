@@ -106,12 +106,26 @@ a {
 }
 
 .swatch {
+  display: grid;
+  place-items: center;
   width: 28px;
   height: 28px;
   padding: 0;
   border: 0;
   border-radius: 8px;
+  color: #fff;
   cursor: pointer;
+  transition: box-shadow 0.15s var(--ui-ease);
+}
+
+.swatch:hover {
+  box-shadow: 0 0 0 2px var(--ui-surface), 0 0 0 4px var(--ui-border-strong);
+}
+
+/* The current theme color: a ring in its own color and a check mark */
+.swatch--on,
+.swatch--on:hover {
+  box-shadow: 0 0 0 2px var(--ui-surface), 0 0 0 4px var(--swatch);
 }
 
 .get-started {

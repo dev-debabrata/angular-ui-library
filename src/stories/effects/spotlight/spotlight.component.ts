@@ -17,11 +17,11 @@ import { localPoint } from '../canvas-effect';
  * outside it. Pure CSS (a radial gradient positioned by custom properties), so it renders on the server.
  */
 @Component({
-  selector: 'nex-spotlight',
+  selector: 'np-spotlight',
   templateUrl: './spotlight.html',
   styleUrl: './spotlight.css',
   host: {
-    class: 'nex-effect',
+    class: 'np-effect',
     '[class.spotlight--on]': 'on()',
     '[class.spotlight--dim]': 'dim()',
     '[style.--spot-size.px]': 'size()',

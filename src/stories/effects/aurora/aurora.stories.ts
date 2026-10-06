@@ -21,7 +21,7 @@ type Story = StoryObj<AuroraComponent>;
 
 /** Theme colors drifting behind dark hero content */
 export const Default: Story = {
-  render: demo('nex-aurora', {
+  render: demo('np-aurora', {
     height: '480px',
     background: BACKGROUNDS.black,
     content: heroCopy(),
@@ -31,12 +31,12 @@ export const Default: Story = {
 /** A light page with pastel blobs */
 export const Light: Story = {
   args: { colors: ['#c7d2fe', '#fbcfe8', '#bae6fd', '#ddd6fe'], opacity: 0.9 },
-  render: demo('nex-aurora', {
+  render: demo('np-aurora', {
     height: '420px',
     background: 'var(--ui-surface)',
     content: heroCopy({
       dark: false,
-      title: 'Build faster with NexUI',
+      title: 'Build faster with NexPrime',
       text: 'A soft aurora behind your content',
     }),
   }),
@@ -45,7 +45,7 @@ export const Light: Story = {
 /** Northern lights: greens and teals, faster */
 export const NorthernLights: Story = {
   args: { colors: ['#22c55e', '#14b8a6', '#0ea5e9', '#a855f7'], speed: 1.8, blur: 90 },
-  render: demo('nex-aurora', {
+  render: demo('np-aurora', {
     height: '420px',
     background: BACKGROUNDS.space,
     content: heroCopy({

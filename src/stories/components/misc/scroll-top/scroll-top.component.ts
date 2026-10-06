@@ -18,7 +18,7 @@ import { IconComponent } from '../../media/icon/icon.component';
 const RING = 2 * Math.PI * 26;
 
 @Component({
-  selector: 'nex-scroll-top',
+  selector: 'np-scroll-top',
   imports: [IconComponent],
   templateUrl: './scroll-top.html',
   styleUrl: './scroll-top.css',

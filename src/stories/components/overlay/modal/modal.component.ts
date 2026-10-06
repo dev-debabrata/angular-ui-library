@@ -1,7 +1,7 @@
 import { Component, input, model } from '@angular/core';
 
 @Component({
-  selector: 'nex-modal',
+  selector: 'np-modal',
   host: {
     '(document:keydown.escape)': 'close()',
   },

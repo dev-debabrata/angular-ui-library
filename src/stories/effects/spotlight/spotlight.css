@@ -1,4 +1,4 @@
-/* Layout comes from .nex-effect in theme.css. The pointer position doesn't inherit, so moving it only
+/* Layout comes from .np-effect in theme.css. The pointer position doesn't inherit, so moving it only
    restyles the host, not the content */
 @property --spot-x {
   syntax: '<length-percentage>';

@@ -1,11 +1,13 @@
 import {
   argsToTemplate,
   componentWrapperDecorator,
+  moduleMetadata,
   type Meta,
   type StoryObj,
 } from '@storybook/angular-vite';
 import { fn } from 'storybook/test';
 
+import { IconComponent } from '../../media/icon/icon.component';
 import { FormComponent, type FormField, type FormOption } from './form.component';
 
 const options = (...labels: string[]): FormOption[] =>
@@ -112,7 +114,7 @@ export const Login: Story = {
   render: (args) => ({
     props: args,
     template: `
-      <nex-form ${argsToTemplate(args)}>
+      <np-form ${argsToTemplate(args)}>
         <div formBeforeActions style="display: flex; justify-content: flex-end; margin-top: -8px">
           <a href="#" style="color: var(--ui-primary); font-size: 13px; font-weight: 600; text-decoration: none">
             Forgot password?
@@ -131,8 +133,117 @@ export const Login: Story = {
           Don't have an account?
           <a href="#" style="color: var(--ui-primary); font-weight: 600; text-decoration: none">Sign up</a>
         </p>
-      </nex-form>
+      </np-form>
     `,
+  }),
+};
+
+/** Plain form with a checkbox that must be ticked */
+export const SignUp: Story = {
+  args: {
+    submitLabel: 'Create account',
+    fields: [
+      {
+        name: 'name',
+        label: 'Full name',
+        type: 'text',
+        placeholder: 'Jane Cooper',
+        required: true,
+      },
+      {
+        name: 'email',
+        label: 'Email',
+        type: 'email',
+        placeholder: 'jane@example.com',
+        required: true,
+      },
+      {
+        name: 'password',
+        label: 'Password',
+        type: 'password',
+        required: true,
+        minLength: 8,
+        hint: 'At least 8 characters',
+      },
+      { name: 'terms', label: 'I agree to the terms of service', type: 'checkbox', required: true },
+    ],
+  },
+};
+
+/** "Back to sign in" link below the form, shared by the password templates */
+const BACK_TO_SIGN_IN = `
+  <a href="#" style="display: inline-flex; align-items: center; justify-content: center; gap: 6px; color: var(--ui-text-muted); font-size: 13px; font-weight: 600; text-decoration: none">
+    <np-icon name="arrow-left" [size]="14" /> Back to sign in
+  </a>`;
+
+/** Step after "Forgot password?" on the login card: one email field, then a check-your-inbox confirmation */
+export const ForgotPassword: Story = {
+  args: {
+    card: true,
+    icon: 'key-round',
+    title: 'Forgot password?',
+    subtitle: "Enter your email and we'll send you a reset link",
+    block: true,
+    submitLabel: 'Send reset link',
+    submitIcon: 'send',
+    successTitle: 'Check your email',
+    successMessage: 'If an account exists for that address, a reset link is on its way.',
+    fields: [
+      {
+        name: 'email',
+        label: 'Email',
+        type: 'email',
+        placeholder: 'you@example.com',
+        required: true,
+      },
+    ],
+  },
+  decorators: [moduleMetadata({ imports: [IconComponent] })],
+  render: (args) => ({
+    props: args,
+    template: `<np-form ${argsToTemplate(args)}>${BACK_TO_SIGN_IN}</np-form>`,
+  }),
+};
+
+/** Page the reset link opens: a new password with rules, and a confirmation that must match it (`match`) */
+export const ResetPassword: Story = {
+  args: {
+    card: true,
+    icon: 'lock-keyhole',
+    title: 'Set a new password',
+    subtitle: 'Choose a password you haven’t used before',
+    block: true,
+    submitLabel: 'Reset password',
+    successTitle: 'Password updated',
+    successMessage: 'You can now sign in with your new password.',
+    fields: [
+      {
+        name: 'password',
+        label: 'New password',
+        type: 'password',
+        placeholder: '••••••••',
+        required: true,
+        minLength: 8,
+        pattern: '(?=.*[A-Za-z])(?=.*\\d).*',
+        patternMessage: 'Use at least one letter and one number',
+        hint: 'At least 8 characters, with a letter and a number',
+      },
+      {
+        name: 'confirm',
+        label: 'Confirm password',
+        type: 'password',
+        placeholder: '••••••••',
+        required: true,
+        match: 'password',
+        matchMessage: "Passwords don't match",
+      },
+      { name: 'signOut', label: 'Sign out of all other devices', type: 'checkbox' },
+    ],
+  },
+  decorators: [moduleMetadata({ imports: [IconComponent] })],
+  render: (args) => ({
+    props: args,
+    template: `<np-form ${argsToTemplate(args)}>${BACK_TO_SIGN_IN}</np-form>`,
   }),
 };
 
@@ -249,7 +360,7 @@ export const Survey: Story = {
         fields: [
           {
             name: 'nps',
-            label: 'How likely are you to recommend NexUI? (0–10)',
+            label: 'How likely are you to recommend NexPrime? (0–10)',
             type: 'segmented',
             required: true,
             options: Array.from({ length: 11 }, (_, i) => ({ value: String(i), label: String(i) })),
@@ -444,38 +555,6 @@ export const Onboarding: Story = {
           },
         ],
       },
-    ],
-  },
-};
-
-/** Plain form with a checkbox that must be ticked */
-export const SignUp: Story = {
-  args: {
-    submitLabel: 'Create account',
-    fields: [
-      {
-        name: 'name',
-        label: 'Full name',
-        type: 'text',
-        placeholder: 'Jane Cooper',
-        required: true,
-      },
-      {
-        name: 'email',
-        label: 'Email',
-        type: 'email',
-        placeholder: 'jane@example.com',
-        required: true,
-      },
-      {
-        name: 'password',
-        label: 'Password',
-        type: 'password',
-        required: true,
-        minLength: 8,
-        hint: 'At least 8 characters',
-      },
-      { name: 'terms', label: 'I agree to the terms of service', type: 'checkbox', required: true },
     ],
   },
 };

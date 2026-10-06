@@ -22,7 +22,7 @@
           [disabled]="disabled()"
           (click)="step(col.unit, 1)"
         >
-          <nex-icon name="chevron-up" [size]="16" />
+          <np-icon name="chevron-up" [size]="16" />
         </button>
         <span class="time-picker-value">{{ col.text }}</span>
         <button
@@ -33,7 +33,7 @@
           [disabled]="disabled()"
           (click)="step(col.unit, -1)"
         >
-          <nex-icon name="chevron-down" [size]="16" />
+          <np-icon name="chevron-down" [size]="16" />
         </button>
       </div>
       @if (col.unit === 'hour' || (col.unit === 'minute' && showSeconds())) {
@@ -88,7 +88,7 @@
         [disabled]="disabled()"
         (click)="toggle()"
       >
-        <nex-icon name="clock" [size]="16" />
+        <np-icon name="clock" [size]="16" />
       </button>
     </div>
     @if (opened()) {
@@ -125,7 +125,7 @@
               >
                 {{ option.label }}
                 @if (option.selected) {
-                  <nex-icon name="check" [size]="16" />
+                  <np-icon name="check" [size]="16" />
                 }
               </li>
             }

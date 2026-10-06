@@ -10,7 +10,7 @@ const GLYPHS =
  * With reduced motion it shows a still frame.
  */
 @Component({
-  selector: 'nex-matrix-rain',
+  selector: 'np-matrix-rain',
   templateUrl: './matrix-rain.html',
   styleUrl: './matrix-rain.css',
 })

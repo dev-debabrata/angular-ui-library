@@ -2,8 +2,8 @@ import type { Meta, StoryObj } from '@storybook/angular-vite';
 
 import { SkeletonComponent } from './skeleton.component';
 
-/** <nex-skeleton> with the given attributes, following the story's animation arg */
-const sk = (attrs: string) => `<nex-skeleton ${attrs} [animation]="animation" />`;
+/** <np-skeleton> with the given attributes, following the story's animation arg */
+const sk = (attrs: string) => `<np-skeleton ${attrs} [animation]="animation" />`;
 const lines = (...widths: string[]) =>
   `<div style="flex: 1; display: grid; gap: 8px">${widths.map((w) => sk(w)).join('')}</div>`;
 const radius = 'borderRadius="var(--ui-radius)"';
@@ -82,7 +82,7 @@ export const TableLoading: Story = {
           <tr>
             @for (col of cols; track col) {
               <th style="padding: 10px 12px; border-bottom: 1px solid var(--ui-border-strong)">
-                <nex-skeleton width="60%" height="12px" animation="none" />
+                <np-skeleton width="60%" height="12px" animation="none" />
               </th>
             }
           </tr>

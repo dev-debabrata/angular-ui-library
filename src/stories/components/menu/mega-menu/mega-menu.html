@@ -3,7 +3,7 @@
     @for (item of model(); track $index) {
       @let open = path.isOpen(item, 0);
       <li class="mega-top" role="none" (mouseenter)="hover(item)">
-        <nex-menu-item
+        <np-menu-item
           [item]="item"
           [chevron]="orientation() === 'vertical' ? 'chevron-right' : 'chevron-down'"
           [open]="open"
@@ -17,7 +17,7 @@
                   <div class="mega-section" role="group" [attr.aria-label]="section.label">
                     <span class="mega-heading">{{ section.label }}</span>
                     @for (link of section.items ?? []; track $index) {
-                      <nex-menu-item [item]="link" (click)="select($event, link)" />
+                      <np-menu-item [item]="link" (click)="select($event, link)" />
                     }
                   </div>
                 }

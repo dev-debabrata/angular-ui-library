@@ -3,7 +3,7 @@ import { Component, booleanAttribute, input, output, signal } from '@angular/cor
 import { IconComponent } from '../../media/icon/icon.component';
 
 @Component({
-  selector: 'nex-chip',
+  selector: 'np-chip',
   imports: [IconComponent],
   templateUrl: './chip.html',
   styleUrl: './chip.css',

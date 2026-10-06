@@ -8,30 +8,9 @@ import express from 'express';
 import { join } from 'node:path';
 
 const browserDistFolder = join(import.meta.dirname, '../browser');
-const storybookDistFolder = join(browserDistFolder, 'storybook');
 
 const app = express();
 const angularApp = new AngularNodeAppEngine();
-
-/**
- * Serve static files from /storybook (if bundled)
- */
-app.use(
-  '/storybook',
-  express.static(storybookDistFolder, {
-    maxAge: '1y',
-    index: 'index.html',
-  }),
-);
-
-/**
- * Fallback for Storybook sub-routes / short URLs
- */
-app.get('/storybook/{*splat}', (req, res, next) => {
-  res.sendFile(join(storybookDistFolder, 'index.html'), (err) => {
-    if (err) next();
-  });
-});
 
 /**
  * Example Express Rest API endpoints can be defined here.

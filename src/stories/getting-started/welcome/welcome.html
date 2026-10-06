@@ -1,12 +1,12 @@
 <div class="welcome">
   <!-- Hero: aurora blobs with a particle network on top -->
-  <nex-aurora
+  <np-aurora
     class="hero"
     [colors]="['#6366f1', '#a855f7', '#ec4899', '#0ea5e9']"
     [opacity]="0.55"
     [blur]="90"
   >
-    <nex-particles
+    <np-particles
       class="hero__particles"
       color="rgb(255 255 255 / 0.75)"
       [count]="80"
@@ -20,27 +20,29 @@
       [pushOnClick]="true"
     >
       <div class="hero__inner">
-        <span class="gallery-version gallery-version--dark nex-anim-fade-down"
+        <span class="gallery-version gallery-version--dark np-anim-fade-down"
           ><i></i>{{ version }}</span
         >
-        <span class="eyebrow nex-anim-fade-down">
-          <nex-icon name="sparkles" [size]="14" /> Angular 21 · Signals · SSR · Web Components
+        <span class="eyebrow np-anim-fade-down">
+          <np-icon name="sparkles" [size]="14" /> Angular 21 · Signals · SSR · Web Components
         </span>
-        <h1 class="hero__title nex-anim-fade-up">
+        <h1 class="hero__title np-anim-fade-up">
           Build <span class="gradient-text">beautiful</span> Angular apps, faster
         </h1>
-        <p class="hero__lead nex-anim-fade-up">
-          NexUI is a next-generation UI library: accessible components, thousands of icons,
+        <p class="hero__lead np-anim-fade-up">
+          NexPrime is a next-generation UI library: accessible components, thousands of icons,
           animations, Lottie and interactive effects, all in one modern Aurora design.
         </p>
-        <div class="hero__actions nex-anim-fade-up">
-          <a class="ui-btn ui-btn--primary hero__cta" [href]="href(pages.getStarted)">
-            Get Started <nex-icon name="arrow-right" [size]="18" />
+        <div class="hero__actions np-anim-fade-up">
+          <a class="ui-btn ui-btn--primary hero__cta" [href]="href(pages.getStarted)" target="_top">
+            Get Started <np-icon name="arrow-right" [size]="18" />
           </a>
-          <a class="ui-btn hero__ghost" [href]="href(pages.catalog)">View Components</a>
+          <a class="ui-btn hero__ghost" [href]="href(pages.catalog)" target="_top"
+            >View Components</a
+          >
         </div>
-        <div class="install nex-anim-fade-up">
-          <nex-icon name="terminal" [size]="16" />
+        <div class="install np-anim-fade-up">
+          <np-icon name="terminal" [size]="16" />
           <code>{{ install }}</code>
           <button
             type="button"
@@ -48,12 +50,12 @@
             [attr.aria-label]="copied() === 'install' ? 'Copied' : 'Copy command'"
             (click)="copy('install', install)"
           >
-            <nex-icon [name]="copied() === 'install' ? 'check' : 'copy'" [size]="16" />
+            <np-icon [name]="copied() === 'install' ? 'check' : 'copy'" [size]="16" />
           </button>
         </div>
       </div>
-    </nex-particles>
-  </nex-aurora>
+    </np-particles>
+  </np-aurora>
 
   <!-- Stats, floating over the hero's bottom edge -->
   <div class="stats">
@@ -67,48 +69,48 @@
 
   <!-- Features -->
   <section class="section">
-    <nex-animate-on-scroll>
+    <np-animate-on-scroll>
       <header class="section__head">
-        <span class="kicker">Why NexUI</span>
+        <span class="kicker">Why NexPrime</span>
         <h2>Everything you need, nothing you don't</h2>
         <p>
           Modern Angular from the ground up, with a design system that looks great out of the box.
         </p>
       </header>
-    </nex-animate-on-scroll>
+    </np-animate-on-scroll>
     <div class="features">
       @for (f of features; track f.title; let i = $index) {
-        <nex-animate-on-scroll [delay]="i * 70">
+        <np-animate-on-scroll [delay]="i * 70">
           <article class="feature">
-            <span class="feature__icon"><nex-icon [name]="f.icon" [size]="22" /></span>
+            <span class="feature__icon"><np-icon [name]="f.icon" [size]="22" /></span>
             <h3>{{ f.title }}</h3>
             <p>{{ f.text }}</p>
           </article>
-        </nex-animate-on-scroll>
+        </np-animate-on-scroll>
       }
     </div>
   </section>
 
   <!-- Live showcase -->
   <section class="section section--tinted">
-    <nex-animate-on-scroll>
+    <np-animate-on-scroll>
       <header class="section__head">
         <span class="kicker">Live, not screenshots</span>
         <h2>Real components, right here</h2>
-        <p>Everything below is NexUI running in this page. Go ahead, click around.</p>
+        <p>Everything below is NexPrime running in this page. Go ahead, click around.</p>
       </header>
-    </nex-animate-on-scroll>
+    </np-animate-on-scroll>
     <div class="bento">
-      <nex-animate-on-scroll class="bento__wide">
+      <np-animate-on-scroll class="bento__wide">
         <article class="tile">
           <div class="tile__head">
             <div>
               <h3>Weekly traffic</h3>
               <p>Visitors and sign-ups</p>
             </div>
-            <nex-tag value="+24%" severity="success" rounded />
+            <np-tag value="+24%" severity="success" rounded />
           </div>
-          <nex-chart
+          <np-chart
             type="area"
             smooth
             [labels]="chartLabels"
@@ -117,16 +119,16 @@
             ariaLabel="Weekly visitors and sign-ups"
           />
         </article>
-      </nex-animate-on-scroll>
+      </np-animate-on-scroll>
 
-      <nex-animate-on-scroll [delay]="80">
+      <np-animate-on-scroll [delay]="80">
         <article class="tile">
           <h3>Preferences</h3>
           <div class="stack">
-            <nex-search-input placeholder="Search settings..." />
-            <nex-toggle label="Email notifications" [(checked)]="notifications" />
-            <nex-checkbox label="Weekly summary" [checked]="true" />
-            <nex-button-toggle
+            <np-search-input placeholder="Search settings..." />
+            <np-toggle label="Email notifications" [(checked)]="notifications" />
+            <np-checkbox label="Weekly summary" [checked]="true" />
+            <np-button-toggle
               size="small"
               ariaLabel="Billing"
               [options]="plans"
@@ -135,35 +137,35 @@
             />
           </div>
         </article>
-      </nex-animate-on-scroll>
+      </np-animate-on-scroll>
 
-      <nex-animate-on-scroll [delay]="120">
+      <np-animate-on-scroll [delay]="120">
         <article class="tile">
           <h3>Project health</h3>
           <div class="stack">
-            <nex-progress-bar [value]="82" variant="success" />
-            <nex-progress-bar [value]="56" variant="info" />
-            <nex-progress-bar [value]="31" variant="warning" />
+            <np-progress-bar [value]="82" variant="success" />
+            <np-progress-bar [value]="56" variant="info" />
+            <np-progress-bar [value]="31" variant="warning" />
             <div class="rating">
-              <span>Rate NexUI</span>
-              <nex-rating [(value)]="rating" />
+              <span>Rate NexPrime</span>
+              <np-rating [(value)]="rating" />
             </div>
           </div>
         </article>
-      </nex-animate-on-scroll>
+      </np-animate-on-scroll>
 
-      <nex-animate-on-scroll class="bento__wide" [delay]="160">
+      <np-animate-on-scroll class="bento__wide" [delay]="160">
         <article class="tile">
           <div class="tile__head">
             <h3>Your team</h3>
-            <nex-badge label="4 members" variant="info" pill />
+            <np-badge label="4 members" variant="info" pill />
           </div>
           <ul class="team">
             @for (m of team; track m.name) {
               <li>
-                <nex-avatar [name]="m.name" [status]="m.status" />
+                <np-avatar [name]="m.name" [status]="m.status" />
                 <span class="team__name">{{ m.name }}</span>
-                <nex-tag
+                <np-tag
                   [value]="m.status"
                   [severity]="
                     m.status === 'online' ? 'success' : m.status === 'away' ? 'warning' : 'neutral'
@@ -174,36 +176,36 @@
             }
           </ul>
         </article>
-      </nex-animate-on-scroll>
+      </np-animate-on-scroll>
     </div>
   </section>
 
   <!-- Explore the sections -->
   <section class="section">
-    <nex-animate-on-scroll>
+    <np-animate-on-scroll>
       <header class="section__head">
         <span class="kicker">Explore</span>
         <h2>Pick a place to start</h2>
         <p>Every section of the sidebar, one click away.</p>
       </header>
-    </nex-animate-on-scroll>
+    </np-animate-on-scroll>
     <div class="explore">
       @for (s of sections; track s.id; let i = $index) {
-        <nex-animate-on-scroll [delay]="i * 60">
-          <a class="explore__card" [href]="href(s.path)">
+        <np-animate-on-scroll [delay]="i * 60">
+          <a class="explore__card" [href]="href(s.path)" target="_top">
             <div class="explore__preview">
               @switch (s.id) {
                 @case ('catalog') {
                   <div class="mini-ui">
                     <span class="ui-btn ui-btn--primary ui-btn--sm">Primary</span>
-                    <nex-toggle [checked]="true" />
-                    <nex-rating [value]="3" readonly />
+                    <np-toggle [checked]="true" />
+                    <np-rating [value]="3" readonly />
                   </div>
                 }
                 @case ('icons') {
                   <div class="mini-icons">
                     @for (icon of previewIcons; track icon; let k = $index) {
-                      <nex-icon
+                      <np-icon
                         [name]="icon"
                         [size]="26"
                         [variant]="iconVariants[k % iconVariants.length]"
@@ -212,15 +214,15 @@
                   </div>
                 }
                 @case ('animations') {
-                  <span class="mini-anim nex-anim-float"
-                    ><nex-icon name="sparkles" [size]="30"
+                  <span class="mini-anim np-anim-float"
+                    ><np-icon name="sparkles" [size]="30"
                   /></span>
                 }
                 @case ('lottie') {
-                  <nex-lottie src="lottie/rocket.json" size="110px" hover />
+                  <np-lottie src="lottie/rocket.json" size="110px" hover />
                 }
                 @case ('effects') {
-                  <nex-starfield
+                  <np-starfield
                     class="mini-effect"
                     color="#ffffff"
                     [count]="160"
@@ -236,12 +238,12 @@
               }
             </div>
             <div class="explore__body">
-              <h3><nex-icon [name]="s.icon" [size]="18" /> {{ s.label }}</h3>
+              <h3><np-icon [name]="s.icon" [size]="18" /> {{ s.label }}</h3>
               <p>{{ s.text }}</p>
-              <span class="explore__more">Open <nex-icon name="arrow-right" [size]="14" /></span>
+              <span class="explore__more">Open <np-icon name="arrow-right" [size]="14" /></span>
             </div>
           </a>
-        </nex-animate-on-scroll>
+        </np-animate-on-scroll>
       }
     </div>
   </section>
@@ -249,7 +251,7 @@
   <!-- Quick start -->
   <section class="section section--tinted">
     <div class="quickstart">
-      <nex-animate-on-scroll>
+      <np-animate-on-scroll>
         <div class="quickstart__text">
           <span class="kicker">Quick start</span>
           <h2>Up and running in minutes</h2>
@@ -257,16 +259,16 @@
             Import a component and use it with signals in Angular, or load the Web Components bundle
             in any other framework. Same components, same design.
           </p>
-          <a class="ui-btn" [href]="href(pages.getStarted)">
-            Read the framework guide <nex-icon name="arrow-right" [size]="16" />
+          <a class="ui-btn" [href]="href(pages.getStarted)" target="_top">
+            Read the framework guide <np-icon name="arrow-right" [size]="16" />
           </a>
         </div>
-      </nex-animate-on-scroll>
-      <nex-animate-on-scroll [delay]="100">
+      </np-animate-on-scroll>
+      <np-animate-on-scroll [delay]="100">
         <div class="code">
           <div class="code__bar">
             <span class="code__dots"><i></i><i></i><i></i></span>
-            <nex-button-toggle
+            <np-button-toggle
               size="small"
               ariaLabel="Code example"
               [options]="snippetTabs"
@@ -280,31 +282,33 @@
               [attr.aria-label]="copied() === 'code' ? 'Copied' : 'Copy code'"
               (click)="copy('code', code())"
             >
-              <nex-icon [name]="copied() === 'code' ? 'check' : 'copy'" [size]="16" />
+              <np-icon [name]="copied() === 'code' ? 'check' : 'copy'" [size]="16" />
             </button>
           </div>
           <pre><code>{{ code() }}</code></pre>
         </div>
-      </nex-animate-on-scroll>
+      </np-animate-on-scroll>
     </div>
   </section>
 
   <!-- Closing call to action -->
   <section class="section">
-    <nex-animate-on-scroll>
+    <np-animate-on-scroll>
       <div class="cta">
         <h2>Ready to build something great?</h2>
         <p>Start with the components, then add icons, motion and effects as you go.</p>
         <div class="hero__actions">
-          <a class="ui-btn cta__primary" [href]="href(pages.catalog)">
-            Browse components <nex-icon name="arrow-right" [size]="18" />
+          <a class="ui-btn cta__primary" [href]="href(pages.catalog)" target="_top">
+            Browse components <np-icon name="arrow-right" [size]="18" />
           </a>
-          <a class="ui-btn hero__ghost" [href]="href(pages.effects)">See the effects</a>
+          <a class="ui-btn hero__ghost" [href]="href(pages.effects)" target="_top"
+            >See the effects</a
+          >
         </div>
       </div>
-    </nex-animate-on-scroll>
+    </np-animate-on-scroll>
     <footer class="footer">
-      NexUI — Next-generation UI · Built with Angular 21 and Storybook 10
+      NexPrime — One UI system for every framework · Built with Angular 21 and Storybook 10
     </footer>
   </section>
 </div>

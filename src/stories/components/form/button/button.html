@@ -1,12 +1,12 @@
 <button
   type="button"
-  class="storybook-button"
+  class="np-button"
   [class]="[
-    'storybook-button--' + size(),
-    primary() ? 'storybook-button--primary' : 'storybook-button--secondary',
+    'np-button--' + size(),
+    primary() ? 'np-button--primary' : 'np-button--secondary',
   ]"
   [style.background]="backgroundColor()"
-  (click)="onClick.emit($event)"
+  (click)="clicked.emit($event)"
 >
   {{ label() }}
 </button>

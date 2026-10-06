@@ -9,7 +9,7 @@ import {
 } from '@angular/core';
 
 @Component({
-  selector: 'nex-rating',
+  selector: 'np-rating',
   templateUrl: './rating.html',
   styleUrl: './rating.css',
 })

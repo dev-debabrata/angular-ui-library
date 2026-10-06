@@ -31,7 +31,7 @@
           aria-label="Change image"
           (click)="fileInput.click()"
         >
-          <nex-icon name="pencil" [size]="16" />
+          <np-icon name="pencil" [size]="16" />
         </button>
         <button
           type="button"
@@ -39,13 +39,13 @@
           aria-label="Remove image"
           (click)="clear()"
         >
-          <nex-icon name="trash-2" [size]="16" />
+          <np-icon name="trash-2" [size]="16" />
         </button>
       </div>
     }
   } @else {
     <button type="button" class="empty" [disabled]="disabled()" (click)="fileInput.click()">
-      <span class="empty-icon"><nex-icon name="image-plus" [size]="22" /></span>
+      <span class="empty-icon"><np-icon name="image-plus" [size]="22" /></span>
       <b>{{ label() }}</b>
       @if (shape() === 'square') {
         <small>{{ hintText() }}</small>

@@ -4,14 +4,14 @@
       <header class="pick-list-header">
         <span class="pick-list-title">
           <span class="pick-list-title-icon">
-            <nex-icon [name]="first ? 'layers' : 'list-checks'" [size]="14" />
+            <np-icon [name]="first ? 'layers' : 'list-checks'" [size]="14" />
           </span>
           {{ header(side) }}
         </span>
         <span class="pick-list-count">{{ (first ? source() : target()).length }}</span>
       </header>
       @if (filter()) {
-        <nex-search-input
+        <np-search-input
           class="pick-list-filter"
           [placeholder]="filterPlaceholder()"
           (search)="query[side].set($event)"
@@ -52,7 +52,7 @@
           </li>
         } @empty {
           <li class="pick-list-empty">
-            <nex-icon [name]="first ? 'package-open' : 'inbox'" [size]="28" />
+            <np-icon [name]="first ? 'package-open' : 'inbox'" [size]="28" />
             {{
               first ? 'All items moved' : dragdrop() ? 'Drag or move items here' : 'Move items here'
             }}
@@ -75,7 +75,7 @@
               [disabled]="all ? !visible[from]().length : !selected[from]().size"
               (click)="all ? move(from, visible[from]()) : move(from)"
             >
-              <nex-icon
+              <np-icon
                 [name]="'chevron' + (all ? 's-' : '-') + (toTarget ? 'right' : 'left')"
                 [size]="18"
               />

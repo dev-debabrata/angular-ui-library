@@ -10,7 +10,7 @@
         [disabled]="!!vote() && vote() !== option"
         (click)="cast($any(option))"
       >
-        <nex-icon [name]="option === 'yes' ? 'thumbs-up' : 'thumbs-down'" [size]="16" />
+        <np-icon [name]="option === 'yes' ? 'thumbs-up' : 'thumbs-down'" [size]="16" />
         {{ option === 'yes' ? yesLabel() : noLabel() }}
       </button>
     }

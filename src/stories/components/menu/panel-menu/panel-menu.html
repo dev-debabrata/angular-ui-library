@@ -2,7 +2,7 @@
   @for (panel of model(); track $index) {
     @let open = openPanels().includes(panel);
     <div class="pm-panel" [class.pm-panel--open]="open">
-      <nex-menu-item
+      <np-menu-item
         class="pm-header"
         [item]="panel"
         chevron="chevron-down"
@@ -28,7 +28,7 @@
         @for (item of items; track $index) {
           @let expanded = expandedItems().includes(item);
           <li>
-            <nex-menu-item
+            <np-menu-item
               [item]="item"
               chevron="chevron-right"
               [open]="expanded"

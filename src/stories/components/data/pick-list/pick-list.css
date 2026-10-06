@@ -231,7 +231,7 @@
     justify-content: center;
   }
 
-  .pick-list-controls nex-icon {
+  .pick-list-controls np-icon {
     transform: rotate(90deg);
   }
 }

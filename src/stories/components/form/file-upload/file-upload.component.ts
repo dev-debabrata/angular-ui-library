@@ -59,7 +59,7 @@ const STATUS_TONES: Record<UploadStatus, Tone> = {
 let nextId = 0;
 
 @Component({
-  selector: 'nex-file-upload',
+  selector: 'np-file-upload',
   imports: [BadgeComponent, IconComponent, ProgressBarComponent],
   templateUrl: './file-upload.html',
   styleUrl: './file-upload.css',

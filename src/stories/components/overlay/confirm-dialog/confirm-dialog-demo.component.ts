@@ -15,7 +15,7 @@ export interface ConfirmDemoAction {
  * Used by the ConfirmDialog and ConfirmPopup stories. Not part of the library.
  */
 @Component({
-  selector: 'nex-confirm-dialog-demo',
+  selector: 'np-confirm-dialog-demo',
   imports: [ButtonComponent],
   templateUrl: './confirm-dialog-demo.html',
   styleUrl: './confirm-dialog-demo.css',
@@ -24,7 +24,7 @@ export class ConfirmDialogDemoComponent {
   /** Buttons to show */
   readonly actions = input<ConfirmDemoAction[]>([]);
 
-  /** Anchor the confirmation to the clicked button (for <nex-confirm-popup>) */
+  /** Anchor the confirmation to the clicked button (for <np-confirm-popup>) */
   readonly popup = input(false, { transform: booleanAttribute });
 
   private readonly service = inject(ConfirmationService);

@@ -28,10 +28,10 @@ export const Colored: Story = {
     props: args,
     template: `
       <div style="display: flex; gap: 16px">
-        <nex-icon [name]="name" [size]="size" style="color: var(--ui-primary)" />
-        <nex-icon [name]="name" [size]="size" style="color: var(--ui-success)" />
-        <nex-icon [name]="name" [size]="size" style="color: var(--ui-warning)" />
-        <nex-icon [name]="name" [size]="size" style="color: var(--ui-danger)" />
+        <np-icon [name]="name" [size]="size" style="color: var(--ui-primary)" />
+        <np-icon [name]="name" [size]="size" style="color: var(--ui-success)" />
+        <np-icon [name]="name" [size]="size" style="color: var(--ui-warning)" />
+        <np-icon [name]="name" [size]="size" style="color: var(--ui-danger)" />
       </div>
     `,
   }),
@@ -45,7 +45,7 @@ export const Variants: Story = {
     template: `
       <div style="display: flex; gap: 24px; align-items: center">
         @for (v of variants; track v) {
-          <nex-icon [name]="name" [size]="size" [variant]="v" [label]="v" />
+          <np-icon [name]="name" [size]="size" [variant]="v" [label]="v" />
         }
       </div>
     `,

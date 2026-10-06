@@ -1,9 +1,9 @@
 @for (action of actions(); track action.label) {
-  <storybook-button
+  <np-button
     [label]="action.label"
     [primary]="action.primary ?? false"
     size="small"
-    (onClick)="open(action, $event)"
+    (clicked)="open(action, $event)"
   />
 }
 @if (status()) {

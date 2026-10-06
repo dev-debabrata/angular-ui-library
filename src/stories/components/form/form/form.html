@@ -8,7 +8,7 @@
     <header class="head">
       @if (icon()) {
         <span class="head__icon" [class]="tone() ? 'tone-' + tone() : ''">
-          <nex-icon [name]="icon()" [size]="20" />
+          <np-icon [name]="icon()" [size]="20" />
         </span>
       }
       <div>
@@ -22,7 +22,7 @@
 
   @if (done()) {
     <div class="success">
-      <span class="success__icon"><nex-icon name="circle-check" [size]="28" /></span>
+      <span class="success__icon"><np-icon name="circle-check" [size]="28" /></span>
       <h3 class="success__title">{{ successTitle() }}</h3>
       @if (successMessage()) {
         <p class="success__message">{{ successMessage() }}</p>
@@ -59,7 +59,7 @@
           (focusout)="touch(field)"
         >
           @if (isText(field)) {
-            <nex-text-input
+            <np-text-input
               [type]="$any(field.type)"
               [label]="field.hideLabel ? '' : field.label"
               [ariaLabel]="field.hideLabel ? field.label : ''"
@@ -79,7 +79,7 @@
               }
             </span>
             @if (field.type === 'rating') {
-              <nex-rating
+              <np-rating
                 [readonly]="locked()"
                 [value]="rating(field)"
                 (valueChange)="set(field, $event); touch(field)"
@@ -115,7 +115,7 @@
           } @else {
             @switch (field.type) {
               @case ('textarea') {
-                <nex-textarea
+                <np-textarea
                   [label]="label(field)"
                   [placeholder]="field.placeholder ?? ''"
                   [rows]="field.rows ?? 4"
@@ -126,7 +126,7 @@
                 />
               }
               @case ('select') {
-                <nex-select
+                <np-select
                   [label]="label(field)"
                   [options]="field.options ?? []"
                   [placeholder]="field.placeholder ?? 'Select an option'"
@@ -136,7 +136,7 @@
                 />
               }
               @case ('radio') {
-                <nex-radio-group
+                <np-radio-group
                   [label]="label(field)"
                   [options]="field.options ?? []"
                   [horizontal]="true"
@@ -146,7 +146,7 @@
                 />
               }
               @case ('checkbox') {
-                <nex-checkbox
+                <np-checkbox
                   [label]="label(field)"
                   [disabled]="locked()"
                   [checked]="checked(field)"
@@ -154,7 +154,7 @@
                 />
               }
               @case ('toggle') {
-                <nex-toggle
+                <np-toggle
                   [label]="label(field)"
                   [disabled]="locked()"
                   [checked]="checked(field)"
@@ -185,7 +185,7 @@
             [disabled]="locked()"
             (click)="goTo(step() - 1)"
           >
-            <nex-icon name="arrow-left" [size]="16" /> Back
+            <np-icon name="arrow-left" [size]="16" /> Back
           </button>
         }
         @if (resetLabel()) {
@@ -195,12 +195,12 @@
         }
         <button type="submit" class="ui-btn ui-btn--primary form__submit" [disabled]="locked()">
           @if (loading()) {
-            <nex-icon class="nex-anim-spin" name="loader-circle" [size]="16" />
+            <np-icon class="np-anim-spin" name="loader-circle" [size]="16" />
           } @else if (submitIcon() && lastStep()) {
-            <nex-icon [name]="submitIcon()" [size]="16" />
+            <np-icon [name]="submitIcon()" [size]="16" />
           }
           @if (steps().length && !lastStep()) {
-            Next <nex-icon name="arrow-right" [size]="16" />
+            Next <np-icon name="arrow-right" [size]="16" />
           } @else {
             {{ submitLabel() }}
           }

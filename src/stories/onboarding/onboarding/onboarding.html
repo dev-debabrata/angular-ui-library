@@ -16,7 +16,7 @@
   } @else if (box) {
     <!-- Pulsing hotspot on the element's top-right corner -->
     <span
-      class="onboarding__beacon nex-anim-ripple"
+      class="onboarding__beacon np-anim-ripple"
       aria-hidden="true"
       [style.top.px]="box.top"
       [style.left.px]="box.left + box.width"
@@ -41,7 +41,7 @@
         @if (step.image) {
           <img [src]="step.image" alt="" />
         } @else {
-          <span class="onboarding__media-icon"><nex-icon [name]="step.icon!" [size]="36" /></span>
+          <span class="onboarding__media-icon"><np-icon [name]="step.icon!" [size]="36" /></span>
         }
       </div>
     }
@@ -82,7 +82,7 @@
       >
         {{ last() ? doneLabel() : nextLabel() }}
         @if (!last()) {
-          <nex-icon name="arrow-right" [size]="14" />
+          <np-icon name="arrow-right" [size]="14" />
         }
       </button>
     </div>

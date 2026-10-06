@@ -22,7 +22,7 @@ type Story = StoryObj<ConfettiComponent>;
 
 /** Click anywhere for a burst */
 export const ClickAnywhere: Story = {
-  render: demo('nex-confetti', {
+  render: demo('np-confetti', {
     height: '420px',
     background: 'var(--ui-surface-muted)',
     content: heroCopy({
@@ -41,7 +41,7 @@ export const OnSuccess: Story = {
   render: (args) => ({
     props: args,
     template: `
-      <nex-confetti #party ${argsToTemplate(args)} style="height:420px;background:var(--ui-surface)">
+      <np-confetti #party ${argsToTemplate(args)} style="height:420px;background:var(--ui-surface)">
         <div style="display:grid;place-items:center;height:100%;font-family:var(--ui-font);text-align:center">
           <div style="display:grid;gap:12px;justify-items:center">
             <h2 style="margin:0;color:var(--ui-text)">Payment complete</h2>
@@ -49,7 +49,7 @@ export const OnSuccess: Story = {
             <button type="button" class="ui-btn ui-btn--primary" (click)="party.fire()">Celebrate</button>
           </div>
         </div>
-      </nex-confetti>`,
+      </np-confetti>`,
   }),
 };
 
@@ -60,7 +60,7 @@ export const Gold: Story = {
     spread: 140,
     count: 150,
   },
-  render: demo('nex-confetti', {
+  render: demo('np-confetti', {
     height: '420px',
     background: BACKGROUNDS.ink,
     content: heroCopy({ title: 'Congratulations!', text: 'Click to celebrate', button: '' }),

@@ -24,7 +24,7 @@ export const SCROLL_ANIMATIONS: ScrollAnimation[] = [
 ];
 
 @Component({
-  selector: 'nex-animate-on-scroll',
+  selector: 'np-animate-on-scroll',
   templateUrl: './animate-on-scroll.html',
   styleUrl: './animate-on-scroll.css',
   host: {

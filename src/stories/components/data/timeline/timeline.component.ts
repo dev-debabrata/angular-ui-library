@@ -18,7 +18,7 @@ export interface TimelineEvent {
 }
 
 @Component({
-  selector: 'nex-timeline',
+  selector: 'np-timeline',
   imports: [NgTemplateOutlet, IconComponent],
   templateUrl: './timeline.html',
   styleUrl: './timeline.css',

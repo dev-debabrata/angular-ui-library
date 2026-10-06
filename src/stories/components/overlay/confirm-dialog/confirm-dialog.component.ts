@@ -13,7 +13,7 @@ import { IconComponent } from '../../media/icon/icon.component';
 import { ConfirmationService } from './confirmation.service';
 
 @Component({
-  selector: 'nex-confirm-dialog',
+  selector: 'np-confirm-dialog',
   imports: [DialogComponent, IconComponent],
   templateUrl: './confirm-dialog.html',
   styleUrl: './confirm-dialog.css',

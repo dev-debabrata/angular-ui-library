@@ -6,7 +6,7 @@ export type BadgePosition = 'top-right' | 'top-left' | 'bottom-right' | 'bottom-
 
 /** Small count or dot overlaid on the corner of its content (icon, avatar, button) */
 @Component({
-  selector: 'nex-overlay-badge',
+  selector: 'np-overlay-badge',
   templateUrl: './overlay-badge.html',
   styleUrl: './overlay-badge.css',
 })

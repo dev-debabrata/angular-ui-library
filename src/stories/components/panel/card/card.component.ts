@@ -4,7 +4,7 @@ import { NgTemplateOutlet } from '@angular/common';
 import { AvatarComponent } from '../../media/avatar/avatar.component';
 
 @Component({
-  selector: 'nex-card',
+  selector: 'np-card',
   imports: [NgTemplateOutlet, AvatarComponent],
   templateUrl: './card.html',
   styleUrl: './card.css',

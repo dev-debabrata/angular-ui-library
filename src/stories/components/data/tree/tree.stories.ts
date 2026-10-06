@@ -87,7 +87,7 @@ export const ExpandCollapseAll: Story = {
         <button class="ui-btn ui-btn--primary ui-btn--sm" (click)="tree.expandAll()">Expand all</button>
         <button class="ui-btn ui-btn--sm" (click)="tree.collapseAll()">Collapse all</button>
       </div>
-      <nex-tree #tree [value]="value" (nodeExpand)="nodeExpand($event)" (nodeCollapse)="nodeCollapse($event)" />
+      <np-tree #tree [value]="value" (nodeExpand)="nodeExpand($event)" (nodeCollapse)="nodeCollapse($event)" />
     `,
   }),
 };

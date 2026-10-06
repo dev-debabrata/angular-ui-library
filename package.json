@@ -1,27 +1,22 @@
 {
-  "name": "angular-ui-library",
+  "name": "nexprime-ui",
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "site-data": "node scripts/site-data.mjs",
-    "prestart": "npm run site-data",
     "start": "ng serve",
-    "prebuild": "npm run site-data",
-    "build": "ng build && npm run build-storybook && node scripts/postbuild.mjs",
-    "prewatch": "npm run site-data",
+    "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "storybook": "ng run angular-ui-library:storybook",
-    "build-storybook": "ng run angular-ui-library:build-storybook",
-    "build:elements": "ng run angular-ui-library:build-elements && node -e \"require('fs').renameSync('dist/nexui-elements/browser/main.js', 'dist/nexui-elements/browser/nexui.js')\"",
-    "build:lib": "ng build nexui",
-    "serve:ssr:angular-ui-library": "node dist/angular-ui-library/server/server.mjs"
+    "storybook": "ng run nexprime-ui:storybook",
+    "build-storybook": "ng run nexprime-ui:build-storybook",
+    "vercel-build": "npm run build-storybook",
+    "build:elements": "ng run nexprime-ui:build-elements && node -e \"require('fs').renameSync('dist/nexprime-elements/browser/main.js', 'dist/nexprime-elements/browser/nexprime.js')\"",
+    "build:lib": "ng build nexprime-lib && npm run build:elements && node packaging/package-lib.mjs",
+    "pack:lib": "npm run build:lib && cd dist/nexprime-lib && npm pack",
+    "serve:ssr:nexprime-ui": "node dist/nexprime-ui/server/server.mjs"
   },
   "private": true,
   "packageManager": "npm@11.6.2",
-  "engines": {
-    "node": "22.x"
-  },
   "dependencies": {
     "@angular/cdk": "~21.2.0",
     "@angular/common": "^21.2.0",
@@ -61,7 +56,7 @@
     "gifenc": "^1.0.3",
     "jsdom": "^28.0.0",
     "mediabunny": "^1.61.0",
-    "ng-packagr": "^21.2.7",
+    "ng-packagr": "~21.2.0",
     "playwright": "latest",
     "prettier": "^3.8.1",
     "storybook": "^10.6.0",

@@ -10,10 +10,10 @@ const text =
 
 /** Card with the story's args bound, plus the given body and footer markup */
 const card = (args: object, body: string, footer = '') => `
-  <nex-card ${argsToTemplate(args)}>
+  <np-card ${argsToTemplate(args)}>
     ${body}
     ${footer ? `<div cardFooter>${footer}</div>` : ''}
-  </nex-card>
+  </np-card>
 `;
 
 const meta: Meta<CardComponent> = {
@@ -86,8 +86,8 @@ export const MediaCard: Story = {
       args,
       'The Shiba Inu is the smallest of the six original and distinct spitz breeds of dog from Japan. ' +
         'A small, agile dog that copes very well with mountainous terrain.',
-      `<button type="button" class="ui-btn ui-btn--text"><nex-icon name="heart" [size]="16" /> Like</button>
-       <button type="button" class="ui-btn ui-btn--text"><nex-icon name="share-2" [size]="16" /> Share</button>`,
+      `<button type="button" class="ui-btn ui-btn--text"><np-icon name="heart" [size]="16" /> Like</button>
+       <button type="button" class="ui-btn ui-btn--text"><np-icon name="share-2" [size]="16" /> Share</button>`,
     ),
   }),
 };

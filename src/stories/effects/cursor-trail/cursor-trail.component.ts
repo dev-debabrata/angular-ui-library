@@ -28,7 +28,7 @@ const STAR = Array.from({ length: 8 }, (_, i) => {
  * the user prefers reduced motion.
  */
 @Component({
-  selector: 'nex-cursor-trail',
+  selector: 'np-cursor-trail',
   templateUrl: './cursor-trail.html',
   styleUrl: './cursor-trail.css',
 })

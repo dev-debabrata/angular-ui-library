@@ -20,6 +20,8 @@ import { formatFileSize } from '../components/form/file-upload/file-upload.compo
 import { IconComponent } from '../components/media/icon/icon.component';
 import { LottieComponent } from '../components/media/lottie/lottie.component';
 import { downloadBlob } from '../utils/download';
+import { elementCode, FRAMEWORKS, type ElementCode, type Framework } from '../utils/framework-code';
+import { FrameworkCodeComponent } from '../getting-started/framework-code/framework-code.component';
 import { categoryOf, isDarkBg, type GalleryAnimation } from './gallery-animation';
 import type { ExportFormat, LottieSize } from './lottie-export';
 
@@ -74,7 +76,7 @@ async function zipDotLottie(id: string, json: string): Promise<Blob> {
   const { zipSync, strToU8 } = await import('fflate');
   const manifest = {
     version: '1',
-    generator: 'NexUI',
+    generator: 'NexPrime',
     animations: [{ id, speed: 1, loop: true, autoplay: true }],
   };
   const zip = zipSync(
@@ -110,7 +112,7 @@ async function buildDownloads(name: string, data: object) {
       label: 'dotLottie',
       ext: 'lottie',
       blob: zip,
-      hint: 'Zipped Lottie, plays in <nex-lottie> and the LottieFiles players.',
+      hint: 'Zipped Lottie, plays in <np-lottie> and the LottieFiles players.',
     },
     {
       label: 'Optimized Lottie JSON',
@@ -149,8 +151,14 @@ function palette(data: unknown, max = 10): string[] {
 
 /** NexLottie page dialog for one animation: big preview, downloads, embed code, details and related animations */
 @Component({
-  selector: 'nex-lottie-detail',
-  imports: [ButtonToggleComponent, DialogComponent, IconComponent, LottieComponent],
+  selector: 'np-lottie-detail',
+  imports: [
+    ButtonToggleComponent,
+    DialogComponent,
+    FrameworkCodeComponent,
+    IconComponent,
+    LottieComponent,
+  ],
   templateUrl: './lottie-detail.html',
   styleUrl: './lottie-detail.css',
 })
@@ -209,7 +217,7 @@ export class LottieDetailComponent {
     const { src } = this.animation();
     return src
       ? `Loaded from ${new URL(src).hostname}`
-      : `${this.category()} animation from the NexUI set. Free to use in any project.`;
+      : `${this.category()} animation from the NexPrime set. Free to use in any project.`;
   });
 
   /** The file's own background, and the one in use (a swatch overrides it) */
@@ -222,23 +230,25 @@ export class LottieDetailComponent {
     return a.src ?? `lottie/${a.name}.json`;
   });
 
-  protected readonly snippets = computed(() => {
-    const src = this.path();
-    const speed = this.speed() !== 1 ? ` speed="${this.speed()}"` : '';
-    return [
-      { id: 'angular', label: 'Angular', code: `<nex-lottie src="${src}"${speed} size="240px" />` },
-      {
-        id: 'element',
-        label: 'Web Component (React, Vue, HTML)',
-        code: `<script type="module" src="nexui.js"></script>\n<nexui-lottie src="${src}"${speed} size="240px"></nexui-lottie>`,
-      },
-      {
-        id: 'lottie-web',
-        label: 'lottie-web',
-        code: `lottie.loadAnimation({\n  container: document.getElementById('animation'),\n  renderer: 'svg',\n  loop: true,\n  autoplay: true,\n  path: '${src}',\n});`,
-      },
-    ];
+  /** <np-lottie> / <np-lottie> for each framework */
+  protected readonly embed = computed(() => {
+    const element: ElementCode = {
+      tag: 'lottie',
+      inputs: { src: this.path(), speed: this.speed() !== 1 && this.speed(), size: '240px' },
+    };
+    return Object.fromEntries(
+      FRAMEWORKS.map(({ value }) => [value, elementCode(value, element)]),
+    ) as Record<Framework, string>;
   });
+
+  /** Without NexPrime: lottie-web on its own */
+  protected readonly snippets = computed(() => [
+    {
+      id: 'lottie-web',
+      label: 'lottie-web (without NexPrime)',
+      code: `lottie.loadAnimation({\n  container: document.getElementById('animation'),\n  renderer: 'svg',\n  loop: true,\n  autoplay: true,\n  path: '${this.path()}',\n});`,
+    },
+  ]);
 
   protected readonly details = computed(() => {
     const d = this.data();

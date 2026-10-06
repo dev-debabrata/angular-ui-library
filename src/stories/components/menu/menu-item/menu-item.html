@@ -30,13 +30,13 @@
 
 <ng-template #content>
   @if (it.icon) {
-    <nex-icon class="mi-icon" [name]="it.icon" [size]="16" />
+    <np-icon class="mi-icon" [name]="it.icon" [size]="16" />
   }
   <span class="mi-label">{{ it.label }}</span>
   @if (it.badge) {
     <span class="mi-badge tone-info">{{ it.badge }}</span>
   }
   @if (sub) {
-    <nex-icon class="mi-chevron" [name]="chevron()" [size]="14" />
+    <np-icon class="mi-chevron" [name]="chevron()" [size]="14" />
   }
 </ng-template>

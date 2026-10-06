@@ -21,12 +21,12 @@ import { IconComponent } from '../../media/icon/icon.component';
 
 /**
  * Slides through items rendered with your template:
- * <nex-carousel [items]="products"><ng-template let-item>…</ng-template></nex-carousel>
+ * <np-carousel [items]="products"><ng-template let-item>…</ng-template></np-carousel>
  * Without a template, each child element is a slide (this is how React/Vue use the Web Component):
- * <nex-carousel><div>1</div><div>2</div></nex-carousel>
+ * <np-carousel><div>1</div><div>2</div></np-carousel>
  */
 @Component({
-  selector: 'nex-carousel',
+  selector: 'np-carousel',
   imports: [NgTemplateOutlet, IconComponent],
   templateUrl: './carousel.html',
   styleUrl: './carousel.css',

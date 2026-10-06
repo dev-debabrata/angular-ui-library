@@ -16,7 +16,7 @@
     (pointercancel)="stopRepeat()"
     (click)="$event.detail === 0 && spin(dir)"
   >
-    <nex-icon
+    <np-icon
       [name]="dir > 0 ? (stacked ? 'chevron-up' : 'plus') : stacked ? 'chevron-down' : 'minus'"
       [size]="stacked ? 14 : 16"
     />

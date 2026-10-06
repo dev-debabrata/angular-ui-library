@@ -23,13 +23,13 @@
         allDone() ? "You're all set!" : done() + ' of ' + tasks().length + ' complete'
       }}</small>
     </span>
-    <nex-icon class="checklist__chevron" name="chevron-down" [size]="18" />
+    <np-icon class="checklist__chevron" name="chevron-down" [size]="18" />
   </button>
 
   @if (!collapsed()) {
     @if (allDone()) {
       <div class="checklist__done">
-        <span class="checklist__party nex-anim-tada">🎉</span>
+        <span class="checklist__party np-anim-tada">🎉</span>
         <p>Great job! You've finished getting started.</p>
       </div>
     }
@@ -45,7 +45,7 @@
             (click)="toggle(task)"
           >
             @if (task.done) {
-              <nex-icon name="check" [size]="14" />
+              <np-icon name="check" [size]="14" />
             }
           </button>
           <span class="checklist__text">

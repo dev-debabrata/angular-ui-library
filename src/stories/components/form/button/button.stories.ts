@@ -12,7 +12,7 @@ const meta: Meta<ButtonComponent> = {
     backgroundColor: { control: 'color' },
     size: { control: 'select', options: SIZES },
   },
-  args: { label: 'Button', onClick: fn() },
+  args: { label: 'Button', clicked: fn() },
 };
 
 export default meta;

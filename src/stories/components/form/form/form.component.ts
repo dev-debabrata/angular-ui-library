@@ -63,6 +63,10 @@ export interface FormField {
   pattern?: string;
   /** Error shown when `pattern` doesn't match */
   patternMessage?: string;
+  /** Name of another field this one must equal (e.g. confirm password) */
+  match?: string;
+  /** Error shown when `match` doesn't match */
+  matchMessage?: string;
   /** Textarea height in lines */
   rows?: number;
   /** Take the full row in a two-column form (textarea always does) */
@@ -84,7 +88,7 @@ let nextId = 0;
 
 /** Builds a validated form (single page or multi-step) from a list of fields */
 @Component({
-  selector: 'nex-form',
+  selector: 'np-form',
   imports: [
     CheckboxComponent,
     IconComponent,
@@ -160,7 +164,7 @@ export class FormComponent {
   readonly submitted = output<FormValue>();
 
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
-  protected readonly id = `nex-form-${nextId++}`;
+  protected readonly id = `np-form-${nextId++}`;
   /** Fields the user has left; their errors show from then on */
   private readonly touched = signal(new Set<string>());
   /** After a submit/next attempt every error on the page shows */
@@ -297,6 +301,9 @@ export class FormComponent {
     }
     if (field.pattern && !new RegExp(`^(?:${field.pattern})$`).test(text)) {
       return field.patternMessage ?? `${field.label} is not valid`;
+    }
+    if (field.match && text !== String(this.value()[field.match] ?? '').trim()) {
+      return field.matchMessage ?? `${field.label} doesn't match`;
     }
     return '';
   }

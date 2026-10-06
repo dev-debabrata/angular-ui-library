@@ -13,7 +13,7 @@ import type { MenuItem } from '../../../utils/types';
 import { MenuItemComponent } from '../menu-item/menu-item.component';
 
 @Component({
-  selector: 'nex-panel-menu',
+  selector: 'np-panel-menu',
   imports: [MenuItemComponent, NgTemplateOutlet],
   templateUrl: './panel-menu.html',
   styleUrl: './panel-menu.css',
