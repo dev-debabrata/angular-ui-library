@@ -1,9 +1,3 @@
-/**
- * Autodocs page for every component: Storybook's usual layout (title, description, primary story, controls,
- * stories), but each story's "Show code" has framework tabs. Angular is Storybook's own snippet; React, Next.js,
- * Vue and HTML come from framework-snippets.ts. Set in preview.ts (parameters.docs.page).
- * Plain .ts with createElement: the Angular Vite builder doesn't serve .tsx files.
- */
 import {
   createElement as h,
   Fragment,
