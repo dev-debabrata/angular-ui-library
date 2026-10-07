@@ -67,8 +67,12 @@ export const CONTACT = {
 
 /** The creators, with their LinkedIn profiles (replace the placeholder URLs with the real ones) */
 export const AUTHORS = [
-  { name: 'Debabrata Das', role: 'Co-creator', linkedin: 'https://www.linkedin.com/in/your-id' },
-  { name: 'Salman Ali', role: 'Co-creator', linkedin: 'https://www.linkedin.com/in/their-id' },
+  {
+    name: 'Debabrata Das',
+    role: 'Co-creator',
+    linkedin: 'https://www.linkedin.com/in/dev-debabrata/',
+  },
+  { name: 'Salman Ali', role: 'Co-creator', linkedin: '' },
 ];
 
 /** Channel event: the site's page changed ({ page, title }); manager.ts shows it in the address bar and tab */
