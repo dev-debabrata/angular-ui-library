@@ -61,8 +61,8 @@ import 'nexprime/styles/theme.css';
 
 ```tsx
 'use client'; // Next.js only
-import { useMemo, useState } from 'react';
-import { NexPrime, setIconsUrl } from 'nexprime/react';
+import { useState } from 'react';
+import { NpButton, NpChart, NpIcon, setIconsUrl } from 'nexprime/react';
 
 setIconsUrl('https://cdn.jsdelivr.net/npm/nexprime/icons/'); // or copy node_modules/nexprime/icons to public/icons
 
@@ -70,22 +70,20 @@ const datasets = [{ label: 'Sales', data: [120, 150, 170] }];
 
 export function Dashboard() {
   const [saved, setSaved] = useState(0);
-  const on = useMemo(() => ({ clicked: () => setSaved((n) => n + 1) }), []);
   return (
     <>
-      <NexPrime tag="np-button" primary label={`Saved ${saved}`} on={on} />
-      <NexPrime tag="np-chart" type="bar" props={{ labels: ['Q1', 'Q2', 'Q3'], datasets }} />
-      <np-icon name="rocket" size="32" />
+      <NpButton primary label={`Saved ${saved}`} onclicked={() => setSaved((n) => n + 1)} />
+      <NpChart type="bar" labels={['Q1', 'Q2', 'Q3']} datasets={datasets} />
+      <NpIcon name="rocket" size="32" />
     </>
   );
 }
 ```
 
-- `<NexPrime tag="np-…">` loads the components in the browser only (safe with server rendering) and works on React 18
-  and 19. Strings, numbers and booleans are attributes; arrays, objects and functions go in `props`; outputs go in
-  `on` (the value is `event.detail`). Keep `props` and `on` stable (constants or `useMemo`).
-- Elements that only take attributes can be written as plain tags (`<np-icon name="rocket" />`); TypeScript accepts
-  every `np-*` tag once `nexprime/react` is imported somewhere. Without the wrapper, call `loadNexPrime()` once.
+- React components are imported directly from `'nexprime/react'` (`<NpButton>`, `<NpChart>`, `<NpTable>`, etc.).
+- Props, data arrays and objects are passed directly (`labels={...}`, `datasets={...}`).
+- Custom events use `on<event>` callbacks (`onclicked`, `onselectionChange`, `onrowClick`), receiving the event with `e.detail`.
+- Elements load in the browser only (safe with Next.js SSR and React 18/19 hydration).
 
 ## Vue 3
 

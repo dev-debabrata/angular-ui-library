@@ -95,7 +95,11 @@
             ×
           </button>
         </div>
-        <np-framework-code [code]="code.snippets" angularImport="IconComponent" />
+        <np-framework-code
+          [code]="code.snippets"
+          angularImport="IconComponent"
+          [reactImport]="code.reactImport"
+        />
         <div class="actions">
           <np-button
             size="small"

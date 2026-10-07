@@ -20,13 +20,17 @@ export const FRAMEWORKS: ToggleOption<Framework>[] = [
 export const FRAMEWORK = signal<Framework>('angular');
 
 /** One-line setup note under the code (Getting Started ▸ Installation has the details) */
-export function setupNote(framework: Framework, angularImport = '') {
+export function setupNote(framework: Framework, angularImport = '', reactImport = '') {
   return {
     angular: angularImport
       ? `Add ${angularImport} (from 'nexprime') to your component’s imports.`
       : 'The classes come with nexprime/styles/theme.css.',
-    react: 'npm install nexprime, then load the theme and the elements once (main.tsx).',
-    next: 'npm install nexprime, then load the elements once from a client component.',
+    react: reactImport
+      ? `npm install nexprime, and import { ${reactImport} } from 'nexprime/react'.`
+      : "npm install nexprime, and import components from 'nexprime/react'.",
+    next: reactImport
+      ? `npm install nexprime, and import { ${reactImport} } from 'nexprime/react'.`
+      : "npm install nexprime, and import components from 'nexprime/react'.",
     vue: 'npm install nexprime, load it once in main.ts and mark np-* tags as custom elements.',
     html: 'No install: load the theme and nexprime.js from the CDN once.',
   }[framework];
@@ -45,11 +49,29 @@ export interface ElementCode {
 
 export const kebab = (name: string) => name.replace(/[A-Z]/g, (c) => '-' + c.toLowerCase());
 export const camel = (name: string) => name.replace(/-([a-z])/g, (_, c: string) => c.toUpperCase());
+export const toPascal = (name: string) =>
+  name
+    .split('-')
+    .map((c) => c.charAt(0).toUpperCase() + c.slice(1))
+    .join('');
 
-/** A NexPrime component as Angular markup or as its Web Component (React, Next.js, Vue, HTML) */
+/** A NexPrime component as Angular markup or as its React / Web Component (React, Next.js, Vue, HTML) */
 export function elementCode(framework: Framework, { tag, inputs, style = {}, classes = '' }: ElementCode) {
-  const element = `np-${tag}`;
   const jsx = framework === 'react' || framework === 'next';
+
+  // React & Next.js icons render as direct icon components: <Accessibility />, <Check size={24} />
+  if (jsx && tag === 'icon' && inputs['name']) {
+    const comp = toPascal(String(inputs['name'])).replace(/^(\d)/, 'Icon$1');
+    const { name: _, ...rest } = inputs;
+    const { color, ...restStyle } = style;
+    const attrs = Object.entries(rest)
+      .filter(([, v]) => v !== false && v != null)
+      .map(([k, v]) => (v === true ? k : typeof v === 'number' ? `${k}={${v}}` : `${k}="${v}"`));
+    if (color) attrs.push(`color="${color}"`);
+    return `<${[comp, classes ? `className="${classes}"` : '', ...attrs, jsxStyle(restStyle)].filter(Boolean).join(' ')} />`;
+  }
+
+  const element = jsx ? toPascal(`np-${tag}`) : `np-${tag}`;
   const classAttr = classes ? [`${jsx ? 'className' : 'class'}="${classes}"`] : [];
   const set = Object.entries(inputs).filter(
     (entry): entry is [string, string | number | true] => entry[1] !== false && entry[1] != null,
@@ -60,7 +82,7 @@ export function elementCode(framework: Framework, { tag, inputs, style = {}, cla
     );
     return `<${[element, ...classAttr, ...attrs, ...cssAttribute(style)].join(' ')} />`;
   }
-  const attrs = set.map(([k, v]) => (v === true ? kebab(k) : `${kebab(k)}="${v}"`));
+  const attrs = set.map(([k, v]) => (v === true ? (jsx ? k : kebab(k)) : `${jsx ? k : kebab(k)}="${v}"`));
   if (jsx) {
     return `<${[element, ...classAttr, ...attrs, jsxStyle(style)].filter(Boolean).join(' ')} />`;
   }
@@ -82,12 +104,16 @@ export function markupCode(
 }
 
 /** Setup lines shown under a framework's code; Angular has none */
-export function setupCode(framework: Framework) {
+export function setupCode(framework: Framework, reactImport = '') {
   switch (framework) {
     case 'react':
-      return `import 'nexprime/styles/theme.css';\nimport 'nexprime/elements';`;
+      return reactImport
+        ? `import { ${reactImport} } from 'nexprime/react';`
+        : `import 'nexprime/styles/theme.css';\n// import components from 'nexprime/react';`;
     case 'next':
-      return `import 'nexprime/styles/theme.css'; // app/layout.tsx\nimport { loadNexPrime } from 'nexprime/react'; // useEffect(() => { loadNexPrime(); }, [])`;
+      return reactImport
+        ? `import { ${reactImport} } from 'nexprime/react';`
+        : `import 'nexprime/styles/theme.css'; // app/layout.tsx\n// import components from 'nexprime/react';`;
     case 'vue':
       return `import 'nexprime/styles/theme.css';\nimport 'nexprime/elements';\n// vite.config: vue({ template: { compilerOptions: { isCustomElement: (tag) => tag.startsWith('np-') } } })`;
     case 'html':

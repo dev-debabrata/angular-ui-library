@@ -23,7 +23,13 @@ import {
 } from '../components/media/icon/icon.component';
 import { SearchInputComponent } from '../components/form/search-input/search-input.component';
 import { copyToClipboard } from '../utils/clipboard';
-import { elementCode, FRAMEWORKS, type ElementCode, type Framework } from '../utils/framework-code';
+import {
+  elementCode,
+  FRAMEWORKS,
+  toPascal,
+  type ElementCode,
+  type Framework,
+} from '../utils/framework-code';
 import { downloadBlob } from '../utils/download';
 import { renderInBatches } from '../utils/render-in-batches';
 import { FrameworkCodeComponent } from '../getting-started/framework-code/framework-code.component';
@@ -125,7 +131,11 @@ export class IconGalleryComponent {
     const snippets = Object.fromEntries(
       FRAMEWORKS.map(({ value }) => [value, elementCode(value, element)]),
     ) as Record<Framework, string>;
-    return { snippets, svg: toSvgFile(icon.svg, this.settings(), color) };
+    return {
+      snippets,
+      svg: toSvgFile(icon.svg, this.settings(), color),
+      reactImport: toPascal(icon.name).replace(/^(\d)/, 'Icon$1'),
+    };
   });
 
   protected update<K extends keyof Settings>(key: K, value: Settings[K]) {

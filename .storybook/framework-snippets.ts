@@ -7,7 +7,7 @@
  */
 import { reflectComponentType, type Type } from '@angular/core';
 
-import { camel, jsxStyle, kebab, type Framework } from '../src/stories/utils/framework-code';
+import { camel, jsxStyle, kebab, toPascal, type Framework } from '../src/stories/utils/framework-code';
 
 export type WebFramework = Exclude<Framework, 'angular'>;
 
@@ -620,14 +620,23 @@ function toReact(nodes: Node[], next: boolean) {
   const hoisted: string[] = [];
   const name = namer();
   let client = false;
+  const usedComponents = new Set<string>();
 
   const render = (node: Element, indent: string, children: () => string[]) => {
     const custom = isNp(node.tag);
-    const tag = node.tag;
+    const iconName =
+      custom && node.tag === 'np-icon' && node.props.find((p) => p.name === 'name')?.value;
+    const isIcon = typeof iconName === 'string';
+    const tag = isIcon
+      ? toPascal(iconName).replace(/^(\d)/, 'Icon$1')
+      : custom
+        ? toPascal(node.tag)
+        : node.tag;
+    if (custom) usedComponents.add(tag);
+
     const attrs: string[] = [];
-    const props: string[] = [];
-    const events: string[] = [];
     for (const p of ordered(node.props)) {
+      if (isIcon && p.name === 'name') continue;
       const kind = kindOf(p, custom);
       if (kind === 'event') {
         const handler = `(e${next ? ': CustomEvent' : ''}) => console.log('${p.name}', e.detail)`;
@@ -644,16 +653,16 @@ function toReact(nodes: Node[], next: boolean) {
           attrs.push(
             `${onName(p.name)}={${call ? `(e) => ${call}` : `() => console.log('${p.name}')`}}`,
           );
-        } else if (next)
-          events.push(`${p.name}: ${call ? `(e: CustomEvent) => ${call}` : handler}`);
-        else attrs.push(`on${p.name}={${call ? `(e) => ${call}` : handler}}`);
+        } else {
+          client ||= next;
+          attrs.push(`on${p.name}={${call ? `(e) => ${call}` : handler}}`);
+        }
       } else if (p.name === 'style' && typeof p.value === 'string')
         attrs.push(jsxStyle(cssToObject(p.value)));
       else if (kind === 'property') {
         const constName = name(p.name);
         hoisted.push(`const ${constName} = ${js(p.value)};`);
-        if (next) props.push(constName === p.name ? p.name : `${p.name}: ${constName}`);
-        else attrs.push(`${p.name}={${constName}}`);
+        attrs.push(`${p.name}={${constName}}`);
       } else if (kind === 'attribute') {
         // A bare attribute on a plain element (content slots: formBeforeActions) would be `={true}`, which
         // React drops; write it as an empty string, lowercase like the DOM stores it
@@ -669,19 +678,7 @@ function toReact(nodes: Node[], next: boolean) {
         }
       }
     }
-    if (!next || !custom || !(props.length || events.length))
-      return print('<' + tag, attrs, children(), indent, tag, true);
-    const base = name(tag);
-    if (props.length) hoisted.push(`const ${base}Props = ${objectLiteral(props)};`);
-    if (events.length) hoisted.push(`const ${base}Events = ${objectLiteral(events)};`);
-    client ||= events.length > 0;
-    const wrapper = [
-      `tag="${tag}"`,
-      ...attrs,
-      ...(props.length ? [`props={${base}Props}`] : []),
-      ...(events.length ? [`on={${base}Events}`] : []),
-    ];
-    return print('<NexPrime', wrapper, children(), indent, 'NexPrime', true);
+    return print('<' + tag, attrs, children(), indent, tag, true);
   };
 
   const body = nodes
@@ -690,9 +687,12 @@ function toReact(nodes: Node[], next: boolean) {
   const jsx = nodes.length > 1 ? `    <>\n${body.replace(/^/gm, '  ')}\n    </>` : body;
   // Outside the component, so the values stay the same object on every render
   const top = hoisted.length ? hoisted.join('\n\n') + '\n\n' : '';
-  const head = next
-    ? `${client ? "'use client';\n\n" : ''}import { NexPrime } from 'nexprime/react';\n\n`
+  const imports = usedComponents.size
+    ? `import { ${[...usedComponents].sort().join(', ')} } from 'nexprime/react';\n\n`
     : '';
+  const head = next
+    ? `${client ? "'use client';\n\n" : ''}${imports}`
+    : imports;
   return `${head}${top}export function Example() {\n  return (\n${jsx}\n  );\n}`;
 }
 

@@ -5,6 +5,7 @@
  */
 import { cpSync, existsSync } from 'node:fs';
 import { basename } from 'node:path';
+import './build-icons.mjs';
 
 const lib = 'dist/nexprime-lib';
 const elements = 'dist/nexprime-elements/browser';

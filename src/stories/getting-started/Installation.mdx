@@ -31,9 +31,9 @@ npm install nexprime
     <tr>
       <td>React, Next.js</td>
       <td>
-        <code>{"import { NexPrime } from 'nexprime/react'"}</code>
+        <code>{"import { NpTable } from 'nexprime/react'"}</code>
       </td>
-      <td>The Web Components plus a small wrapper that passes props and events</td>
+      <td>React component wrappers with props, events, SSR safety and ref support</td>
     </tr>
     <tr>
       <td>Vue, Svelte, Solid, Astro, …</td>
@@ -109,12 +109,11 @@ Load the theme once, in `main.tsx`:
 import 'nexprime/styles/theme.css';
 ```
 
-Render components with the `NexPrime` wrapper. It loads the elements in the browser, sets arrays and objects as
-**properties** and adds the **event listeners**:
+Import and render components directly from `'nexprime/react'`. The wrappers automatically load the elements in the browser, handle SSR, pass arrays/objects as **properties**, and wire up **event listeners**:
 
 ```tsx
-import { useMemo, useState } from 'react';
-import { NexPrime, setIconsUrl } from 'nexprime/react';
+import { useState } from 'react';
+import { NpForm, setIconsUrl } from 'nexprime/react';
 
 setIconsUrl('https://cdn.jsdelivr.net/npm/nexprime/icons/'); // or copy node_modules/nexprime/icons to public/icons
 
@@ -126,19 +125,22 @@ const fields = [
 
 export function Signup() {
   const [account, setAccount] = useState<Record<string, unknown> | null>(null);
-  const on = useMemo(() => ({ submitted: (e: CustomEvent) => setAccount(e.detail) }), []);
-  return <NexPrime tag="np-form" card title="Create account" submit-label="Sign up" props={{ fields }} on={on} />;
+  return (
+    <NpForm
+      card
+      title="Create account"
+      submit-label="Sign up"
+      fields={fields}
+      onsubmitted={(e) => setAccount(e.detail)}
+    />
+  );
 }
 ```
 
-- `tag` is the element name. Strings, numbers and booleans are plain attributes (`submit-label="Sign up"`, `card`);
-  arrays, objects and functions go in `props`; outputs go in `on` (the value is `event.detail`).
-- Keep `props` and `on` stable (constants outside the component, `useMemo`): a new object on every render sets the
-  properties and re-adds the listeners each time.
-- Elements that only take attributes can be written as plain tags: `<np-icon name="rocket" size="32" />`. TypeScript
-  accepts every `np-*` tag once `nexprime/react` is imported.
-- Without the wrapper, `import 'nexprime/elements'` once. React 19 then sets object props as properties and
-  `on<event>` props as listeners (`onsubmitted`, `onvalueChange`).
+- Every component is available as PascalCase: `NpTable`, `NpButton`, `NpSelect`, `NpCard`, `NpForm`, etc.
+- Arrays, objects, and attributes are passed directly as props (`fields={fields}`, `card`, `submit-label="Sign up"`).
+- Outputs use `on<event>` callbacks (`onsubmitted`, `onselectionChange`, `onrowClick`), receiving the event with `e.detail`.
+- Ref forwarding (`ref`) and standard React props (`className`, `style`, `children`) work out of the box.
 
 ## Next.js (App Router)
 
@@ -146,9 +148,8 @@ export function Signup() {
 npm install nexprime
 ```
 
-Next.js renders pages on the server, before the elements exist in the browser. The `NexPrime` wrapper handles this:
-it loads the elements only in the browser and sets properties and listeners once they're defined, so it works in
-server and client components.
+Next.js renders pages on the server, before the elements exist in the browser. The components from `'nexprime/react'` handle this automatically:
+they are marked `'use client'`, load elements in the browser, and hydrate safely across server and client boundaries.
 
 **1.** Load the theme in `app/layout.tsx`:
 
@@ -156,17 +157,17 @@ server and client components.
 import 'nexprime/styles/theme.css';
 ```
 
-**2.** Use the wrapper. In a **server component**, data can be passed directly:
+**2.** Use the component wrappers. In a **server component**, data can be passed directly:
 
 ```tsx
-import { NexPrime } from 'nexprime/react';
+import { NpChart } from 'nexprime/react';
 
 export default function Page() {
   return (
-    <NexPrime
-      tag="np-chart"
+    <NpChart
       type="bar"
-      props={{ labels: ['Q1', 'Q2', 'Q3', 'Q4'], datasets: [{ label: 'Sales', data: [120, 150, 170, 210] }] }}
+      labels={['Q1', 'Q2', 'Q3', 'Q4']}
+      datasets={[{ label: 'Sales', data: [120, 150, 170, 210] }]}
     />
   );
 }
@@ -176,8 +177,6 @@ Event handlers are functions, so they need a **client component** (`'use client'
 
 - Icons: copy `node_modules/nexprime/icons` to `public/icons`, or call `setIconsUrl()` with the CDN folder in a
   client component.
-- Plain `<np-*>` tags (without the wrapper) need the elements loaded: call `loadNexPrime()` from `nexprime/react`
-  once in a client component's `useEffect`.
 
 ## Vue 3
 

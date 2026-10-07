@@ -178,17 +178,11 @@
       </np-animate-on-scroll>
     </div>
 
-    <!-- A picture of the Text Editor (it and Quill load when it scrolls into view); a click opens the editor page.
-         Styles inline: welcome.css is at its size budget -->
+    <!-- Text Editor demo (Quill loads when it scrolls into view) -->
     @defer (on viewport) {
-      <a
-        [href]="href(pages.textEditor)"
-        target="_top"
-        aria-label="Open the Text Editor"
-        style="display: block; max-width: 1120px; margin: 40px auto 0; color: inherit; text-decoration: none"
-      >
-        <np-text-editor-demo preview />
-      </a>
+      <div style="max-width: 1120px; margin: 40px auto 0">
+        <np-text-editor-demo />
+      </div>
     } @placeholder {
       <div style="max-width: 1120px; height: 470px; margin: 40px auto 0"></div>
     }

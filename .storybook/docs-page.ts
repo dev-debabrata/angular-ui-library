@@ -41,10 +41,11 @@ const LANGUAGE: Record<Framework, string> = {
   html: 'html',
 };
 
-/** Setup note under the generated code; Next.js snippets here use the NexPrime wrapper (nexprime/react) */
+/** Setup note under the generated code */
 const NOTES: Partial<Record<Framework, string>> = {
   angular: 'npm install nexprime, and load nexprime/styles/theme.css once.',
-  next: 'npm install nexprime. Uses the NexPrime wrapper from nexprime/react, which loads the elements in the browser.',
+  react: "npm install nexprime, and import components from 'nexprime/react'.",
+  next: "npm install nexprime, and import components from 'nexprime/react'.",
 };
 const note = (framework: Framework) => NOTES[framework] ?? setupNote(framework);
 

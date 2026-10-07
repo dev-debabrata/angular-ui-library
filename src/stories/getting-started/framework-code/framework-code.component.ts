@@ -26,14 +26,17 @@ export class FrameworkCodeComponent {
   /** Angular class to import, named in the Angular note (empty for CSS-only code) */
   readonly angularImport = input('');
 
+  /** React component/icon to import, named in the React/Next note and setup code */
+  readonly reactImport = input('');
+
   protected readonly frameworks = FRAMEWORKS;
   protected readonly framework = FRAMEWORK;
   protected readonly guide = managerHref(PAGES.getStarted);
   protected readonly copied = signal(false);
 
   protected readonly setup = computed(() => ({
-    note: setupNote(this.framework(), this.angularImport()),
-    code: setupCode(this.framework()),
+    note: setupNote(this.framework(), this.angularImport(), this.reactImport()),
+    code: setupCode(this.framework(), this.reactImport()),
   }));
 
   protected pick(value: unknown) {
