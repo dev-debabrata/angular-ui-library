@@ -9,7 +9,7 @@ Put your own `.svg` files in this folder and use them by file name:
 <nex-icon name="search" label="Search" />                       <!-- label = accessible name when there is no visible text -->
 ```
 
-The folder ships with the full [Lucide](https://lucide.dev) set (ISC license, see `LICENSE-lucide.txt`). Browse, search and copy them on the **Icons** page at the top of the Storybook sidebar. New files show up there automatically.
+The folder ships with the full [Lucide](https://lucide.dev) set (ISC license, see `LICENSE-lucide.txt`). It also has brand and social media logos (`github`, `instagram`, `facebook`, `twitter-x`, `linkedin`, `youtube`, `whatsapp`, `discord`, …): the outline ones come from Lucide 0.460 (ISC), the filled ones from [Simple Icons](https://simpleicons.org) (CC0), including filled versions of the outline logos (`github-fill`, `instagram-fill`, `linkedin-fill`, `youtube-fill`, …; `twitter-fill`, `linkedin-fill`, `slack-fill`, `codepen-fill` and `pocket-fill` from Simple Icons 9.21, since later releases dropped those brands); search "brand" or "social" to list them. Logos are trademarks of their owners. Browse, search and copy them on the **Icons** page at the top of the Storybook sidebar. New files show up there automatically.
 
 `tags.json` holds extra search keywords per icon (e.g. `house` also matches "home"). Adding your icon to it is optional.
 

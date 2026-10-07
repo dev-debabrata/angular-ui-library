@@ -1,0 +1,398 @@
+/* ViewEncapsulation.None (Quill builds the editing area), so every rule is nested in .np-text-editor */
+.np-text-editor {
+  --te-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  display: block;
+  min-width: 0;
+
+  /* theme="light" / "dark": this editor's own look, whatever the page's mode. Same values as theme.css */
+  &.np-text-editor--light {
+    color-scheme: light;
+    --ui-text: #0f172a;
+    --ui-text-muted: #64748b;
+    --ui-text-subtle: #94a3b8;
+    --ui-border: #e2e8f0;
+    --ui-border-strong: #cbd5e1;
+    --ui-surface: #fff;
+    --ui-surface-muted: #f8fafc;
+    --ui-surface-sunken: #f1f5f9;
+    --ui-primary-soft: color-mix(in srgb, var(--ui-primary) 10%, var(--ui-surface));
+  }
+
+  &.np-text-editor--dark {
+    color-scheme: dark;
+    color: var(--ui-text);
+    --ui-text: #e2e8f0;
+    --ui-text-muted: #94a3b8;
+    --ui-text-subtle: #64748b;
+    --ui-border: #1e293b;
+    --ui-border-strong: #334155;
+    --ui-surface: #0f172a;
+    --ui-surface-muted: #0b1222;
+    --ui-surface-sunken: #1e293b;
+    --ui-primary-soft: color-mix(in srgb, var(--ui-primary) 18%, var(--ui-surface));
+  }
+
+  .te {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--ui-border-strong);
+    border-radius: var(--ui-radius);
+    background: var(--ui-surface);
+    box-shadow: var(--ui-shadow-sm);
+    color: var(--ui-text);
+    transition:
+      border-color var(--ui-ease),
+      box-shadow var(--ui-ease);
+  }
+
+  &:not(.np-text-editor--disabled, .np-text-editor--readonly) .te:hover {
+    border-color: var(--ui-text-subtle);
+  }
+
+  .te:has(.ql-editor:focus) {
+    border-color: var(--ui-primary);
+    box-shadow: var(--ui-ring);
+  }
+
+  .te--invalid,
+  .te--invalid:hover {
+    border-color: var(--ui-danger);
+  }
+
+  /* Toolbar (wraps on narrow screens); [editorToolbarStart] / [editorToolbarEnd] hold extra controls */
+  .te__toolbar,
+  .te__toolbar > :is([editorToolbarStart], [editorToolbarEnd]) {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1px;
+  }
+
+  .te__toolbar {
+    padding: 6px;
+    border-bottom: 1px solid var(--ui-border);
+    border-radius: var(--ui-radius) var(--ui-radius) 0 0;
+    background: var(--ui-surface-muted);
+  }
+
+  .te__toolbar > [editorToolbarEnd] {
+    margin-left: auto;
+  }
+
+  .te__divider {
+    width: 1px;
+    height: 20px;
+    margin: 0 3px;
+    background: var(--ui-border-strong);
+  }
+
+  .te__tool {
+    position: relative;
+    display: inline-grid;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    border: none;
+    border-radius: var(--ui-radius-sm);
+    background: none;
+    color: var(--ui-text-muted);
+    cursor: pointer;
+    transition:
+      background var(--ui-ease),
+      color var(--ui-ease),
+      box-shadow var(--ui-ease);
+  }
+
+  .te__tool:hover:not(:disabled),
+  .te__menu-item:hover {
+    background: var(--ui-primary-soft);
+    color: var(--ui-primary);
+  }
+
+  .te__tool--active,
+  .te__tool--active:hover:not(:disabled) {
+    background: var(--ui-gradient);
+    color: #fff;
+  }
+
+  :is(.te__tool, .te__select, .te__menu-item, .te__swatch, .te__cell):focus-visible {
+    outline: none;
+    box-shadow: var(--ui-ring);
+  }
+
+  :is(.te__tool, .te__select):disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  /* The current text / highlight color, under the icon */
+  .te__swatch-bar {
+    position: absolute;
+    bottom: 4px;
+    left: 9px;
+    right: 9px;
+    height: 3px;
+    border-radius: var(--ui-radius-full);
+  }
+
+  .te__tool--active .te__swatch-bar {
+    box-shadow: 0 0 0 1px #fff;
+  }
+
+  .te__select {
+    height: 32px;
+    padding: 0 8px;
+    border: 1px solid var(--ui-border);
+    border-radius: var(--ui-radius-sm);
+    background: var(--ui-surface);
+    color: var(--ui-text);
+    font: inherit;
+    font-size: 13px;
+    cursor: pointer;
+  }
+
+  .te__select:hover:not(:disabled) {
+    border-color: var(--ui-primary);
+  }
+
+  /* The bar under the toolbar: a link or image address, or find & replace */
+  .te__bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 10px;
+    border-bottom: 1px solid var(--ui-border);
+    background: var(--ui-surface-muted);
+  }
+
+  .te__bar-icon {
+    color: var(--ui-text-muted);
+  }
+
+  .te__bar label:focus-within {
+    box-shadow: var(--ui-ring);
+  }
+
+  .te__bar-input {
+    flex: 1 1 180px;
+    width: auto;
+    padding: 6px 10px;
+    font-size: 13px;
+  }
+
+  .te__matches {
+    min-width: 72px;
+    color: var(--ui-text-muted);
+    font-size: 12px;
+  }
+
+  /* Under the editor: the hint, and the word / character count on the right */
+  .te__footer {
+    display: flex;
+    gap: 12px;
+  }
+
+  .te__count {
+    margin-left: auto;
+    white-space: nowrap;
+  }
+
+  .te__count--full {
+    color: var(--ui-warning);
+  }
+
+  /* Editing area: grows from min-height to max-height, then scrolls */
+  .te__scroll {
+    display: flex;
+    flex-direction: column;
+    min-height: var(--te-min-height, 200px);
+    max-height: var(--te-max-height, 500px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    border-radius: 0 0 var(--ui-radius) var(--ui-radius);
+  }
+
+  .te__editor {
+    position: relative;
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    font-family: var(--ui-font);
+    font-size: 15px;
+  }
+
+  /* Disabled: dimmed, no editing. Read-only: no toolbar, content looks normal */
+  &.np-text-editor--disabled .te,
+  &.np-text-editor--readonly .te {
+    background: var(--ui-surface-sunken);
+    box-shadow: none;
+  }
+
+  &.np-text-editor--readonly .te {
+    background: var(--ui-surface-muted);
+  }
+
+  &.np-text-editor--disabled .ql-editor {
+    color: var(--ui-text-subtle);
+
+    &,
+    > * {
+      cursor: not-allowed;
+    }
+
+    :is(blockquote, a) {
+      color: inherit;
+    }
+  }
+
+  &.np-text-editor--readonly .ql-editor > * {
+    cursor: auto;
+  }
+
+  /* variant="document": one wide writing surface with the text in a centered, readable column (like Notion or
+     Tiptap); the toolbar stays on top while the text scrolls */
+  &.np-text-editor--document {
+    /* --te-sticky-top: the height of a fixed header above the editor, if the page has one */
+    .te__toolbar {
+      position: sticky;
+      top: var(--te-sticky-top, 0);
+      z-index: 1;
+    }
+
+    .ql-editor {
+      --te-pad: 24px;
+      position: relative;
+      width: 100%;
+      max-width: 760px;
+      margin: 0 auto;
+      padding-block: 48px;
+      font-size: 16px;
+      line-height: 1.7;
+      zoom: var(--te-zoom, 1);
+    }
+  }
+
+  /* Toolbar menus (colors, alignment, table) are popovers (top layer): undo the popover defaults */
+  .te__menu {
+    position: fixed;
+    inset: auto;
+    min-width: 180px;
+    margin: 0;
+    padding: 10px;
+    overflow: visible;
+    border: 1px solid var(--ui-border);
+    border-radius: var(--ui-radius);
+    background: var(--ui-surface);
+    box-shadow: var(--ui-shadow-lg);
+    color: var(--ui-text);
+  }
+
+  .te__menu-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    width: 100%;
+    padding: 7px 8px;
+    border: none;
+    border-radius: var(--ui-radius-sm);
+    background: none;
+    color: var(--ui-text);
+    font: inherit;
+    font-size: 13px;
+    text-align: left;
+    cursor: pointer;
+  }
+
+  .te__menu-item--active {
+    color: var(--ui-primary);
+    font-weight: 600;
+  }
+
+  .te__menu-title {
+    display: block;
+    padding: 4px 8px;
+    color: var(--ui-text-subtle);
+    font-size: 11px;
+    font-weight: 600;
+  }
+
+  .te__menu--color {
+    width: 212px;
+
+    .te__swatches {
+      margin: 4px 0 8px;
+    }
+  }
+
+  /* The table size picker: 6 rows × 8 columns of cells, lit up to the one under the pointer */
+  .te__grid {
+    display: grid;
+    grid-template-columns: repeat(8, 18px);
+    gap: 3px;
+    padding: 4px 8px 6px;
+  }
+
+  .te__cell {
+    height: 18px;
+    padding: 0;
+    border: 1px solid var(--ui-border-strong);
+    border-radius: 3px;
+    background: var(--ui-surface);
+    cursor: pointer;
+  }
+
+  .te__cell--on {
+    border-color: var(--ui-primary);
+    background: var(--ui-primary-soft);
+  }
+
+  .te__swatches {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 6px;
+  }
+
+  .te__swatch {
+    aspect-ratio: 1;
+    padding: 0;
+    border: 1px solid color-mix(in srgb, var(--ui-text) 15%, transparent);
+    border-radius: var(--ui-radius-sm);
+    cursor: pointer;
+    transition: box-shadow var(--ui-ease);
+  }
+
+  .te__swatch:hover,
+  .te__swatch--active {
+    box-shadow:
+      0 0 0 2px var(--ui-surface),
+      0 0 0 4px var(--ui-primary);
+  }
+
+  /* Up to small laptops (where the full toolbar doesn't fit): one row that scrolls sideways, instead of rows of
+     buttons above the text */
+  @media (max-width: 1279px) {
+    .te__toolbar {
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      scrollbar-width: thin;
+
+      > * {
+        flex: none;
+      }
+    }
+  }
+
+  @media (max-width: 640px) {
+    .te__tool {
+      width: 36px;
+      height: 36px;
+    }
+
+    &.np-text-editor--document .ql-editor {
+      --te-pad: 16px;
+      padding-block: 24px;
+    }
+  }
+}

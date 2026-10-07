@@ -1,0 +1,244 @@
+/*
+ * How the editor's content looks: Quill's own rules (quill.core.css, only the ones this editor uses) and the
+ * formats' styles. A second stylesheet of np-text-editor (text-editor.css has the editor's frame, toolbar and menus);
+ * ViewEncapsulation.None, so the rules are nested in .np-text-editor.
+ */
+.np-text-editor {
+  .ql-editor {
+    --te-pad: 16px;
+    flex: 1;
+    box-sizing: border-box;
+    padding: 14px var(--te-pad);
+    outline: none;
+    line-height: 1.6;
+    tab-size: 4;
+    text-align: left;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    counter-reset: list-0;
+
+    > * {
+      margin: 0 0 0.6em;
+      cursor: text;
+    }
+
+    > :last-child {
+      margin-bottom: 0;
+    }
+
+    :is(p, h1, h2, h3) {
+      counter-set: list-0;
+    }
+
+    :is(h1, h2, h3) {
+      margin-top: 0.4em;
+      font-weight: 700;
+      line-height: 1.25;
+    }
+
+    h1 {
+      font-size: 1.75em;
+    }
+
+    h2 {
+      font-size: 1.4em;
+    }
+
+    h3 {
+      font-size: 1.15em;
+    }
+
+    a {
+      color: var(--ui-primary);
+      text-decoration: underline;
+    }
+
+    blockquote {
+      padding: 4px 0 4px 14px;
+      border-left: 3px solid var(--ui-primary);
+      color: var(--ui-text-muted);
+    }
+
+    .ql-code-block-container {
+      padding: 12px 14px;
+      overflow-x: auto;
+      border-radius: var(--ui-radius-sm);
+      background: var(--ui-surface-sunken);
+      font-family: var(--te-mono);
+      font-size: 13px;
+    }
+
+    .ql-code-block {
+      margin: 0;
+    }
+
+    /* Quill 2 renders both list types as <ol> with data-list items, and draws the marker in .ql-ui */
+    ol {
+      padding-left: 0.5em;
+    }
+
+    li {
+      position: relative;
+      padding-left: 1.5em;
+      list-style-type: none;
+    }
+
+    .ql-ui {
+      position: absolute;
+    }
+
+    li > .ql-ui::before {
+      display: inline-block;
+      width: 1.2em;
+      margin: 0 0.3em 0 -1.5em;
+      text-align: right;
+      white-space: nowrap;
+    }
+
+    li[data-list='bullet'] > .ql-ui::before {
+      content: '\2022';
+    }
+
+    li[data-list='ordered'] {
+      counter-increment: list-0;
+    }
+
+    li[data-list='ordered'] > .ql-ui::before {
+      content: counter(list-0, decimal) '. ';
+    }
+
+    /* Checklist: a checkbox (Quill toggles it on click); done items are struck through */
+    li:is([data-list='checked'], [data-list='unchecked']) > .ql-ui {
+      cursor: pointer;
+
+      &::before {
+        content: '';
+        box-sizing: border-box;
+        width: 15px;
+        height: 15px;
+        margin-right: calc(1.5em - 15px);
+        border: 1.5px solid var(--ui-border-strong);
+        border-radius: 4px;
+        background: var(--ui-surface);
+        vertical-align: -2px;
+      }
+    }
+
+    li[data-list='checked'] {
+      color: var(--ui-text-muted);
+      text-decoration: line-through;
+    }
+
+    li[data-list='checked'] > .ql-ui::before {
+      content: '✓';
+      border-color: transparent;
+      background: var(--ui-gradient);
+      color: #fff;
+      font-size: 11px;
+      font-weight: 700;
+      line-height: 12px;
+      text-align: center;
+    }
+
+    /* Indent, up to 3 levels: paragraphs move right, list items nest (numbered 1. a. i. per level) */
+    .ql-indent-1 {
+      --i: 1;
+      --n: list-1;
+      --style: lower-alpha;
+    }
+
+    .ql-indent-2 {
+      --i: 2;
+      --n: list-2;
+      --style: lower-roman;
+    }
+
+    .ql-indent-3 {
+      --i: 3;
+      --n: list-3;
+      --style: decimal;
+    }
+
+    [class*='ql-indent-'] {
+      padding-left: calc(var(--i) * 2em);
+    }
+
+    li:not([class*='ql-indent-']) {
+      counter-set: list-1 list-2 list-3;
+    }
+
+    li.ql-indent-1 {
+      counter-set: list-2 list-3;
+    }
+
+    li.ql-indent-2 {
+      counter-set: list-3;
+    }
+
+    li[class*='ql-indent-'] {
+      padding-left: calc(1.5em + var(--i) * 2em);
+    }
+
+    li[data-list='ordered'][class*='ql-indent-'] {
+      counter-increment: var(--n);
+
+      > .ql-ui::before {
+        content: counter(var(--n), var(--style)) '. ';
+      }
+    }
+
+    table {
+      width: 100%;
+      margin-bottom: 0.8em;
+      border-collapse: collapse;
+      table-layout: fixed;
+    }
+
+    td {
+      padding: 6px 10px;
+      border: 1px solid var(--ui-border-strong);
+      vertical-align: top;
+      outline: none;
+    }
+
+    code {
+      padding: 1px 5px;
+      border-radius: 4px;
+      background: var(--ui-surface-sunken);
+      font-family: var(--te-mono);
+      font-size: 0.88em;
+    }
+
+    img {
+      max-width: 100%;
+      height: auto;
+      border-radius: var(--ui-radius-sm);
+      vertical-align: middle;
+    }
+
+    hr {
+      margin: 1.2em 0;
+      border: none;
+      border-top: 1px solid var(--ui-border-strong);
+    }
+
+    &.ql-blank::before {
+      content: attr(data-placeholder);
+      position: absolute;
+      left: var(--te-pad);
+      right: var(--te-pad);
+      color: var(--ui-text-subtle);
+      pointer-events: none;
+    }
+  }
+
+  /* Find: the matches (CSS Custom Highlight API, set in text-editor-quill.ts) */
+  ::highlight(np-find) {
+    background-color: rgb(250 204 21 / 0.35);
+  }
+
+  ::highlight(np-find-current) {
+    background-color: #fbbf24;
+    color: #0f172a;
+  }
+}

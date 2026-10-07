@@ -1,0 +1,149 @@
+/* Privacy policy and Terms of service of the NexPrime site (inside np-site-page) */
+
+.doc {
+  display: grid;
+  grid-template-columns: 220px minmax(0, 1fr);
+  gap: 48px;
+  align-items: start;
+  max-width: 980px;
+  margin: 0 auto;
+}
+
+/* ---- table of contents ---- */
+.toc {
+  position: sticky;
+  top: 24px;
+  display: grid;
+  gap: 4px;
+  padding: 18px;
+  border: 1px solid var(--ui-border);
+  border-radius: var(--ui-radius-lg);
+  background: var(--ui-surface-muted);
+  font-size: 14px;
+
+  b {
+    margin-bottom: 6px;
+    color: var(--ui-text);
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  a {
+    padding: 4px 8px;
+    border-radius: var(--ui-radius-sm);
+    color: var(--ui-text-muted);
+    text-decoration: none;
+    transition:
+      color 0.15s var(--ui-ease),
+      background 0.15s var(--ui-ease);
+  }
+
+  a:hover {
+    background: var(--ui-primary-soft);
+    color: var(--ui-primary);
+  }
+
+  a:focus-visible {
+    outline: none;
+    box-shadow: var(--ui-ring);
+  }
+}
+
+/* ---- sections ---- */
+.sections {
+  display: grid;
+  gap: 36px;
+
+  section {
+    scroll-margin-top: 24px;
+  }
+
+  h2 {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 0 0 12px;
+    font-size: 21px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+  }
+
+  p {
+    margin: 0;
+    color: var(--ui-text-muted);
+    font-size: 15.5px;
+    line-height: 1.75;
+  }
+
+  p + p {
+    margin-top: 12px;
+  }
+}
+
+.num {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: var(--ui-radius-full);
+  background: var(--ui-gradient);
+  color: #fff;
+  font-size: 14px;
+}
+
+.link,
+.questions a {
+  border-radius: var(--ui-radius-sm);
+  color: var(--ui-primary);
+  font-weight: 600;
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: var(--ui-ring);
+  }
+}
+
+.link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 10px;
+  font-size: 14px;
+}
+
+.sections .questions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 20px 22px;
+  border: 1px solid var(--ui-border);
+  border-radius: var(--ui-radius-lg);
+  background: var(--ui-primary-soft);
+
+  np-icon {
+    flex: none;
+    color: var(--ui-primary);
+  }
+
+  p {
+    color: var(--ui-text);
+  }
+}
+
+@media (max-width: 800px) {
+  .doc {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+
+  .toc {
+    position: static;
+  }
+}

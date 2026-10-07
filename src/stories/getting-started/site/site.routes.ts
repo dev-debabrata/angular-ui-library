@@ -11,21 +11,26 @@ import {
 } from '@angular/router';
 import { addons } from 'storybook/preview-api';
 
+import { AboutComponent } from '../about/about.component';
 import { AnimationGalleryComponent } from '../../animations/animation-gallery.component';
 import { IconGalleryComponent } from '../../icons/icon-gallery.component';
 import { LottieGalleryComponent } from '../../nexlottie/lottie-gallery.component';
+import { TextEditorPageComponent } from '../../text-editor/page/text-editor-page.component';
 import { ComponentsCatalogComponent } from '../components-catalog/components-catalog.component';
+import { ContactComponent } from '../contact/contact.component';
 import { PAGES, SITE_ROUTE } from '../landing';
+import { LegalComponent } from '../legal/legal.component';
 import { WelcomeComponent } from '../welcome/welcome.component';
 
 // The galleries' data is big (~2,000 SVGs, 236 Lottie files), so it loads on its own, not with Welcome
 const icons = () => import('../../icons/icons-data');
 const animations = () => import('../../animations/animations-data');
 const lottie = () => import('../../nexlottie/lottie-data');
+const effects = () => import('../components-catalog/effect-previews');
 
 /** Loads every page's data, so opening a page doesn't wait for it (preview.ts calls this after the first page) */
 export function preloadSiteData() {
-  return Promise.all([icons(), animations(), lottie()]);
+  return Promise.all([icons(), animations(), lottie(), effects()]);
 }
 
 /** The site's pages. Paths are the pages' short URLs; resolved data goes to the page's inputs */
@@ -50,6 +55,17 @@ const routes: Routes = [
     component: LottieGalleryComponent,
     resolve: { animations: () => lottie().then((m) => m.ANIMATIONS) },
   },
+  { path: PAGES.textEditor, title: 'Text Editor', component: TextEditorPageComponent },
+  {
+    path: PAGES.effects,
+    title: 'Effects',
+    component: ComponentsCatalogComponent,
+    data: { kind: 'effects' },
+  },
+  { path: PAGES.about, title: 'About', component: AboutComponent },
+  { path: PAGES.contact, title: 'Contact us', component: ContactComponent },
+  { path: PAGES.privacy, title: 'Privacy policy', component: LegalComponent, data: { doc: 'privacy' } },
+  { path: PAGES.terms, title: 'Terms of service', component: LegalComponent, data: { doc: 'terms' } },
   { path: '**', redirectTo: '' },
 ];
 

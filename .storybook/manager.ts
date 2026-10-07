@@ -4,17 +4,26 @@ import {
   GLOBALS_UPDATED,
   STORY_PREPARED,
 } from 'storybook/internal/core-events';
-import { type API, addons, types } from 'storybook/manager-api';
+import { type API, addons } from 'storybook/manager-api';
 
-import { applyTheme, saveTheme, savedTheme, themeOf } from './np-theme';
-import { SITE_PAGES, SITE_ROUTE } from '../src/stories/getting-started/landing';
-import { ModeTool, PaletteTool, SearchTool, managerTheme } from './theme-tools';
+import { PALETTES, applyTheme, saveTheme, savedTheme, themeOf } from './np-theme';
+import {
+  OPEN_PAGE,
+  PAGES,
+  SECTIONS,
+  SITE_GO,
+  SITE_PAGES,
+  SITE_ROUTE,
+  SITE_SEARCH,
+} from '../src/stories/getting-started/landing';
+import { ICONS, managerTheme } from './theme-tools';
 
 /** The last light/dark mode and theme color the user picked (preview.ts starts the stories with it too) */
 const saved = savedTheme();
 
 // Storybook UI (sidebar, toolbar) branding in the saved mode and color. Storybook's own toolbar tools are hidden
-// (with `features` in main.ts for backgrounds/grid, outline, measure and viewport); NexPrime's are added below.
+// (with `features` in main.ts for backgrounds/grid, outline, measure and viewport); search, mode and theme color
+// are in the top bar (below).
 // The sidebar CSS in manager-head.html reads data-theme and --ui-primary from this page. Restart after editing
 applyTheme(document, saved.theme, saved.palette);
 addons.setConfig({
@@ -33,17 +42,8 @@ addons.setConfig({
   ),
 });
 
-// Toolbar: search, light/dark mode and theme color (PrimeNG-style). The choice is saved and comes back on reload
-const TOOLS = [
-  ['search', 'Search', SearchTool],
-  ['mode', 'Light or dark mode', ModeTool],
-  ['palette', 'Theme color', PaletteTool],
-] as const;
 addons.register('np/theme', (api) => {
-  for (const [id, title, Tool] of TOOLS) {
-    addons.add(`np/${id}`, { type: types.TOOL, title, match: () => true, render: () => Tool() });
-  }
-  // A change from the toolbar or the landing pages' top bar: save it and restyle the Storybook UI. Storybook sends
+  // A change from either top bar: save it and restyle the Storybook UI. Storybook sends
   // GLOBALS_UPDATED on every render, so unchanged themes stop at applyTheme
   api.on(GLOBALS_UPDATED, ({ globals }: { globals: Record<string, string> }) => {
     const { theme, palette } = themeOf(globals);
@@ -73,6 +73,14 @@ function storybookUrl() {
   const entry = manager?.resolveStory(id);
   if (entry?.type === 'component') id = entry.children[0];
   return `${location.pathname.replace(/[^/]*$/, '')}?path=/story/${id}${location.search.replace('?', '&')}`;
+}
+/**
+ * Opens a page by its short URL, like the address bar does: a component's id opens its first page (also when it's
+ * hidden from the sidebar, which selectStory alone can't), an MDX page's id its docs, '' Welcome
+ */
+function openPage(api: API, page: string) {
+  const entry = page ? (api.resolveStory(page) ?? api.resolveStory(`${page}--docs`)) : undefined;
+  api.selectStory(entry?.type === 'component' ? entry.children[0] : (entry?.id ?? (page || WELCOME)));
 }
 const pageUrl = location.href;
 const opened = !!storybookUrl();
@@ -132,14 +140,8 @@ addons.register('np/page-url', (api) => {
   };
   api.on(CURRENT_STORY_WAS_SET, () => showPage());
   api.on(SITE_ROUTE, showPage);
-  // The sidebar logo (brandUrl "/") opens Welcome in place instead of reloading Storybook; new-tab clicks keep it
-  document.addEventListener('click', (event) => {
-    const link = (event.target as Element).closest?.('.sidebar-header a[href="/"]');
-    if (!link || event.button || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey)
-      return;
-    event.preventDefault();
-    api.selectStory(WELCOME);
-  });
+  // Links from the site's pages and its search (preview.ts, site-search)
+  api.on(OPEN_PAGE, (page: string) => openPage(api, page));
 });
 
 // Browser tab title: Storybook writes "Components / Button - Primary ⋅ Storybook"; show "NexPrime - Button - Primary",
@@ -180,26 +182,69 @@ const collapseGroups = new MutationObserver(() => {
 });
 collapseGroups.observe(document.body, { childList: true, subtree: true });
 
-// Accordion at every level: opening a top-level group closes the other open one, and opening a sub-group
-// (Components ▸ Form) or a component closes its open siblings (also when a story is picked from search)
+/** Runs `listener` with the id of each page the preview shows (STORY_PREPARED/DOCS_PREPARED, as it swaps pages) */
+function onShown(api: API, listener: (page: { id: string }) => void) {
+  api.on(STORY_PREPARED, listener);
+  api.on(DOCS_PREPARED, listener);
+}
+
+// Accordion: opening a top-level group closes the other open one, and opening a component closes its open siblings
+// (also when a story is picked from search). Groups inside Components (Form, Data, …) are headings that stay open:
+// closed ones are opened as they appear (programmatic clicks aren't trusted, so the click handler below lets them
+// through). Only a row's own button (its first child) counts: the dev server's "⋯" test menu button is a later
+// sibling with aria-expanded too, and clicking it opens that menu
 new MutationObserver((mutations) => {
+  document
+    .querySelectorAll<HTMLElement>(
+      '.sidebar-item[data-nodetype="group"] > [aria-expanded="false"]:first-child',
+    )
+    .forEach((group) => group.click());
   for (const { target } of mutations) {
     const opened = target as HTMLElement;
-    if (opened.getAttribute('aria-expanded') !== 'true') continue;
-    const parent = opened.closest<HTMLElement>(
-      '.sidebar-item:is([data-nodetype="component"], [data-nodetype="group"])',
-    )?.dataset.parentId;
+    if (opened.getAttribute?.('aria-expanded') !== 'true') continue;
+    const row = opened.closest<HTMLElement>('.sidebar-item');
+    if (row && opened !== row.firstElementChild) continue;
     const selector =
       opened.dataset.action === 'collapse-root'
         ? '[data-action="collapse-root"][aria-expanded="true"]'
-        : parent &&
-          `.sidebar-item:is([data-nodetype="component"], [data-nodetype="group"])[data-parent-id="${parent}"] > [aria-expanded="true"]`;
+        : row?.dataset['nodetype'] === 'component' &&
+          `.sidebar-item[data-nodetype="component"][data-parent-id="${row.dataset['parentId']}"] > [aria-expanded="true"]:first-child`;
     if (!selector) continue;
     document
       .querySelectorAll<HTMLElement>(selector)
       .forEach((other) => other !== opened && other.click());
   }
-}).observe(document.body, { subtree: true, attributes: true, attributeFilter: ['aria-expanded'] });
+}).observe(document.body, {
+  childList: true,
+  subtree: true,
+  attributes: true,
+  attributeFilter: ['aria-expanded'],
+});
+
+// Components like PrimeNG's docs (styles in manager-head.html): a component is one link to its first page (its
+// docs), its stories hidden. A click on a component opens it without toggling it; a click on a group does nothing
+addons.register('np/sidebar-components', (api) => {
+  document.addEventListener(
+    'click',
+    (event) => {
+      const button = (event.target as Element).closest?.('.sidebar-item > button:first-child');
+      const row = button?.parentElement;
+      if (!event.isTrusted || !row?.matches('[data-nodetype="component"], [data-nodetype="group"]'))
+        return;
+      event.preventDefault();
+      event.stopPropagation();
+      if (row.dataset['nodetype'] === 'component') api.selectStory(row.dataset['itemId']);
+    },
+    true,
+  );
+  // The current component gets the selected look (its own row is never the selected one: its pages are hidden)
+  const current = document.head.appendChild(document.createElement('style'));
+  current.id = 'np-current-component';
+  onShown(api, ({ id }) => {
+    const row = `.sidebar-item[data-nodetype='component'][data-item-id='${id.split('--')[0]}']`;
+    current.textContent = `${row}::before { content: '' } ${row} > button { color: var(--nav-text) !important; font-weight: 500 }`;
+  });
+});
 
 // Layout per page: `np-landing` pages (the NexPrime site: Welcome, Components, Icons, Animations, NexLottie) fill
 // the window like a website: no sidebar, toolbar or addon panel. Elsewhere the panel stays as the user left it.
@@ -229,8 +274,127 @@ addons.setConfig({
     showPanel: (state) => (isLanding(state) ? false : undefined),
   },
 });
-addons.register(SHOWN, (api) => {
-  const shown = ({ id }: { id: string }) => api.setAddonState(SHOWN, id);
-  api.on(STORY_PREPARED, shown);
-  api.on(DOCS_PREPARED, shown);
+addons.register(SHOWN, (api) => onShown(api, ({ id }) => api.setAddonState(SHOWN, id)));
+
+// Top bar of every page (like quilljs.com/docs): logo, section links, search, light/dark mode, theme color and Get
+// Started, its content centered in 1200px. It sits above Storybook's layout, so it stays put across page changes.
+// Links are short URLs (new-tab clicks keep them). A plain click on a site page while the site is shown goes to the
+// site's router (SITE_GO, no story load); other clicks open the page in Storybook. Search opens the site search
+// (SITE_SEARCH) on the site's pages and the sidebar search elsewhere. A section is current while the page's id starts
+// with the first word of its own (components-…, effects-…). Onboarding has no page of its own
+const TOP_LINKS = SECTIONS.filter((s) => s.id !== 'onboarding').map(({ label, path }) => ({
+  label,
+  path,
+  prefix: path.split(/--|-/)[0],
+}));
+const icon = (name: string) =>
+  `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[name]}</svg>`;
+addons.register('np/topbar', (api) => {
+  const bar = document.createElement('header');
+  bar.id = 'np-topbar';
+  bar.innerHTML = `
+    <nav class="np-topbar__inner" aria-label="NexPrime">
+      <a class="np-topbar__brand" href="./" data-page="" aria-label="NexPrime home">
+        <img src="favicon.svg" alt="" width="28" height="28" /><span>Nex<b>Prime</b></span>
+      </a>
+      <div class="np-topbar__links">
+        ${TOP_LINKS.map(
+          ({ label, path, prefix }) =>
+            `<a href="./${path}" data-page="${path}" data-prefix="${prefix}">${label}</a>`,
+        ).join('')}
+      </div>
+      <div class="np-topbar__tools">
+        <button type="button" class="np-topbar__tool" data-tool="search" aria-label="Search components" title="Search components">${icon('search')}</button>
+        <button type="button" class="np-topbar__tool" data-tool="mode"></button>
+        <div class="np-topbar__palette">
+          <button type="button" class="np-topbar__tool" data-tool="palette" aria-label="Theme color" title="Theme color" aria-expanded="false">${icon('palette')}</button>
+          <div class="np-topbar__menu" role="menu" aria-label="Theme color" hidden>
+            ${Object.entries(PALETTES)
+              .map(
+                ([key, p]) =>
+                  `<button type="button" role="menuitemradio" class="np-topbar__swatch" data-palette="${key}" aria-label="${p.label}" title="${p.label}" style="background: linear-gradient(135deg, ${p.primary}, ${p.accent}); --swatch: ${p.primary}"></button>`,
+              )
+              .join('')}
+          </div>
+        </div>
+      </div>
+      <a class="np-topbar__start" href="./${PAGES.getStarted}" data-page="${PAGES.getStarted}">Get Started</a>
+    </nav>`;
+  document.body.prepend(bar);
+  const menu = bar.querySelector<HTMLElement>('.np-topbar__menu')!;
+  const paletteButton = bar.querySelector<HTMLElement>('[data-tool="palette"]')!;
+  const showMenu = (open: boolean) => {
+    menu.hidden = !open;
+    paletteButton.setAttribute('aria-expanded', String(open));
+  };
+
+  // Mode icon and the checked swatch follow the page's data-np-theme ("dark|teal", set by applyTheme)
+  const modeButton = bar.querySelector<HTMLElement>('[data-tool="mode"]')!;
+  const sync = () => {
+    const [mode, palette] = (document.documentElement.dataset['npTheme'] ?? 'light|').split('|');
+    const dark = mode === 'dark';
+    modeButton.innerHTML = icon(dark ? 'sun' : 'moon');
+    modeButton.title = dark ? 'Light mode' : 'Dark mode';
+    modeButton.setAttribute('aria-label', dark ? 'Switch to light mode' : 'Switch to dark mode');
+    for (const swatch of menu.querySelectorAll<HTMLElement>('[data-palette]')) {
+      const on = swatch.dataset['palette'] === (palette in PALETTES ? palette : 'indigo');
+      swatch.classList.toggle('np-topbar__swatch--on', on);
+      swatch.setAttribute('aria-checked', String(on));
+      swatch.innerHTML = on ? icon('check') : '';
+    }
+  };
+  sync();
+  new MutationObserver(sync).observe(document.documentElement, {
+    attributes: true,
+    attributeFilter: ['data-np-theme'],
+  });
+
+  bar.addEventListener('click', (event) => {
+    const target = event.target as Element;
+    const tool = target.closest<HTMLElement>('[data-tool]')?.dataset['tool'];
+    const swatch = target.closest<HTMLElement>('[data-palette]')?.dataset['palette'];
+    const onSite = document.documentElement.dataset['npLayout'] === 'landing';
+    if (tool === 'search' && onSite) {
+      api.emit(SITE_SEARCH);
+    } else if (tool === 'search') {
+      if (!api.getIsNavShown()) api.toggleNav(true);
+      setTimeout(() => api.focusOnUIElement('storybook-explorer-searchfield'));
+    } else if (tool === 'mode') {
+      const dark = document.documentElement.dataset['theme'] === 'dark';
+      api.updateGlobals({ theme: dark ? 'light' : 'dark' });
+    } else if (tool === 'palette') {
+      showMenu(menu.hidden !== false);
+    } else if (swatch) {
+      api.updateGlobals({ palette: swatch });
+      showMenu(false);
+    }
+    const link = target.closest<HTMLAnchorElement>('a[data-page]');
+    if (!link || event.button || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey)
+      return;
+    event.preventDefault();
+    const page = link.dataset['page']!;
+    if (onSite && SITE_PAGES.includes(page)) api.emit(SITE_GO, page);
+    else openPage(api, page);
+  });
+  // The color menu closes on an outside click or Escape
+  document.addEventListener('click', (event) => {
+    if (!menu.hidden && !(event.target as Element).closest?.('.np-topbar__palette'))
+      showMenu(false);
+  });
+  bar.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && !menu.hidden) {
+      showMenu(false);
+      paletteButton.focus();
+    }
+  });
+
+  const markCurrent = ({ id }: { id: string }) => {
+    for (const link of bar.querySelectorAll<HTMLAnchorElement>('a[data-prefix]')) {
+      if (id.startsWith(link.dataset['prefix']!)) link.setAttribute('aria-current', 'page');
+      else link.removeAttribute('aria-current');
+    }
+  };
+  onShown(api, markCurrent);
+  // The site's router changed page (the site's stories all start on their own page, so the story id isn't it)
+  api.on(SITE_ROUTE, ({ page }: { page: string }) => markCurrent({ id: page }));
 });

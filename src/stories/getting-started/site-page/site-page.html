@@ -1,0 +1,15 @@
+<div class="gallery-page gallery-page--footer">
+  <header class="gallery-hero">
+    <span class="gallery-version"><i></i>{{ version }}</span>
+    <h1>{{ heading() }}</h1>
+    @if (intro()) {
+      <p class="subtitle">{{ intro() }}</p>
+    }
+    @if (note()) {
+      <p class="note">{{ note() }}</p>
+    }
+  </header>
+  <ng-content />
+</div>
+
+<np-site-footer />

@@ -248,7 +248,9 @@ export abstract class CanvasEffect {
   }
 
   private readonly frame = (now: number) => {
-    const dt = Math.min(3, (now - this.lastFrame) / 16.67);
+    // The first frame's timestamp can be a little before lastFrame (set when the loop was scheduled): never negative,
+    // or effects run backwards (Starfield's stars would pass its far plane)
+    const dt = Math.min(3, Math.max(0, (now - this.lastFrame) / 16.67));
     this.lastFrame = now;
     this.step(dt);
     this.draw(this.ctx!);

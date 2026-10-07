@@ -343,6 +343,31 @@ h3 {
   gap: 20px;
 }
 
+/* Three columns; the Text Editor card takes a whole row (dense packing keeps the others in full rows) */
+.explore {
+  grid-template-columns: repeat(3, 1fr);
+  grid-auto-flow: dense;
+}
+
+.explore__wide {
+  grid-column: 1 / -1;
+}
+
+/* The wide card: its preview on the left, the text on the right */
+@media (min-width: 901px) {
+  .explore__wide a {
+    flex-direction: row;
+    min-height: 220px;
+  }
+
+  /* The preview and the text, half each; the text centered on the preview's height */
+  .explore__wide a > * {
+    flex: 1;
+    height: auto;
+    align-content: center;
+  }
+}
+
 .feature {
   /* border-box: height 100% includes the padding, so a card doesn't spill into the row below */
   box-sizing: border-box;
@@ -521,6 +546,8 @@ h3 {
 
 .mini-ui {
   display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
   align-items: center;
   gap: 14px;
 }
@@ -674,22 +701,6 @@ h3 {
   background: #eef2ff;
 }
 
-.footer {
-  margin-top: 56px;
-  color: var(--ui-text-subtle);
-  font-size: 13px;
-  text-align: center;
-}
-
-.footer__credit {
-  margin: 6px 0 0;
-
-  b {
-    color: var(--ui-text-muted);
-    font-weight: 600;
-  }
-}
-
 /* Grid items may shrink below their content (wide code, charts) instead of overflowing the page */
 .features > *,
 .explore > *,
@@ -700,6 +711,10 @@ h3 {
 
 /* ---- responsive ---- */
 @media (max-width: 900px) {
+  .explore {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
   .bento,
   .quickstart {
     grid-template-columns: 1fr;

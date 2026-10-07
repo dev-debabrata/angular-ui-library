@@ -89,3 +89,4 @@ export * from './stories/effects/starfield/starfield.component';
 export * from './stories/effects/waves/waves.component';
 export * from './stories/onboarding/onboarding-checklist/onboarding-checklist.component';
 export * from './stories/onboarding/onboarding/onboarding.component';
+export * from './stories/text-editor/text-editor.component';

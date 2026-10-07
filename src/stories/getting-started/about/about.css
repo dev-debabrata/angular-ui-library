@@ -1,0 +1,162 @@
+/* About page of the NexPrime site (inside np-site-page) */
+h2 {
+  margin: 0 0 20px;
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+h3 {
+  margin: 0;
+  font-size: 17px;
+}
+
+p {
+  margin: 0;
+  color: var(--ui-text-muted);
+  line-height: 1.65;
+}
+
+.block {
+  margin-top: 72px;
+}
+
+/* ---- why ---- */
+.story {
+  display: grid;
+  grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+  gap: 48px;
+  align-items: center;
+
+  p + p {
+    margin-top: 14px;
+  }
+}
+
+.facts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  margin: 0;
+}
+
+.fact {
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 4px;
+  padding: 22px;
+  border: 1px solid var(--ui-border);
+  border-radius: var(--ui-radius-lg);
+  background: var(--ui-surface-muted);
+
+  dt {
+    color: var(--ui-text-muted);
+    font-size: 13px;
+  }
+
+  dd {
+    margin: 0;
+    background: var(--ui-gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    font-size: 30px;
+    font-weight: 800;
+  }
+}
+
+/* ---- values ---- */
+.values {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 18px;
+}
+
+.value {
+  display: grid;
+  gap: 10px;
+  align-content: start;
+  padding: 24px;
+
+  p {
+    font-size: 14px;
+  }
+}
+
+/* ---- team ---- */
+.team {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 18px;
+}
+
+.person {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px 22px;
+
+  p {
+    font-size: 14px;
+  }
+
+  .ui-btn {
+    margin-left: auto;
+  }
+}
+
+.person__text {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+/* ---- call to action ---- */
+.cta {
+  display: grid;
+  justify-items: center;
+  gap: 10px;
+  margin: 72px 0 0;
+  padding: 56px 24px;
+  border-radius: 28px;
+  background: var(--ui-gradient);
+  color: #fff;
+  text-align: center;
+
+  h2 {
+    margin: 0;
+  }
+
+  p {
+    color: rgb(255 255 255 / 0.85);
+  }
+
+  .ui-btn:not(.ui-btn--primary) {
+    border-color: rgb(255 255 255 / 0.6);
+    background: transparent;
+    color: #fff;
+  }
+
+  .ui-btn--primary {
+    background: #fff;
+    color: var(--ui-primary);
+  }
+}
+
+.cta__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 14px;
+}
+
+@media (max-width: 800px) {
+  .story {
+    grid-template-columns: 1fr;
+  }
+
+  .person {
+    flex-wrap: wrap;
+  }
+}

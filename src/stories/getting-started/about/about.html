@@ -1,0 +1,69 @@
+<np-site-page
+  heading="About NexPrime"
+  intro="NexPrime is one premium UI system for every framework: components, icons, animations, Lottie files and background effects that look the same in Angular, React, Vue and plain HTML."
+>
+  <section class="story">
+    <div>
+      <h2>Why we built it</h2>
+      <p>
+        Most UI libraries belong to a single framework, so teams that use more than one end up
+        rebuilding the same buttons, tables and dialogs, and keeping them in sync by hand.
+      </p>
+      <p>
+        NexPrime starts from modern Angular (signals, standalone components, server rendering) and
+        ships every component as a Web Component as well. One design, one set of tokens and one
+        package work everywhere, from a React app to a static HTML page.
+      </p>
+    </div>
+    <dl class="facts">
+      @for (fact of facts; track fact.label) {
+        <div class="fact">
+          <dt>{{ fact.label }}</dt>
+          <dd>{{ fact.value }}</dd>
+        </div>
+      }
+    </dl>
+  </section>
+
+  <section class="block">
+    <h2>What we care about</h2>
+    <div class="values">
+      @for (value of values; track value.title) {
+        <article class="value site-card site-card--hover">
+          <span class="site-icon"><np-icon [name]="value.icon" [size]="22" /></span>
+          <h3>{{ value.title }}</h3>
+          <p>{{ value.text }}</p>
+        </article>
+      }
+    </div>
+  </section>
+
+  <section class="block">
+    <h2>The team</h2>
+    <div class="team">
+      @for (author of authors; track author.name) {
+        <article class="person site-card">
+          <np-avatar [name]="author.name" size="large" variant="ring" />
+          <div class="person__text">
+            <h3>{{ author.name }}</h3>
+            <p>{{ author.role }} · Kolkata, India</p>
+          </div>
+          <a class="ui-btn ui-btn--sm" [href]="author.linkedin" target="_blank" rel="noopener"
+            ><np-icon name="linkedin-fill" [size]="15" /> LinkedIn</a
+          >
+        </article>
+      }
+    </div>
+  </section>
+
+  <section class="cta">
+    <h2>Have a question or an idea?</h2>
+    <p>We'd love to hear how you use NexPrime and what you'd like to see next.</p>
+    <div class="cta__actions">
+      <a class="ui-btn ui-btn--primary" [href]="href(pages.contact)" target="_top"
+        ><np-icon name="mail" [size]="16" /> Contact us</a
+      >
+      <a class="ui-btn" [href]="href(pages.catalog)" target="_top">Browse components</a>
+    </div>
+  </section>
+</np-site-page>

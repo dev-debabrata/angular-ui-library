@@ -1,19 +1,18 @@
 <div class="catalog">
   <header class="hero">
     <span class="gallery-version"><i></i>{{ version }}</span>
-    <h1>Components</h1>
+    <h1>{{ config().root }}</h1>
     <p>
       Discover
       @if (total()) {
         <b>{{ total() }}</b>
       }
-      UI components, crafted for real-world Angular applications and equally at home in React, Vue
-      or plain HTML.
+      {{ config().noun }}{{ config().intro }}
     </p>
     <div class="tools">
       <np-search-input
         class="search"
-        placeholder="Search components..."
+        [placeholder]="'Search ' + config().root.toLowerCase() + '...'"
         (search)="query.set($event)"
       />
       <np-button-toggle
@@ -36,11 +35,24 @@
         @for (item of group.items; track item.folder) {
           <a class="card" [href]="item.href" target="_top">
             <span class="thumb" aria-hidden="true">
-              <np-icon
-                [name]="item.icon"
-                [size]="view() === 'list' ? 20 : view() === 'compact' ? 30 : 44"
-                [strokeWidth]="1.5"
-              />
+              @let preview = view() === 'list' ? undefined : previews()[item.folder];
+              @if (preview) {
+                <!-- Each effect starts when its card scrolls into view, so the page doesn't run all of them at once -->
+                <span class="thumb__effect" [style.background]="preview.background">
+                  @defer (on viewport) {
+                    <ng-container *ngComponentOutlet="preview.component; inputs: preview.inputs" />
+                  } @placeholder {
+                    <span></span>
+                  }
+                </span>
+              }
+              @if (!preview || preview.idle) {
+                <np-icon
+                  [name]="item.icon"
+                  [size]="view() === 'list' ? 20 : view() === 'compact' ? 30 : 44"
+                  [strokeWidth]="1.5"
+                />
+              }
             </span>
             <span class="name">{{ item.title }}</span>
             @if (view() === 'list') {
@@ -51,6 +63,18 @@
       </div>
     </section>
   } @empty {
-    <p class="empty">No components match "{{ query() }}".</p>
+    @if (loaded()) {
+      <p class="empty">No {{ config().root.toLowerCase() }} match "{{ query() }}".</p>
+    } @else {
+      <!-- Placeholder cards while index.json loads -->
+      <div class="cards" [class]="'cards--' + view()" aria-hidden="true">
+        @for (n of [1, 2, 3, 4, 5, 6, 7, 8]; track n) {
+          <span class="card card--loading">
+            <span class="thumb"></span>
+            <span class="name"></span>
+          </span>
+        }
+      </div>
+    }
   }
 </div>

@@ -1,11 +1,10 @@
 import { Component, ElementRef, computed, inject, signal, viewChild } from '@angular/core';
 import { Router } from '@angular/router';
-import { SELECT_STORY } from 'storybook/internal/core-events';
 import { addons } from 'storybook/preview-api';
 
 import { IconComponent } from '../../components/media/icon/icon.component';
 import { COMPONENT_ICONS } from '../components-catalog/components-catalog.component';
-import { PAGES, SECTIONS, SITE_PAGES } from '../landing';
+import { OPEN_PAGE, PAGES, SECTIONS, SITE_PAGES } from '../landing';
 
 /** A result: `page` is a short URL (a site page or a Storybook id) */
 interface Hit {
@@ -105,9 +104,7 @@ export class SiteSearchComponent {
     if (this.router && SITE_PAGES.includes(h.page)) {
       this.router.navigate(['/' + h.page], { queryParams: { q } });
     } else {
-      addons
-        .getChannel()
-        .emit(SELECT_STORY, { storyId: h.page || 'getting-started-welcome--welcome' });
+      addons.getChannel().emit(OPEN_PAGE, h.page);
     }
   }
 

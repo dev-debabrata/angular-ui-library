@@ -1,0 +1,104 @@
+<footer class="footer">
+  <!-- Aurora glow in the theme colors, behind everything -->
+  <div class="footer__glow" aria-hidden="true"></div>
+
+  <div class="footer__inner">
+    <!-- Call to action: install command + get started -->
+    @if (cta()) {
+      <div class="footer__cta">
+        <div class="footer__cta-text">
+          <h2>Start building with <span>NexPrime</span></h2>
+          <p>One install, every framework. Free and open source.</p>
+        </div>
+        <div class="footer__cta-actions">
+          <button type="button" class="footer__install" (click)="copyInstall()">
+            <span class="footer__prompt">$</span> {{ install }}
+            <np-icon [name]="copied() ? 'check' : 'copy'" [size]="15" />
+            <span class="ui-visually-hidden">{{ copied() ? 'Copied' : 'Copy' }}</span>
+          </button>
+          <a class="footer__start" [href]="href(pages.getStarted)" target="_top"
+            >Get started <np-icon name="arrow-right" [size]="16"
+          /></a>
+        </div>
+      </div>
+    }
+
+    <div class="footer__top">
+      <div class="footer__about">
+        <a
+          class="footer__brand"
+          [href]="href(pages.welcome)"
+          target="_top"
+          aria-label="NexPrime home"
+        >
+          <img src="nexprime-logo-dark.svg" alt="" width="355" height="64" />
+        </a>
+        <p>
+          One premium UI system for every framework. Components, icons, animations and effects for
+          Angular, React, Vue and plain HTML.
+        </p>
+        <ul class="footer__contact">
+          <li><np-icon name="map-pin" [size]="15" /> {{ contact.location }}</li>
+          <li>
+            <a [href]="'mailto:' + contact.email"
+              ><np-icon name="mail" [size]="15" /> {{ contact.email }}</a
+            >
+          </li>
+        </ul>
+        <div class="footer__social">
+          <a [href]="contact.npm" target="_blank" rel="noopener" aria-label="nexprime on npm"
+            ><np-icon name="package" [size]="18"
+          /></a>
+          <a [href]="contact.x" target="_blank" rel="noopener" aria-label="nexprime on X"
+            ><np-icon name="twitter-x" [size]="16"
+          /></a>
+          <a [href]="authors[0].linkedin" target="_blank" rel="noopener" aria-label="LinkedIn"
+            ><np-icon name="linkedin-fill" [size]="16"
+          /></a>
+          <!-- <a [href]="'mailto:' + contact.email" aria-label="Email"
+            ><np-icon name="mail" [size]="18"
+          /></a> -->
+        </div>
+      </div>
+
+      @for (column of columns; track column.title) {
+        <nav class="footer__column" [attr.aria-label]="column.title">
+          <h2>{{ column.title }}</h2>
+          <ul>
+            @for (link of column.links; track link.label) {
+              <li>
+                @if (link.url) {
+                  <a [href]="link.url" target="_blank" rel="noopener"
+                    >{{ link.label }} <np-icon name="arrow-up-right" [size]="13"
+                  /></a>
+                } @else {
+                  <a [href]="href(link.page!)" target="_top">{{ link.label }}</a>
+                }
+              </li>
+            }
+          </ul>
+        </nav>
+      }
+    </div>
+
+    <!-- Oversized wordmark, cut off by the bottom bar -->
+    <div class="footer__wordmark" aria-hidden="true">NexPrime</div>
+
+    <div class="footer__bottom">
+      <p>© {{ year }} NexPrime. MIT License. Open source and free forever.</p>
+      <p>
+        Created with by
+        @for (author of authors; track author.name; let last = $last) {
+          <a class="footer__author" [href]="author.linkedin" target="_blank" rel="noopener">{{
+            author.name
+          }}</a>
+          @if (!last) {
+            &amp;
+          }
+        }
+      </p>
+    </div>
+
+    <!-- <np-icon class="footer__heart" name="heart" [size]="13" /> -->
+  </div>
+</footer>

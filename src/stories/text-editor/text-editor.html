@@ -1,0 +1,304 @@
+<div class="ui-field">
+  @if (label()) {
+    <span class="ui-label" [id]="id + '-label'" (click)="focus()">{{ label() }}</span>
+  }
+
+  <div class="te" [class.te--invalid]="invalid()">
+    @if (!readonly() && items().length) {
+      <div
+        #toolbar
+        class="te__toolbar"
+        role="toolbar"
+        [attr.aria-label]="(label() || ariaLabel()) + ' formatting'"
+        [attr.aria-controls]="id"
+        [attr.aria-disabled]="isDisabled() || null"
+        (keydown)="onToolbarKey($event)"
+        (focusin)="onToolbarFocus($event)"
+      >
+        <!-- Extra controls: add data-tool to join the toolbar's arrow-key navigation -->
+        <ng-content select="[editorToolbarStart]" />
+        @for (item of items(); track $index) {
+          @if (item.divider) {
+            <span class="te__divider" aria-hidden="true"></span>
+          }
+          @if (item.select) {
+            <select
+              class="te__select"
+              data-tool
+              [attr.aria-label]="item.label"
+              [title]="item.label"
+              [disabled]="isDisabled()"
+              (change)="setFormat(item.format, $any($event.target).value)"
+            >
+              @for (
+                option of item.tool === 'size' ? options.size : options.heading;
+                track option.value
+              ) {
+                <option [value]="option.value" [selected]="option.value === selected(item.format)">
+                  {{ option.label }}
+                </option>
+              }
+            </select>
+          } @else {
+            <button
+              #button
+              type="button"
+              class="te__tool"
+              data-tool
+              [class.te__tool--active]="isActive(item)"
+              [attr.aria-label]="item.label"
+              [attr.aria-pressed]="item.pressable ? isActive(item) : null"
+              [attr.aria-haspopup]="item.popup"
+              [attr.aria-expanded]="item.menu ? menu()?.tool === item.tool : null"
+              [attr.aria-keyshortcuts]="item.keys?.replace('Ctrl', 'Control') ?? null"
+              [title]="item.title"
+              [disabled]="isDisabled() || isIdle(item)"
+              (mousedown)="$event.preventDefault()"
+              (click)="run(item, button)"
+            >
+              <np-icon
+                [name]="
+                  item.tool === 'align' ? 'align-' + (selected('align') || 'left') : item.icon
+                "
+                size="18"
+              />
+              @if (item.tool === 'color') {
+                <span
+                  class="te__swatch-bar"
+                  [style.background]="selected('color') || 'currentColor'"
+                ></span>
+              }
+            </button>
+          }
+        }
+        <ng-content select="[editorToolbarEnd]" />
+      </div>
+    }
+
+    @switch (bar()) {
+      @case ('find') {
+        <form
+          class="te__bar"
+          role="search"
+          aria-label="Find and replace"
+          (submit)="$event.preventDefault(); applyBar()"
+          (keydown.escape)="$event.preventDefault(); closeBar()"
+        >
+          <np-icon name="search" size="16" class="te__bar-icon" />
+          <input
+            #barInput
+            class="ui-control te__bar-input"
+            aria-label="Find"
+            placeholder="Find"
+            [value]="barUrl()"
+            (input)="barUrl.set($any($event.target).value); findIndex.set(0)"
+            (keydown.shift.enter)="$event.preventDefault(); step(-1)"
+          />
+          <span class="te__matches" aria-live="polite">
+            @if (barUrl()) {
+              {{ matches().length ? findIndex() + 1 + ' of ' + matches().length : 'No matches' }}
+            }
+          </span>
+          <button
+            type="button"
+            class="te__tool"
+            aria-label="Previous match"
+            title="Previous (Shift+Enter)"
+            [disabled]="!matches().length"
+            (click)="step(-1)"
+          >
+            <np-icon name="chevron-up" size="16" />
+          </button>
+          <button
+            type="submit"
+            class="te__tool"
+            aria-label="Next match"
+            title="Next (Enter)"
+            [disabled]="!matches().length"
+          >
+            <np-icon name="chevron-down" size="16" />
+          </button>
+          <input
+            class="ui-control te__bar-input"
+            aria-label="Replace with"
+            placeholder="Replace with"
+            [value]="replaceWith()"
+            (input)="replaceWith.set($any($event.target).value)"
+            (keydown.enter)="$event.preventDefault(); replace()"
+          />
+          <button
+            type="button"
+            class="ui-btn ui-btn--sm"
+            [disabled]="!matches().length"
+            (click)="replace()"
+          >
+            Replace
+          </button>
+          <button
+            type="button"
+            class="ui-btn ui-btn--sm"
+            [disabled]="!matches().length"
+            (click)="replace(true)"
+          >
+            All
+          </button>
+          <button type="button" class="ui-close" aria-label="Close find" (click)="closeBar()">
+            ×
+          </button>
+        </form>
+      }
+      @case (null) {}
+      @default {
+        <form
+          class="te__bar"
+          role="dialog"
+          [attr.aria-label]="bar() === 'link' ? 'Insert link' : 'Insert image'"
+          (submit)="$event.preventDefault(); applyBar()"
+        >
+          <np-icon [name]="bar() === 'link' ? 'link' : 'image'" size="16" class="te__bar-icon" />
+          <input
+            #barInput
+            class="ui-control te__bar-input"
+            type="text"
+            inputmode="url"
+            [attr.aria-label]="bar() === 'link' ? 'Link address' : 'Image address'"
+            [placeholder]="
+              bar() === 'link' ? 'https://example.com' : 'https://example.com/photo.jpg'
+            "
+            [value]="barUrl()"
+            (input)="barUrl.set($any($event.target).value)"
+            (keydown.escape)="$event.preventDefault(); closeBar()"
+          />
+          <button
+            type="submit"
+            class="ui-btn ui-btn--primary ui-btn--sm"
+            [disabled]="!barUrl().trim()"
+          >
+            {{ bar() === 'link' ? 'Apply' : 'Insert' }}
+          </button>
+          @if (bar() === 'image') {
+            <label class="ui-btn ui-btn--sm">
+              <np-icon name="upload" size="14" /> Upload
+              <input
+                type="file"
+                accept="image/*"
+                multiple
+                class="ui-visually-hidden"
+                (change)="insertImages(null, [].slice.call($any($event.target).files))"
+              />
+            </label>
+          } @else if (formats()['link']) {
+            <button
+              type="button"
+              class="ui-btn ui-btn--text ui-btn--danger ui-btn--sm"
+              (click)="applyLink(true)"
+            >
+              Remove
+            </button>
+          }
+          <button type="button" class="ui-btn ui-btn--text ui-btn--sm" (click)="closeBar()">
+            Cancel
+          </button>
+        </form>
+      }
+    }
+
+    <div class="te__scroll">
+      <div #editor class="te__editor" [id]="id"></div>
+    </div>
+  </div>
+
+  @if (hint() || countShown()) {
+    <div class="te__footer">
+      @if (hint()) {
+        <span class="ui-hint" [class.ui-error]="invalid()" [id]="id + '-hint'">{{ hint() }}</span>
+      }
+      @if (countShown()) {
+        <span
+          class="ui-hint te__count"
+          [class.te__count--full]="maxLength() && counts().characters >= maxLength()"
+          [id]="id + '-count'"
+        >
+          {{ counts().words }} {{ counts().words === 1 ? 'word' : 'words' }} ·
+          {{ counts().characters }}{{ maxLength() ? ' / ' + maxLength() : '' }} characters
+        </span>
+      }
+    </div>
+  }
+</div>
+
+@if (menu(); as m) {
+  <div
+    #menuEl
+    class="te__menu"
+    [class.te__menu--color]="m.tool === 'color'"
+    popover="auto"
+    role="group"
+    [attr.aria-label]="m.label"
+    (toggle)="$any($event).newState === 'closed' && closeMenu()"
+  >
+    @switch (m.tool) {
+      @case ('color') {
+        @for (section of colorSections; track section.format) {
+          <span class="te__menu-title">{{ section.title }}</span>
+          <button type="button" class="te__menu-item" (click)="setFormat(section.format, false)">
+            <np-icon name="x" size="14" /> {{ section.none }}
+          </button>
+          <div class="te__swatches">
+            @for (c of colors; track c.value) {
+              <button
+                type="button"
+                class="te__swatch"
+                [class.te__swatch--active]="selected(section.format) === c.value"
+                [style.background]="c.value"
+                [attr.aria-label]="section.title + ': ' + c.name"
+                [attr.aria-pressed]="selected(section.format) === c.value"
+                [title]="c.name"
+                (click)="setFormat(section.format, c.value)"
+              ></button>
+            }
+          </div>
+        }
+      }
+      @case ('align') {
+        @for (a of alignments; track a.value) {
+          <button
+            type="button"
+            class="te__menu-item"
+            [class.te__menu-item--active]="selected('align') === a.value"
+            [attr.aria-pressed]="selected('align') === a.value"
+            (click)="setFormat('align', a.value)"
+          >
+            <np-icon [name]="a.icon" size="16" /> {{ a.label }}
+          </button>
+        }
+      }
+      @case ('table') {
+        @if (formats()['table']) {
+          @for (action of tableActions; track action.run) {
+            <button type="button" class="te__menu-item" (click)="table(action.run)">
+              <np-icon [name]="action.icon" size="16" /> {{ action.label }}
+            </button>
+          }
+        } @else {
+          <span class="te__menu-title"
+            >Insert a table: {{ grid()[0] || 1 }} × {{ grid()[1] || 1 }}</span
+          >
+          <div class="te__grid" (mouseleave)="grid.set([0, 0])">
+            @for (cell of gridCells; track $index) {
+              <button
+                type="button"
+                class="te__cell"
+                [class.te__cell--on]="cell[0] <= grid()[0] && cell[1] <= grid()[1]"
+                [attr.aria-label]="cell[0] + ' by ' + cell[1] + ' table'"
+                (mouseenter)="grid.set(cell)"
+                (focus)="grid.set(cell)"
+                (click)="table([cell[0], cell[1]])"
+              ></button>
+            }
+          </div>
+        }
+      }
+    }
+  </div>
+}

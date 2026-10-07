@@ -1,0 +1,176 @@
+<div [attr.inert]="preview() ? '' : null">
+  @if (!preview()) {
+    <div class="modes">
+      <np-button-toggle
+        ariaLabel="Editor mode"
+        [options]="modes"
+        [showCheck]="false"
+        [value]="current()"
+        (valueChange)="current.set($any($event))"
+      />
+    </div>
+  }
+
+  @switch (current()) {
+    @case ('document') {
+      <section #docEl class="doc" aria-label="Document editor">
+        <div class="doc__head">
+          <np-icon name="file-text" [size]="22" class="doc__icon" />
+          <input
+            class="doc__title"
+            aria-label="Document title"
+            [value]="title()"
+            (input)="title.set($any($event.target).value)"
+          />
+          <span class="doc__saved" role="status">
+            @if (saved()) {
+              <np-icon name="check" [size]="14" /> Saved in this browser
+            }
+          </span>
+          <div class="doc__tools" role="toolbar" aria-label="File">
+            @for (action of actions(); track $index) {
+              <button
+                type="button"
+                class="ui-btn ui-btn--text ui-btn--icon"
+                [attr.aria-label]="action.label"
+                [title]="action.label"
+                (click)="action.run()"
+              >
+                <np-icon [name]="action.icon" [size]="18" />
+              </button>
+            }
+          </div>
+        </div>
+
+        <np-text-editor
+          variant="document"
+          ariaLabel="Document"
+          placeholder="Start writing your document..."
+          minHeight="0"
+          maxHeight="none"
+          [zoom]="zoom() / 100"
+          [value]="doc()"
+          (valueChange)="doc.set($event)"
+        >
+          <div editorToolbarStart>
+            <button
+              type="button"
+              class="te__tool"
+              data-tool
+              aria-label="Zoom out"
+              title="Zoom out"
+              [disabled]="zoom() <= 50"
+              (click)="zoomBy(-1)"
+            >
+              <np-icon name="minus" [size]="16" />
+            </button>
+            <span class="zoom" aria-live="polite">{{ zoom() }}%</span>
+            <button
+              type="button"
+              class="te__tool"
+              data-tool
+              aria-label="Zoom in"
+              title="Zoom in"
+              [disabled]="zoom() >= 200"
+              (click)="zoomBy(1)"
+            >
+              <np-icon name="plus" [size]="16" />
+            </button>
+            <span class="te__divider" aria-hidden="true"></span>
+          </div>
+        </np-text-editor>
+
+        <input
+          #fileInput
+          type="file"
+          accept=".html,.htm,.txt,.md,text/html,text/plain,text/markdown"
+          hidden
+          (change)="importFile(fileInput)"
+        />
+
+        <footer class="doc__status">
+          <span>{{ stats().words }} words</span>
+          <span>{{ stats().characters }} characters</span>
+          <span>{{ stats().minutes }} min read</span>
+          @if (importError()) {
+            <span class="ui-error" role="alert">{{ importError() }}</span>
+          }
+          <span class="doc__actions">
+            <button
+              type="button"
+              class="ui-btn ui-btn--text ui-btn--sm"
+              (click)="load('Untitled document', '')"
+            >
+              <np-icon name="plus" [size]="14" /> New document
+            </button>
+            <button
+              type="button"
+              class="ui-btn ui-btn--text ui-btn--sm"
+              (click)="load(sample.title, sample.html)"
+            >
+              <np-icon name="rotate-ccw" [size]="14" /> Restore sample
+            </button>
+          </span>
+        </footer>
+      </section>
+    }
+
+    @case ('simple') {
+      <section class="simple" aria-label="Simple editor">
+        <np-text-editor
+          label="Your text"
+          minHeight="320px"
+          maxHeight="520px"
+          [value]="simple()"
+          (valueChange)="simple.set($event)"
+        />
+        <div class="output">
+          <span class="ui-label" id="te-output-label">HTML output (the editor's value)</span>
+          <pre aria-labelledby="te-output-label" tabindex="0">{{ simple() || '(empty)' }}</pre>
+        </div>
+      </section>
+    }
+
+    @case ('comment') {
+      <section class="comments" aria-label="Comment box">
+        <h2>
+          Discussion <span>{{ comments().length }}</span>
+        </h2>
+        <ul class="comments__list">
+          @for (c of comments(); track $index) {
+            <li class="comment">
+              <np-avatar [name]="c.name" size="small" />
+              <div class="comment__body">
+                <div class="comment__meta">
+                  <b>{{ c.name }}</b> · {{ c.time }}
+                </div>
+                <div class="comment__html" [innerHTML]="c.html"></div>
+              </div>
+            </li>
+          }
+        </ul>
+        <form class="composer" (submit)="$event.preventDefault(); postComment()">
+          <np-text-editor
+            ariaLabel="Write a comment"
+            placeholder="Write a comment..."
+            minHeight="90px"
+            maxHeight="240px"
+            [tools]="commentTools"
+            [value]="draft()"
+            (valueChange)="draft.set($event)"
+          />
+          <div class="composer__actions">
+            <span class="ui-hint">Ctrl/⌘ B, I, U and K work here too.</span>
+            <button type="submit" class="ui-btn ui-btn--primary" [disabled]="!draft()">
+              <np-icon name="send" [size]="16" /> Post comment
+            </button>
+          </div>
+        </form>
+      </section>
+    }
+  }
+</div>
+
+@if (preview()) {
+  <span class="demo__open">Open the Text Editor <np-icon name="arrow-right" [size]="16" /></span>
+}

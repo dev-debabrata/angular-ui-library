@@ -37,16 +37,6 @@ video {
 
 /* ============================== Tablet (<= 1024px) ============================== */
 @media (max-width: 1024px) {
-  /* ---- top bar ---- */
-  :root np-landing-nav .nav {
-    gap: 16px;
-    padding: 0 20px;
-  }
-
-  :root np-landing-nav .links.links a {
-    padding: 8px 9px;
-  }
-
   /* ---- Welcome ---- */
   :root np-welcome-page .hero__inner {
     padding: 96px 24px 120px;
@@ -66,7 +56,7 @@ video {
 
   /* ---- Components catalog ---- */
   :root np-components-catalog .hero {
-    padding: 64px 0 56px;
+    padding: 64px 0 40px;
   }
 
   :root np-components-catalog .cards--grid {
@@ -84,45 +74,6 @@ video {
 
   :root np-lottie-gallery .grid {
     grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
-  }
-}
-
-/* =================== Top bar on phones and small tablets (<= 760px) =================== */
-/* The section links move to a second row that scrolls sideways, instead of disappearing */
-@media (max-width: 760px) {
-  :root np-landing-nav .nav {
-    flex-wrap: wrap;
-    gap: 6px 12px;
-    height: auto;
-    padding: 10px 16px 0;
-  }
-
-  :root np-landing-nav .links {
-    display: flex;
-    flex: 1 0 100%;
-    order: 3;
-    margin: 0 -16px;
-    padding: 0 12px 8px;
-    overflow-x: auto;
-    scrollbar-width: none;
-  }
-
-  :root np-landing-nav .links::-webkit-scrollbar {
-    display: none;
-  }
-
-  :root np-landing-nav .links.links a {
-    flex: none;
-    white-space: nowrap;
-  }
-
-  :root np-landing-nav .tools {
-    margin-left: auto;
-  }
-
-  :root np-landing-nav .get-started {
-    padding: 7px 12px;
-    font-size: 13px;
   }
 }
 
@@ -230,7 +181,7 @@ video {
     width: 100%;
   }
 
-  :root np-components-catalog .group {
+  :root np-components-catalog .group:not(.hero + *) {
     margin-top: 40px;
   }
 
@@ -393,15 +344,6 @@ video {
 
 /* ============================== Small phones (<= 400px) ============================== */
 @media (max-width: 400px) {
-  /* "Get Started" is also on the Welcome page; the logo, links and tools keep the row */
-  :root np-landing-nav .get-started {
-    display: none;
-  }
-
-  :root np-landing-nav .brand {
-    font-size: 18px;
-  }
-
   :root np-components-catalog .cards--compact {
     gap: 8px;
   }

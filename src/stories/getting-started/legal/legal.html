@@ -1,0 +1,43 @@
+<np-site-page
+  [heading]="page().title"
+  [intro]="page().intro"
+  [note]="'Last updated ' + page().updated"
+>
+  <article class="doc">
+    <nav class="toc" aria-label="On this page">
+      <b>On this page</b>
+      @for (section of page().sections; track section.title; let i = $index) {
+        <a href="" (click)="$event.preventDefault(); jump(i)">{{
+          section.title
+        }}</a>
+      }
+    </nav>
+
+    <div class="sections">
+      @for (section of page().sections; track section.title; let i = $index) {
+        <section [id]="doc() + '-' + i">
+          <h2>
+            <span class="num">{{ i + 1 }}</span> {{ section.title }}
+          </h2>
+          @for (paragraph of section.paragraphs; track $index) {
+            <p>{{ paragraph }}</p>
+          }
+          @if (section.link; as link) {
+            <a class="link" [href]="link.url" target="_blank" rel="noopener"
+              >{{ link.label }} <np-icon name="arrow-up-right" [size]="14"
+            /></a>
+          }
+        </section>
+      }
+
+      <section class="questions">
+        <np-icon name="mail" [size]="20" />
+        <p>
+          Questions about this page? Write to
+          <a [href]="'mailto:' + contact.email">{{ contact.email }}</a
+          >.
+        </p>
+      </section>
+    </div>
+  </article>
+</np-site-page>

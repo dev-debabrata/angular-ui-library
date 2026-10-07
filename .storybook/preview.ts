@@ -1,12 +1,11 @@
 import type { Preview } from '@storybook/angular-vite';
 import {
   GLOBALS_UPDATED,
-  SELECT_STORY,
   SET_GLOBALS,
   STORY_RENDERED,
 } from 'storybook/internal/core-events';
 import { addons } from 'storybook/preview-api';
-import { clickedPage } from '../src/stories/getting-started/landing';
+import { OPEN_PAGE, clickedPage } from '../src/stories/getting-started/landing';
 import '../src/stories/styles/theme.css';
 // Shared layout of the Icons and Animations pages
 import '../src/stories/styles/gallery-page.css';
@@ -31,7 +30,7 @@ document.addEventListener('click', (event) => {
   const page = clickedPage(event);
   if (page === undefined) return;
   event.preventDefault();
-  addons.getChannel().emit(SELECT_STORY, { storyId: page || 'getting-started-welcome--welcome' });
+  addons.getChannel().emit(OPEN_PAGE, page);
 });
 
 // The site's data (icons, animations, Lottie files) loads in the background once the first page is up, so
@@ -92,6 +91,7 @@ const preview: Preview = {
             'Dot Wave',
             'Dot Ribbon',
           ],
+          'Text Editor',
         ],
       },
     },

@@ -246,3 +246,43 @@
     background: linear-gradient(90deg, #a5b4fc, #f0abfc);
   }
 }
+
+/* The site's text pages (np-site-page: About, Contact, Privacy, Terms) end with the footer, without the galleries'
+   room at the bottom, and share a card and an icon tile */
+:root .gallery-page.gallery-page--footer {
+  padding-bottom: 0;
+}
+
+.gallery-page {
+  .site-card {
+    border: 1px solid var(--ui-border);
+    border-radius: var(--ui-radius-lg);
+    background: var(--ui-surface);
+    box-shadow: var(--ui-shadow-sm);
+    transition:
+      border-color 0.2s var(--ui-ease),
+      box-shadow 0.2s var(--ui-ease);
+  }
+
+  a[href].site-card:hover,
+  .site-card--hover:hover {
+    border-color: var(--ui-primary);
+    box-shadow: var(--ui-shadow);
+  }
+
+  a[href].site-card:focus-visible {
+    outline: none;
+    box-shadow: var(--ui-ring);
+  }
+
+  .site-icon {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border-radius: var(--ui-radius);
+    background: var(--ui-primary-soft);
+    color: var(--ui-primary);
+  }
+}

@@ -1,0 +1,21 @@
+:host {
+  display: block;
+}
+
+/* The same width and side padding as the top bar (manager-head.html), so the edges line up */
+.gallery-page.te-page {
+  max-width: 1200px;
+  padding-inline: 24px;
+}
+
+@media (max-width: 1024px) {
+  .gallery-page.te-page {
+    padding-inline: 20px;
+  }
+}
+
+@media (max-width: 760px) {
+  .gallery-page.te-page {
+    padding-inline: 16px;
+  }
+}

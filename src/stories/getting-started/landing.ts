@@ -15,8 +15,13 @@ export const PAGES = {
   icons: 'icons',
   animations: 'animations',
   lottie: 'nexlottie',
-  effects: 'effects-particles--hero',
+  textEditor: 'text-editor',
+  effects: 'effects-overview',
   onboarding: 'onboarding-tour',
+  about: 'about',
+  contact: 'contact',
+  privacy: 'privacy',
+  terms: 'terms',
 };
 
 /**
@@ -44,12 +49,45 @@ export const SITE_PAGES = [
   PAGES.icons,
   PAGES.animations,
   PAGES.lottie,
+  PAGES.textEditor,
+  PAGES.effects,
+  PAGES.about,
+  PAGES.contact,
+  PAGES.privacy,
+  PAGES.terms,
+];
+
+/** How to reach the NexPrime team: shown by the site footer, About and Contact */
+export const CONTACT = {
+  email: 'debabratadas711@gmail.com',
+  location: 'Kolkata, India',
+  x: 'https://twitter.com/nexprime',
+  npm: 'https://www.npmjs.com/package/nexprime',
+};
+
+/** The creators, with their LinkedIn profiles (replace the placeholder URLs with the real ones) */
+export const AUTHORS = [
+  { name: 'Debabrata Das', role: 'Co-creator', linkedin: 'https://www.linkedin.com/in/your-id' },
+  { name: 'Salman Ali', role: 'Co-creator', linkedin: 'https://www.linkedin.com/in/their-id' },
 ];
 
 /** Channel event: the site's page changed ({ page, title }); manager.ts shows it in the address bar and tab */
 export const SITE_ROUTE = 'np/site-route';
 
-/** The site's sections, for the landing nav and Welcome's "Pick a place to start" cards */
+/** Channel event from the top bar (manager.ts): open a site page (its short URL) in the site's router */
+export const SITE_GO = 'np/site-go';
+
+/** Channel event from the top bar (manager.ts): open the site search */
+export const SITE_SEARCH = 'np/site-search';
+
+/**
+ * Channel event to the manager: open a page by its short URL (managerHref, '' for Welcome). manager.ts resolves it
+ * like the address bar: Storybook's SELECT_STORY can't open a component hidden from the sidebar (Components/Overview)
+ * or an MDX page's short id (getting-started-installation)
+ */
+export const OPEN_PAGE = 'np/open-page';
+
+/** The site's sections, for the top bar (manager.ts) and Welcome's "Pick a place to start" cards */
 export const SECTIONS = [
   {
     id: 'catalog',
@@ -78,6 +116,13 @@ export const SECTIONS = [
     icon: 'clapperboard',
     path: PAGES.lottie,
     text: 'Hundreds of Lottie files with export to MP4, GIF and dotLottie.',
+  },
+  {
+    id: 'text-editor',
+    label: 'Text Editor',
+    icon: 'type',
+    path: PAGES.textEditor,
+    text: 'Write documents in the browser and export them to Word, HTML or PDF.',
   },
   {
     id: 'effects',

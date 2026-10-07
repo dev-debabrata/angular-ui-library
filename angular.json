@@ -112,6 +112,7 @@
             "browser": "src/elements/nexprime.ts",
             "index": false,
             "tsConfig": "tsconfig.elements.json",
+            "allowedCommonJsDependencies": ["quill-delta"],
             "styles": [
               "src/stories/styles/theme.css"
             ],

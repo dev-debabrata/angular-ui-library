@@ -1,0 +1,12 @@
+:host {
+  display: block;
+  font-family: var(--ui-font);
+  color: var(--ui-text);
+  background: var(--ui-surface);
+}
+
+.note {
+  margin: 0;
+  color: var(--ui-text-subtle);
+  font-size: 13px;
+}

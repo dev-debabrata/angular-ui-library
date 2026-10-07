@@ -1,0 +1,43 @@
+<np-site-page
+  heading="Contact us"
+  intro="Questions, bug reports, feature ideas or a project you built with NexPrime: we read every message and usually reply within a day or two."
+>
+  <div class="layout">
+    <ul class="channels">
+      @for (channel of channels; track channel.title) {
+        <li>
+          <!-- A link when the channel has a URL (Location has none) -->
+          <a
+            class="channel site-card"
+            [attr.href]="channel.url || null"
+            [attr.target]="channel.url.startsWith('http') ? '_blank' : null"
+            rel="noopener"
+          >
+            <span class="site-icon"><np-icon [name]="channel.icon" [size]="20" /></span>
+            <span class="channel__text">
+              <b>{{ channel.title }}</b>
+              <span>{{ channel.text }}</span>
+            </span>
+            @if (channel.url) {
+              <np-icon class="channel__arrow" name="arrow-up-right" [size]="16" />
+            }
+          </a>
+        </li>
+      }
+    </ul>
+
+    <np-form
+      card
+      icon="send"
+      title="Send us a message"
+      subtitle="This opens your email app with the message filled in."
+      [columns]="2"
+      [fields]="fields"
+      submitLabel="Write email"
+      submitIcon="mail"
+      successTitle="Almost there"
+      [successMessage]="'Your email app should now be open. Press Send there, or write to ' + contact.email + '.'"
+      (submitted)="send($event)"
+    />
+  </div>
+</np-site-page>

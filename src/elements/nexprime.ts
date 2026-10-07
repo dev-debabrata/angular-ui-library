@@ -73,6 +73,7 @@ import { StepperComponent } from '../stories/components/panel/stepper/stepper.co
 import { TableComponent } from '../stories/components/data/table/table.component';
 import { TabsComponent } from '../stories/components/panel/tabs/tabs.component';
 import { TagComponent } from '../stories/components/media/tag/tag.component';
+import { TextEditorComponent } from '../stories/text-editor/text-editor.component';
 import { TextInputComponent } from '../stories/components/form/text-input/text-input.component';
 import { TextareaComponent } from '../stories/components/form/textarea/textarea.component';
 import { TieredMenuComponent } from '../stories/components/menu/tiered-menu/tiered-menu.component';
@@ -160,6 +161,7 @@ const components: Type<unknown>[] = [
   TableComponent,
   TabsComponent,
   TagComponent,
+  TextEditorComponent,
   TextInputComponent,
   TextareaComponent,
   TieredMenuComponent,

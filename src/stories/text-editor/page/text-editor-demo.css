@@ -1,0 +1,326 @@
+/* The site's top bar is outside the page (Storybook's, manager.ts), so the editor's toolbar sticks to the top */
+:host {
+  display: block;
+}
+
+.modes {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 24px;
+}
+
+/* Document editor: a window with a title bar, the editor, and a status bar */
+.doc {
+  display: flex;
+  flex-direction: column;
+  overflow: clip;
+  border: 1px solid var(--ui-border);
+  border-radius: var(--ui-radius-lg);
+  background: var(--ui-surface);
+  box-shadow: var(--ui-shadow-lg);
+}
+
+.doc:fullscreen {
+  border-radius: 0;
+}
+
+.doc__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--ui-border);
+}
+
+.doc__icon {
+  color: var(--ui-primary);
+}
+
+.doc__title {
+  flex: 1 1 160px;
+  min-width: 0;
+  padding: 6px 8px;
+  border: 1px solid transparent;
+  border-radius: var(--ui-radius-sm);
+  background: none;
+  color: var(--ui-text);
+  font: inherit;
+  font-size: 16px;
+  font-weight: 600;
+  transition:
+    border-color var(--ui-ease),
+    box-shadow var(--ui-ease);
+}
+
+.doc__title:hover {
+  border-color: var(--ui-border-strong);
+}
+
+.doc__title:focus {
+  outline: none;
+  border-color: var(--ui-primary);
+  box-shadow: var(--ui-ring);
+}
+
+.doc__tools {
+  display: flex;
+  gap: 2px;
+}
+
+.doc__tools .ui-btn {
+  width: 34px;
+  height: 34px;
+  color: var(--ui-text-muted);
+}
+
+.doc__tools .ui-btn:hover {
+  color: var(--ui-primary);
+}
+
+.doc__saved {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--ui-text-subtle);
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+/* The editor fills the window: no border of its own, and a tall page area that scrolls */
+.doc np-text-editor {
+  flex: 1;
+  min-height: 0;
+}
+
+.doc ::ng-deep .te,
+.doc ::ng-deep .te:has(.ql-editor:focus) {
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.doc ::ng-deep .te__toolbar {
+  border-radius: 0;
+}
+
+.doc ::ng-deep .te__scroll {
+  height: min(72vh, 900px);
+  border-radius: 0;
+}
+
+.doc:fullscreen ::ng-deep .te__scroll {
+  height: calc(100vh - 150px);
+}
+
+.zoom {
+  min-width: 44px;
+  color: var(--ui-text-muted);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+}
+
+.doc__status {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 18px;
+  padding: 8px 16px;
+  border-top: 1px solid var(--ui-border);
+  color: var(--ui-text-muted);
+  font-size: 12px;
+}
+
+.doc__actions {
+  display: flex;
+  gap: 4px;
+  margin-left: auto;
+}
+
+/* Simple editor: the editor and its HTML side by side */
+.simple {
+  display: grid;
+  grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+  gap: 24px;
+  align-items: start;
+}
+
+.output {
+  display: grid;
+  gap: 6px;
+}
+
+.output pre {
+  max-height: 560px;
+  margin: 0;
+  padding: 16px;
+  overflow: auto;
+  border-radius: var(--ui-radius);
+  background: #1e293b;
+  color: #e2e8f0;
+  font-size: 12.5px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.output pre:focus-visible {
+  outline: none;
+  box-shadow: var(--ui-ring);
+}
+
+/* Comment box */
+.comments {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 24px;
+  border: 1px solid var(--ui-border);
+  border-radius: var(--ui-radius-lg);
+  background: var(--ui-surface);
+  box-shadow: var(--ui-shadow);
+}
+
+.comments h2 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 16px;
+  color: var(--ui-text);
+  font-size: 18px;
+}
+
+.comments h2 span {
+  padding: 1px 8px;
+  border-radius: var(--ui-radius-full);
+  background: var(--ui-primary-soft);
+  color: var(--ui-primary);
+  font-size: 12px;
+}
+
+.comments__list {
+  display: grid;
+  gap: 16px;
+  margin: 0 0 20px;
+  padding: 0;
+  list-style: none;
+}
+
+.comment {
+  display: flex;
+  gap: 12px;
+}
+
+.comment__body {
+  flex: 1;
+  min-width: 0;
+  padding: 10px 14px;
+  border-radius: var(--ui-radius);
+  background: var(--ui-surface-muted);
+  color: var(--ui-text);
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.comment__meta {
+  margin-bottom: 4px;
+  color: var(--ui-text-muted);
+  font-size: 12px;
+}
+
+.comment__meta b {
+  color: var(--ui-text);
+}
+
+.comment__html ::ng-deep :is(p, ul, ol, pre) {
+  margin: 0 0 6px;
+}
+
+.comment__html ::ng-deep :last-child {
+  margin-bottom: 0;
+}
+
+.composer {
+  display: grid;
+  gap: 10px;
+}
+
+.composer__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+@media (max-width: 900px) {
+  .simple {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .comments {
+    padding: 16px;
+  }
+
+  .doc__saved {
+    display: none;
+  }
+}
+
+/* preview (Welcome): a shorter picture of the document editor that fades out, with a button over it */
+:host(.demo--preview) {
+  position: relative;
+}
+
+:host(.demo--preview) .doc {
+  position: relative;
+  transition:
+    border-color var(--ui-ease),
+    box-shadow var(--ui-ease);
+}
+
+:host(.demo--preview:hover) .doc {
+  border-color: var(--ui-primary);
+}
+
+:host(.demo--preview) .doc::after {
+  content: '';
+  position: absolute;
+  inset: auto 0 0;
+  height: 160px;
+  background: linear-gradient(transparent, var(--ui-surface));
+}
+
+:host(.demo--preview) .doc ::ng-deep .te__toolbar {
+  position: static;
+  /* A picture: one row, cut off at the edge */
+  flex-wrap: nowrap;
+  overflow: hidden;
+}
+
+:host(.demo--preview) .doc ::ng-deep .te__scroll {
+  height: 360px;
+}
+
+:host(.demo--preview) .doc__status {
+  display: none;
+}
+
+.demo__open {
+  position: absolute;
+  bottom: 28px;
+  left: 50%;
+  translate: -50% 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 20px;
+  border-radius: var(--ui-radius-full);
+  background: var(--ui-gradient);
+  box-shadow: var(--ui-shadow-lg);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+}
