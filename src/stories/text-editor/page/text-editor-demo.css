@@ -282,9 +282,11 @@
   }
 }
 
-/* preview (Welcome): display-only demo of the document editor matching the 470px showcase height */
+/* preview (Welcome): display-only demo of the document editor matching the other bento cards and 470px showcase height */
 :host(.demo--preview) .doc {
   height: 470px;
+  border-radius: 20px;
+  box-shadow: var(--ui-shadow-sm);
 }
 
 :host(.demo--preview) .doc ::ng-deep .te__scroll {
