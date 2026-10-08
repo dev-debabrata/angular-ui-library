@@ -282,30 +282,12 @@
   }
 }
 
-/* preview (Welcome): a shorter, read-only picture of the document editor that fades out */
+/* preview (Welcome): display-only demo of the document editor matching the 470px showcase height */
 :host(.demo--preview) .doc {
-  position: relative;
-}
-
-:host(.demo--preview) .doc::after {
-  content: '';
-  position: absolute;
-  inset: auto 0 0;
-  height: 160px;
-  background: linear-gradient(transparent, var(--ui-surface));
-}
-
-:host(.demo--preview) .doc ::ng-deep .te__toolbar {
-  position: static;
-  /* A picture: one row, cut off at the edge */
-  flex-wrap: nowrap;
-  overflow: hidden;
+  height: 470px;
 }
 
 :host(.demo--preview) .doc ::ng-deep .te__scroll {
-  height: 360px;
+  height: auto;
 }
 
-:host(.demo--preview) .doc__status {
-  display: none;
-}
