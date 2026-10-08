@@ -34,6 +34,7 @@
   <div class="appearance">
     <np-select
       label="color (any component)"
+      filter
       [options]="colorOptions"
       [value]="color()"
       (valueChange)="color.set($event)"

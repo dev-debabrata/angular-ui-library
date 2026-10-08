@@ -105,7 +105,8 @@
   }
 
   .te__tool:hover:not(:disabled),
-  .te__menu-item:hover {
+  .te__menu-item:hover,
+  .te__char:hover {
     background: var(--ui-primary-soft);
     color: var(--ui-primary);
   }
@@ -116,7 +117,7 @@
     color: #fff;
   }
 
-  :is(.te__tool, .te__select, .te__menu-item, .te__swatch, .te__cell):focus-visible {
+  :is(.te__tool, .te__select, .te__menu-item, .te__swatch, .te__cell, .te__char):focus-visible {
     outline: none;
     box-shadow: var(--ui-ring);
   }
@@ -324,6 +325,25 @@
     .te__swatches {
       margin: 4px 0 8px;
     }
+  }
+
+  /* Emoji and special characters, inserted at the cursor */
+  .te__chars {
+    display: grid;
+    grid-template-columns: repeat(8, 30px);
+    gap: 2px;
+  }
+
+  .te__char {
+    height: 30px;
+    padding: 0;
+    border: none;
+    border-radius: var(--ui-radius-sm);
+    background: none;
+    color: var(--ui-text);
+    font: inherit;
+    font-size: 17px;
+    cursor: pointer;
   }
 
   /* The table size picker: 6 rows × 8 columns of cells, lit up to the one under the pointer */

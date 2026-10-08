@@ -1,0 +1,50 @@
+<section #page class="focus" aria-label="Focus writing">
+  <div class="focus__bar">
+    <span class="focus__count" aria-live="polite">{{ words() }} / {{ goal() }} words</span>
+    <div
+      class="focus__progress"
+      role="progressbar"
+      aria-label="Word goal"
+      [attr.aria-valuenow]="words()"
+      aria-valuemin="0"
+      [attr.aria-valuemax]="goal()"
+    >
+      <span [style.width.%]="progress()"></span>
+    </div>
+    <label class="focus__goal">
+      Goal
+      <select [value]="goal()" (change)="goal.set(+$any($event.target).value)">
+        @for (g of goals; track g) {
+          <option [value]="g" [selected]="g === goal()">{{ g }}</option>
+        }
+      </select>
+    </label>
+    <button
+      type="button"
+      class="focus__tool"
+      [attr.aria-label]="fullscreen() ? 'Exit full screen' : 'Full screen'"
+      [title]="fullscreen() ? 'Exit full screen' : 'Full screen'"
+      (click)="toggleFullscreen()"
+    >
+      <np-icon [name]="fullscreen() ? 'minimize' : 'maximize'" [size]="16" />
+    </button>
+  </div>
+
+  <np-text-editor
+    class="te-fill"
+    theme="dark"
+    ariaLabel="Your text"
+    placeholder="Start writing. No toolbar, no noise: # for a heading, **bold**, - for a list..."
+    minHeight="0"
+    maxHeight="none"
+    [tools]="[]"
+    [value]="text()"
+    (valueChange)="text.set($event)"
+  />
+
+  @if (progress() >= 100) {
+    <p class="focus__done" role="status">
+      <np-icon name="sparkles" [size]="16" /> Goal reached. Nice work!
+    </p>
+  }
+</section>

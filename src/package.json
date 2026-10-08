@@ -1,6 +1,6 @@
 {
   "name": "nexprime",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "NexPrime: one premium UI system for every framework. 85+ components for Angular and, as Web Components, for React, Next.js, Vue, Svelte and plain HTML: forms, tables, charts, dialogs, menus, chat, onboarding tours, background effects, a Lottie player, 2,000+ icons, CSS animations and a light/dark theme with custom colors.",
   "keywords": [
     "nexprime",
@@ -49,7 +49,8 @@
     "@angular/common": "^21.2.0",
     "@angular/core": "^21.2.0",
     "@angular/forms": "^21.2.0",
-    "react": ">=18"
+    "react": ">=18",
+    "vue": ">=3.3"
   },
   "peerDependenciesMeta": {
     "@angular/cdk": {
@@ -65,6 +66,9 @@
       "optional": true
     },
     "react": {
+      "optional": true
+    },
+    "vue": {
       "optional": true
     }
   },
@@ -90,6 +94,10 @@
     "./react": {
       "types": "./react/index.d.ts",
       "default": "./react/index.js"
+    },
+    "./vue": {
+      "types": "./vue/index.d.ts",
+      "default": "./vue/index.js"
     }
   }
 }

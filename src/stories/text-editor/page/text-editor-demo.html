@@ -43,6 +43,7 @@
         </div>
 
         <np-text-editor
+          class="te-fill"
           variant="document"
           ariaLabel="Document"
           placeholder="Start writing your document..."
@@ -168,9 +169,21 @@
         </form>
       </section>
     }
+
+    @case ('markdown') {
+      <np-text-editor-markdown (openDocument)="openInDocument($event)" />
+    }
+
+    @case ('email') {
+      <np-text-editor-email />
+    }
+
+    @case ('notes') {
+      <np-text-editor-notes />
+    }
+
+    @case ('focus') {
+      <np-text-editor-focus />
+    }
   }
 </div>
-
-@if (preview()) {
-  <span class="demo__open">Open the Text Editor <np-icon name="arrow-right" [size]="16" /></span>
-}

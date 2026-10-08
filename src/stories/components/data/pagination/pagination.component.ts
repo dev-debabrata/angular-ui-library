@@ -8,6 +8,7 @@ import {
 } from '@angular/core';
 
 import type { Size } from '../../../utils/types';
+import { SelectComponent } from '../../form/select/select.component';
 import { IconComponent } from '../../media/icon/icon.component';
 
 /** Looks of the pagination */
@@ -18,12 +19,16 @@ export const PAGINATION_VARIANTS = [
   'glass',
   'minimal',
   'dots',
+  'compact',
+  'segmented',
+  'input',
+  'load-more',
 ] as const;
 export type PaginationVariant = (typeof PAGINATION_VARIANTS)[number];
 
 @Component({
   selector: 'np-pagination',
-  imports: [IconComponent],
+  imports: [IconComponent, SelectComponent],
   templateUrl: './pagination.html',
   styleUrl: './pagination.css',
 })
@@ -34,7 +39,11 @@ export class PaginationComponent {
   readonly totalPages = input(1, { transform: numberAttribute });
   /** Page numbers shown on each side of the current page */
   readonly siblings = input(1, { transform: numberAttribute });
-  /** Look: default (pill track), outlined, soft, glass (frosted), minimal ("Page 3 of 12") or dots */
+  /**
+   * Look: default (pill track), outlined, soft, glass (frosted), minimal ("Page 3 of 12"), dots, compact (a data
+   * table footer: "Items per page" select, "1 – 10 of 240" and arrows), segmented (joined buttons), input ("Page [3]
+   * of 12", type a page) or load-more ("Showing 20 of 240" and a "Load more" button: show page × rows items)
+   */
   readonly variant = input<PaginationVariant>('default');
   /** Button size */
   readonly size = input<Size>('medium');
@@ -53,6 +62,21 @@ export class PaginationComponent {
   /** Number of pages */
   protected readonly count = computed(
     () => Math.ceil(this.totalRecords() / this.rows()) || this.totalPages(),
+  );
+
+  /** The items of this page: from–to of total, and how many the next page adds (load-more) */
+  protected readonly range = computed(() => {
+    const [total, rows, page] = [this.totalRecords(), this.rows(), this.page()];
+    const to = Math.min(page * rows, total);
+    return { from: (page - 1) * rows + 1, to, total, next: Math.min(rows, total - to) };
+  });
+
+  /** The rows-per-page choices, for the select ("10 / page"; just "10" after compact's "Items per page:") */
+  protected readonly rowsChoices = computed(() =>
+    this.rowsOptions().map((n) => ({
+      value: String(n),
+      label: this.variant() === 'compact' ? String(n) : `${n} / page`,
+    })),
   );
 
   /** Page numbers to show, with null where pages are skipped */
@@ -76,6 +100,11 @@ export class PaginationComponent {
     }
     return result;
   });
+
+  /** Arrow keys change the page, except in the page number box (where they move the caret) */
+  protected arrow(event: Event, step: number) {
+    if (!(event.target instanceof HTMLInputElement)) this.goTo(this.page() + step);
+  }
 
   protected goTo(page: number) {
     this.page.set(Math.min(this.count(), Math.max(1, page)));

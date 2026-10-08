@@ -63,26 +63,30 @@
   object-fit: cover;
 }
 
-/* Phones only see a narrow slice: zoom in on the NP mark (at 23% / 46% of the banner) so the wordmark and tagline
-   fall outside, instead of showing half of them */
+/* Phones: the banner's NP mark and wordmark behind the title and paragraph, as on desktop, centered on them (at 46%
+   of the hero on phones) and wider than the screen; its edges fade into the hero, and its tagline band too, which
+   would otherwise run through the paragraph. A wash over the middle dims the wordmark so the text reads on top */
 @media (max-width: 640px) {
   .hero__banner {
     position: absolute;
-    top: 50%;
+    top: 46%;
     left: 50%;
-    width: auto;
+    width: 135%;
     max-width: none;
-    height: 180%;
-    translate: -23% -46%;
+    height: auto;
+    translate: -50% -50%;
+    mask:
+      radial-gradient(closest-side, #000 70%, transparent),
+      linear-gradient(#000 66%, transparent 76%);
+    mask-composite: intersect;
   }
 
-  /* The wordmark and tagline are cropped out here: keep only the base wash, not the NP mark shaded or gray */
   .hero__bg::before {
     display: none;
   }
 
   .hero__bg::after {
-    background: radial-gradient(ellipse 60% 55% at 50% 50%, rgb(2 6 23 / 0.6), rgb(2 6 23 / 0.25));
+    background: radial-gradient(ellipse 70% 28% at 60% 46%, rgb(2 6 23 / 0.45), rgb(2 6 23 / 0.1));
   }
 }
 

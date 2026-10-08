@@ -3,9 +3,9 @@
 /** Toolbar tools, in toolbar order. Pass a subset to `tools` to show fewer */
 // prettier-ignore
 export const TEXT_EDITOR_TOOLS = [
-  'undo', 'redo', 'heading', 'size', 'bold', 'italic', 'underline', 'strike', 'code', 'superscript', 'subscript',
-  'color', 'ordered', 'bullet', 'check', 'outdent', 'indent', 'align', 'link', 'image', 'table', 'blockquote',
-  'code-block', 'divider', 'find', 'clean',
+  'undo', 'redo', 'heading', 'font', 'size', 'bold', 'italic', 'underline', 'strike', 'code', 'superscript',
+  'subscript', 'color', 'highlight', 'ordered', 'bullet', 'check', 'outdent', 'indent', 'align', 'line-height', 'link',
+  'image', 'video', 'table', 'blockquote', 'code-block', 'divider', 'emoji', 'symbol', 'case', 'find', 'clean',
 ] as const;
 export type TextEditorTool = (typeof TEXT_EDITOR_TOOLS)[number];
 
@@ -26,11 +26,11 @@ export const TEXT_EDITOR_COLORS: readonly { name: string; value: string }[] = Ob
   'Light pink': '#fbcfe8',
 }).map(([name, value]) => ({ name, value }));
 
-/** The color menu: text color and highlight, each with a "none" choice */
-export const TEXT_EDITOR_COLOR_SECTIONS = [
-  { format: 'color', title: 'Text color', none: 'Default color' },
-  { format: 'background', title: 'Highlight', none: 'No highlight' },
-] as const;
+/** The color menus: text color (the color tool) and highlight (the highlight tool), each with a "none" choice */
+export const TEXT_EDITOR_COLOR_SECTIONS = {
+  color: { format: 'color', title: 'Text color', none: 'Default color' },
+  highlight: { format: 'background', title: 'Highlight', none: 'No highlight' },
+} as const;
 
 /** Options of the toolbar's dropdowns: text style, and font size in px (written as style="font-size: …") */
 export const TEXT_EDITOR_HEADINGS = [
@@ -46,6 +46,39 @@ export const TEXT_EDITOR_SIZES = [
     value: `${px}px`,
   })),
 ] as const;
+
+/** Font families (written as style="font-family: …"); plain stacks, no quotes, so they read back unchanged */
+export const TEXT_EDITOR_FONTS = [
+  { label: 'Default', value: '' },
+  { label: 'Sans', value: 'Arial, Helvetica, sans-serif' },
+  { label: 'Serif', value: 'Georgia, serif' },
+  { label: 'Mono', value: 'Menlo, Consolas, monospace' },
+] as const;
+
+/** The line spacing menu (written as style="line-height: …" on the line) */
+export const TEXT_EDITOR_LINE_HEIGHTS = [
+  { label: 'Default', value: '' },
+  ...['1', '1.15', '1.5', '2'].map((value) => ({ label: value, value })),
+] as const;
+
+/** The letter case menu */
+export const TEXT_EDITOR_CASES = [
+  { label: 'UPPERCASE', value: 'upper' },
+  { label: 'lowercase', value: 'lower' },
+  { label: 'Title Case', value: 'title' },
+  { label: 'Sentence case', value: 'sentence' },
+] as const;
+export type TextCase = (typeof TEXT_EDITOR_CASES)[number]['value'];
+
+/** The emoji and special character menus: characters inserted at the cursor */
+export const TEXT_EDITOR_EMOJI =
+  '😀 😂 😊 😍 🤔 😎 😢 😮 👍 👎 👏 🙌 🙏 💪 👀 🎉 🔥 ✨ ⭐ ❤️ 💡 ✅ ❌ ⚠️ 🚀 📌 📎 📅 📝 💬 🔗 🎯'.split(
+    ' ',
+  );
+export const TEXT_EDITOR_SYMBOLS =
+  '© ® ™ § ¶ † • … – — « » ‹ › “ ” ← → ↑ ↓ ⇒ ⇔ ± × ÷ ≈ ≠ ≤ ≥ ∞ √ ° µ π Σ Ω € £ ¥ ¢ ½ ¼ ¾ ✓ ★'.split(
+    ' ',
+  );
 
 /** The alignment menu */
 export const TEXT_EDITOR_ALIGNMENTS = [
@@ -89,6 +122,7 @@ const GROUPS: ToolItem[][] = [
   ],
   [
     tool('heading', 'Text style', 'heading', { format: 'header' }),
+    tool('font', 'Font', 'type'),
     tool('size', 'Font size', 'a-large-small'),
   ],
   [
@@ -102,7 +136,10 @@ const GROUPS: ToolItem[][] = [
     tool('superscript', 'Superscript', 'superscript', { format: 'script', value: 'super' }),
     tool('subscript', 'Subscript', 'subscript', { format: 'script', value: 'sub' }),
   ],
-  [tool('color', 'Text and highlight color', 'baseline')],
+  [
+    tool('color', 'Text color', 'baseline'),
+    tool('highlight', 'Highlight', 'highlighter', { format: 'background' }),
+  ],
   [
     tool('ordered', 'Numbered list', 'list-ordered', { format: 'list', value: 'ordered' }),
     tool('bullet', 'Bulleted list', 'list', { format: 'list', value: 'bullet' }),
@@ -110,16 +147,22 @@ const GROUPS: ToolItem[][] = [
     tool('outdent', 'Decrease indent', 'indent-decrease', { format: 'indent', keys: 'Ctrl+[' }),
     tool('indent', 'Increase indent', 'indent-increase', { keys: 'Ctrl+]' }),
   ],
-  [tool('align', 'Align', 'align-left')],
+  [
+    tool('align', 'Align', 'align-left'),
+    tool('line-height', 'Line spacing', 'unfold-vertical', { format: 'lineheight' }),
+  ],
   [
     tool('link', 'Link', 'link', { keys: 'Ctrl+K' }),
     tool('image', 'Image', 'image-plus'),
+    tool('video', 'Video (YouTube, Vimeo)', 'square-play'),
     tool('table', 'Table', 'table'),
     tool('blockquote', 'Quote', 'text-quote'),
     tool('code-block', 'Code block', 'code-xml'),
     tool('divider', 'Divider', 'separator-horizontal'),
   ],
+  [tool('emoji', 'Emoji', 'smile'), tool('symbol', 'Special characters', 'omega')],
   [
+    tool('case', 'Change case', 'case-sensitive'),
     tool('find', 'Find and replace', 'search', { keys: 'Ctrl+F' }),
     tool('clean', 'Clear formatting', 'remove-formatting'),
   ],
@@ -127,9 +170,19 @@ const GROUPS: ToolItem[][] = [
 
 /** Tools that do something once (no on/off state), drop-downs, and tools that open a menu or a bar */
 const ACTIONS = new Set<TextEditorTool>(['clean', 'undo', 'redo', 'divider', 'indent', 'outdent']);
-const SELECTS = new Set<TextEditorTool>(['heading', 'size']);
-const MENUS = new Set<TextEditorTool>(['color', 'align', 'table']);
-const BARS = new Set<TextEditorTool>(['link', 'image', 'find']);
+const SELECTS = new Set<TextEditorTool>(['heading', 'font', 'size']);
+export const MENUS = new Set<TextEditorTool>([
+  'color',
+  'highlight',
+  'align',
+  'line-height',
+  'table',
+  'emoji',
+  'symbol',
+  'case',
+]);
+export const BARS = new Set<TextEditorTool>(['link', 'image', 'video', 'find']);
+export type TextEditorBar = 'link' | 'image' | 'video' | 'find';
 
 /** The toolbar's controls for `tools`; the first of each group after the first gets a divider */
 export function toolbarItems(tools: readonly TextEditorTool[]) {

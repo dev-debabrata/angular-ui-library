@@ -1,0 +1,109 @@
+<section class="mail" aria-label="Email composer">
+  @if (sent()) {
+    <div class="mail__sent" role="status">
+      <span class="mail__sent-icon"><np-icon name="send" [size]="26" /></span>
+      <h2>Message ready to send</h2>
+      <p>
+        "{{ subject() || '(no subject)' }}" to {{ recipients() }}
+        {{ recipients() === 1 ? 'recipient' : 'recipients' }}
+        @if (files().length) {
+          with {{ files().length }} {{ files().length === 1 ? 'attachment' : 'attachments' }}
+        }
+      </p>
+      <p class="ui-hint">
+        This demo doesn't send email. In your app, post the editor's value (HTML) to your mail API.
+      </p>
+      <div class="mail__sent-actions">
+        <button type="button" class="ui-btn" (click)="sent.set(false)">Back to the message</button>
+        <button type="button" class="ui-btn ui-btn--primary" (click)="reset()">
+          Write another
+        </button>
+      </div>
+    </div>
+  } @else {
+    <form class="mail__form" (submit)="$event.preventDefault(); send()">
+      <div class="mail__head">
+        <np-icon name="mail" [size]="18" />
+        <b>New message</b>
+      </div>
+      @for (field of fields(); track field.label) {
+        <label class="mail__field">
+          <span>{{ field.label }}</span>
+          <input
+            type="text"
+            autocomplete="off"
+            [attr.inputmode]="field.label === 'Subject' ? null : 'email'"
+            [attr.aria-invalid]="field.label === 'To' && tried() && addressError() ? 'true' : null"
+            [value]="field.value()"
+            (input)="field.value.set($any($event.target).value)"
+          />
+          @if (field.label === 'To' && !showCc()) {
+            <button type="button" class="ui-btn ui-btn--text ui-btn--sm" (click)="showCc.set(true)">
+              Cc
+            </button>
+          }
+        </label>
+      }
+
+      <np-text-editor
+        class="te-fill"
+        ariaLabel="Message"
+        placeholder="Write your message..."
+        minHeight="260px"
+        maxHeight="460px"
+        [tools]="tools"
+        [value]="body()"
+        (valueChange)="body.set($event)"
+      />
+
+      @if (files().length) {
+        <ul class="mail__files" aria-label="Attachments">
+          @for (file of files(); track $index) {
+            <li>
+              <np-icon name="paperclip" [size]="14" />
+              <span class="mail__file-name">{{ file.name }}</span>
+              <span class="ui-hint">{{ size(file.size) }}</span>
+              <button
+                type="button"
+                class="ui-close"
+                [attr.aria-label]="'Remove ' + file.name"
+                (click)="remove(file)"
+              >
+                ×
+              </button>
+            </li>
+          }
+        </ul>
+      }
+
+      <div class="mail__actions">
+        <button type="submit" class="ui-btn ui-btn--primary">
+          <np-icon name="send" [size]="16" /> Send
+        </button>
+        <label class="ui-btn ui-btn--text ui-btn--icon" title="Attach files">
+          <np-icon name="paperclip" [size]="18" />
+          <input
+            #fileInput
+            type="file"
+            multiple
+            class="ui-visually-hidden"
+            aria-label="Attach files"
+            (change)="attach(fileInput)"
+          />
+        </label>
+        @if (tried() && error()) {
+          <span class="ui-error" role="alert">{{ error() }}</span>
+        }
+        <button
+          type="button"
+          class="ui-btn ui-btn--text ui-btn--danger ui-btn--icon mail__discard"
+          aria-label="Discard"
+          title="Discard"
+          (click)="reset()"
+        >
+          <np-icon name="trash-2" [size]="18" />
+        </button>
+      </div>
+    </form>
+  }
+</section>

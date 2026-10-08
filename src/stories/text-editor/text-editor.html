@@ -30,10 +30,7 @@
               [disabled]="isDisabled()"
               (change)="setFormat(item.format, $any($event.target).value)"
             >
-              @for (
-                option of item.tool === 'size' ? options.size : options.heading;
-                track option.value
-              ) {
+              @for (option of options[item.tool]; track option.value) {
                 <option [value]="option.value" [selected]="option.value === selected(item.format)">
                   {{ option.label }}
                 </option>
@@ -62,10 +59,13 @@
                 "
                 size="18"
               />
-              @if (item.tool === 'color') {
+              @if (item.tool === 'color' || item.tool === 'highlight') {
                 <span
                   class="te__swatch-bar"
-                  [style.background]="selected('color') || 'currentColor'"
+                  [style.background]="
+                    selected(item.format) ||
+                    (item.tool === 'color' ? 'currentColor' : 'transparent')
+                  "
                 ></span>
               }
             </button>
@@ -149,21 +149,30 @@
       }
       @case (null) {}
       @default {
+        @let kind = bar() === 'link' ? 'Link' : bar() === 'image' ? 'Image' : 'Video';
         <form
           class="te__bar"
           role="dialog"
-          [attr.aria-label]="bar() === 'link' ? 'Insert link' : 'Insert image'"
+          [attr.aria-label]="'Insert ' + kind.toLowerCase()"
           (submit)="$event.preventDefault(); applyBar()"
         >
-          <np-icon [name]="bar() === 'link' ? 'link' : 'image'" size="16" class="te__bar-icon" />
+          <np-icon
+            [name]="kind === 'Link' ? 'link' : kind === 'Image' ? 'image' : 'square-play'"
+            size="16"
+            class="te__bar-icon"
+          />
           <input
             #barInput
             class="ui-control te__bar-input"
             type="text"
             inputmode="url"
-            [attr.aria-label]="bar() === 'link' ? 'Link address' : 'Image address'"
+            [attr.aria-label]="kind + ' address'"
             [placeholder]="
-              bar() === 'link' ? 'https://example.com' : 'https://example.com/photo.jpg'
+              kind === 'Link'
+                ? 'https://example.com'
+                : kind === 'Image'
+                  ? 'https://example.com/photo.jpg'
+                  : 'YouTube or Vimeo address'
             "
             [value]="barUrl()"
             (input)="barUrl.set($any($event.target).value)"
@@ -172,7 +181,7 @@
           <button
             type="submit"
             class="ui-btn ui-btn--primary ui-btn--sm"
-            [disabled]="!barUrl().trim()"
+            [disabled]="kind === 'Video' ? !videoSrc() : !barUrl().trim()"
           >
             {{ bar() === 'link' ? 'Apply' : 'Insert' }}
           </button>
@@ -187,7 +196,7 @@
                 (change)="insertImages(null, [].slice.call($any($event.target).files))"
               />
             </label>
-          } @else if (formats()['link']) {
+          } @else if (kind === 'Link' && formats()['link']) {
             <button
               type="button"
               class="ui-btn ui-btn--text ui-btn--danger ui-btn--sm"
@@ -221,6 +230,9 @@
         >
           {{ counts().words }} {{ counts().words === 1 ? 'word' : 'words' }} ·
           {{ counts().characters }}{{ maxLength() ? ' / ' + maxLength() : '' }} characters
+          @if (!maxLength()) {
+            · {{ counts().minutes }} min read
+          }
         </span>
       }
     </div>
@@ -231,35 +243,13 @@
   <div
     #menuEl
     class="te__menu"
-    [class.te__menu--color]="m.tool === 'color'"
+    [class.te__menu--color]="m.tool === 'color' || m.tool === 'highlight'"
     popover="auto"
     role="group"
     [attr.aria-label]="m.label"
     (toggle)="$any($event).newState === 'closed' && closeMenu()"
   >
     @switch (m.tool) {
-      @case ('color') {
-        @for (section of colorSections; track section.format) {
-          <span class="te__menu-title">{{ section.title }}</span>
-          <button type="button" class="te__menu-item" (click)="setFormat(section.format, false)">
-            <np-icon name="x" size="14" /> {{ section.none }}
-          </button>
-          <div class="te__swatches">
-            @for (c of colors; track c.value) {
-              <button
-                type="button"
-                class="te__swatch"
-                [class.te__swatch--active]="selected(section.format) === c.value"
-                [style.background]="c.value"
-                [attr.aria-label]="section.title + ': ' + c.name"
-                [attr.aria-pressed]="selected(section.format) === c.value"
-                [title]="c.name"
-                (click)="setFormat(section.format, c.value)"
-              ></button>
-            }
-          </div>
-        }
-      }
       @case ('align') {
         @for (a of alignments; track a.value) {
           <button
@@ -270,6 +260,26 @@
             (click)="setFormat('align', a.value)"
           >
             <np-icon [name]="a.icon" size="16" /> {{ a.label }}
+          </button>
+        }
+      }
+      @case ('line-height') {
+        @for (h of lineHeights; track h.value) {
+          <button
+            type="button"
+            class="te__menu-item"
+            [class.te__menu-item--active]="selected('lineheight') === h.value"
+            [attr.aria-pressed]="selected('lineheight') === h.value"
+            (click)="setFormat('lineheight', h.value)"
+          >
+            {{ h.label }}
+          </button>
+        }
+      }
+      @case ('case') {
+        @for (c of cases; track c.value) {
+          <button type="button" class="te__menu-item" (click)="setCase(c.value)">
+            {{ c.label }}
           </button>
         }
       }
@@ -294,6 +304,37 @@
                 (mouseenter)="grid.set(cell)"
                 (focus)="grid.set(cell)"
                 (click)="table([cell[0], cell[1]])"
+              ></button>
+            }
+          </div>
+        }
+      }
+      @default {
+        @if (m.tool === 'emoji' || m.tool === 'symbol') {
+          <div class="te__chars">
+            @for (c of characters[m.tool]; track c) {
+              <button type="button" class="te__char" [attr.aria-label]="c" (click)="insert(c)">
+                {{ c }}
+              </button>
+            }
+          </div>
+        } @else {
+          @let section = m.tool === 'color' ? colorSections.color : colorSections.highlight;
+          <span class="te__menu-title">{{ section.title }}</span>
+          <button type="button" class="te__menu-item" (click)="setFormat(section.format, false)">
+            <np-icon name="x" size="14" /> {{ section.none }}
+          </button>
+          <div class="te__swatches">
+            @for (c of colors; track c.value) {
+              <button
+                type="button"
+                class="te__swatch"
+                [class.te__swatch--active]="selected(section.format) === c.value"
+                [style.background]="c.value"
+                [attr.aria-label]="section.title + ': ' + c.name"
+                [attr.aria-pressed]="selected(section.format) === c.value"
+                [title]="c.name"
+                (click)="setFormat(section.format, c.value)"
               ></button>
             }
           </div>

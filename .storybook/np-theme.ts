@@ -63,9 +63,71 @@ function paletteVars(palette: string | undefined) {
   return { '--ui-primary': primary, '--ui-primary-hover': hover, '--ui-accent': accent };
 }
 
-/** A palette's colors; unknown keys fall back to the default */
+/** A palette's colors: a preset, or a custom color ("custom-ff6a00"); unknown keys fall back to the default */
 export function paletteColors(key: string | undefined) {
+  const custom = key?.match(/^custom-([\da-f]{6})$/i);
+  if (custom) {
+    const [h, s, l] = hsl(`#${custom[1]}`);
+    return {
+      label: 'Custom',
+      primary: `#${custom[1]}`,
+      hover: hex(h, s, l * 0.85),
+      accent: hex(h + 40, s, l),
+    };
+  }
   return PALETTES[key ?? ''] ?? PALETTES[DEFAULT_GLOBALS.palette];
+}
+
+/** Custom theme colors the user added in the theme menu, newest first (this browser only) */
+const CUSTOM_KEY = 'np-theme-custom';
+const MAX_CUSTOM = 8;
+
+export const customPalette = (color: string) => `custom-${color.slice(1).toLowerCase()}`;
+
+export function customColors(): string[] {
+  try {
+    const list = JSON.parse(localStorage.getItem(CUSTOM_KEY) ?? '[]');
+    return Array.isArray(list) ? list.filter((c) => /^#[\da-f]{6}$/i.test(c)) : [];
+  } catch {
+    return [];
+  }
+}
+
+/** Adds (or moves to the front) a custom color, or removes it; returns the new list */
+export function editCustomColors(color: string, remove = false): string[] {
+  const list = customColors().filter((c) => c !== color);
+  const next = remove ? list : [color, ...list].slice(0, MAX_CUSTOM);
+  try {
+    localStorage.setItem(CUSTOM_KEY, JSON.stringify(next));
+  } catch {
+    // Storage blocked: the color still applies, it just isn't kept
+  }
+  return next;
+}
+
+/** A #rrggbb color as hue (degrees), saturation and lightness (0–1) */
+function hsl(color: string): [number, number, number] {
+  const [r, g, b] = [1, 3, 5].map((i) => parseInt(color.slice(i, i + 2), 16) / 255);
+  const max = Math.max(r, g, b);
+  const min = Math.min(r, g, b);
+  const l = (max + min) / 2;
+  const d = max - min;
+  if (!d) return [0, 0, l];
+  const s = d / (1 - Math.abs(2 * l - 1));
+  const h = max === r ? ((g - b) / d) % 6 : max === g ? (b - r) / d + 2 : (r - g) / d + 4;
+  return [(h * 60 + 360) % 360, s, l];
+}
+
+/** Hue, saturation and lightness back to #rrggbb */
+function hex(h: number, s: number, l: number) {
+  const f = (n: number) => {
+    const k = (n + h / 30) % 12;
+    const value = l - s * Math.min(l, 1 - l) * Math.max(-1, Math.min(k - 3, 9 - k, 1));
+    return Math.round(value * 255)
+      .toString(16)
+      .padStart(2, '0');
+  };
+  return `#${f(0)}${f(8)}${f(4)}`;
 }
 
 /** Mode and palette from Storybook globals, with defaults */
@@ -87,6 +149,7 @@ export function applyTheme(doc: Document, theme: string | undefined, palette: st
   if (root.dataset['npTheme'] === key) return false;
   root.dataset['npTheme'] = key;
   root.dataset['theme'] = mode;
-  for (const [name, value] of Object.entries(paletteVars(palette))) root.style.setProperty(name, value);
+  for (const [name, value] of Object.entries(paletteVars(palette)))
+    root.style.setProperty(name, value);
   return true;
 }

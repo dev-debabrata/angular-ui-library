@@ -65,6 +65,17 @@ export const DataToolbar: Story = {
   },
 };
 
+/** `variant="compact"`: a data table footer, "Items per page" select, "1 – 10 of 240" and arrows (like Angular Material's paginator) */
+export const Compact: Story = {
+  args: { variant: 'compact', totalRecords: 100, rows: 5, rowsOptions: [5, 10, 25, 100] },
+};
+
+/** `variant="load-more"`: "Showing 20 of 240" with a progress bar and a "Load 20 more" button; show page × rows items */
+export const LoadMore: Story = { args: { variant: 'load-more', totalRecords: 240, rows: 20 } };
+
+/** `variant="input"`: "Page [3] of 12" between the arrows; type a page and press Enter */
+export const PageInput: Story = { args: { variant: 'input', page: 3, totalPages: 12 } };
+
 /** The appearance classes from theme.css (np-color-*, np-shape-*) on the Default example */
 const appearance = appearanceStories(meta, Default);
 export const AppearanceColors = appearance.colors;

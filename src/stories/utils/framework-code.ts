@@ -31,7 +31,9 @@ export function setupNote(framework: Framework, angularImport = '', reactImport 
     next: reactImport
       ? `npm install nexprime, and import { ${reactImport} } from 'nexprime/react'.`
       : "npm install nexprime, and import components from 'nexprime/react'.",
-    vue: 'npm install nexprime, load it once in main.ts and mark np-* tags as custom elements.',
+    vue: reactImport
+      ? `npm install nexprime, and import { ${reactImport} } from 'nexprime/vue'.`
+      : 'npm install nexprime, load it once in main.ts and mark np-* tags as custom elements.',
     html: 'No install: load the theme and nexprime.js from the CDN once.',
   }[framework];
 }
@@ -56,7 +58,10 @@ export const toPascal = (name: string) =>
     .join('');
 
 /** A NexPrime component as Angular markup or as its React / Web Component (React, Next.js, Vue, HTML) */
-export function elementCode(framework: Framework, { tag, inputs, style = {}, classes = '' }: ElementCode) {
+export function elementCode(
+  framework: Framework,
+  { tag, inputs, style = {}, classes = '' }: ElementCode,
+) {
   const jsx = framework === 'react' || framework === 'next';
 
   // React & Next.js icons render as direct icon components: <Accessibility />, <Check size={24} />
@@ -71,6 +76,24 @@ export function elementCode(framework: Framework, { tag, inputs, style = {}, cla
     return `<${[comp, classes ? `className="${classes}"` : '', ...attrs, jsxStyle(restStyle)].filter(Boolean).join(' ')} />`;
   }
 
+  // Vue icons render as icon components from nexprime/vue: <Accessibility :size="24" color="#f43f5e" />
+  if (framework === 'vue' && tag === 'icon' && inputs['name']) {
+    const comp = toPascal(String(inputs['name'])).replace(/^(\d)/, 'Icon$1');
+    const { name: _, ...rest } = inputs;
+    const { color, ...restStyle } = style;
+    const attrs = Object.entries(rest)
+      .filter(([, v]) => v !== false && v != null)
+      .map(([k, v]) =>
+        v === true
+          ? kebab(k)
+          : typeof v === 'number'
+            ? `:${kebab(k)}="${v}"`
+            : `${kebab(k)}="${v}"`,
+      );
+    if (color) attrs.push(`color="${color}"`);
+    return `<${[comp, classes ? `class="${classes}"` : '', ...attrs, ...cssAttribute(restStyle)].filter(Boolean).join(' ')} />`;
+  }
+
   const element = jsx ? toPascal(`np-${tag}`) : `np-${tag}`;
   const classAttr = classes ? [`${jsx ? 'className' : 'class'}="${classes}"`] : [];
   const set = Object.entries(inputs).filter(
@@ -82,7 +105,9 @@ export function elementCode(framework: Framework, { tag, inputs, style = {}, cla
     );
     return `<${[element, ...classAttr, ...attrs, ...cssAttribute(style)].join(' ')} />`;
   }
-  const attrs = set.map(([k, v]) => (v === true ? (jsx ? k : kebab(k)) : `${jsx ? k : kebab(k)}="${v}"`));
+  const attrs = set.map(([k, v]) =>
+    v === true ? (jsx ? k : kebab(k)) : `${jsx ? k : kebab(k)}="${v}"`,
+  );
   if (jsx) {
     return `<${[element, ...classAttr, ...attrs, jsxStyle(style)].filter(Boolean).join(' ')} />`;
   }
@@ -115,6 +140,7 @@ export function setupCode(framework: Framework, reactImport = '') {
         ? `import { ${reactImport} } from 'nexprime/react';`
         : `import 'nexprime/styles/theme.css'; // app/layout.tsx\n// import components from 'nexprime/react';`;
     case 'vue':
+      if (reactImport) return `import { ${reactImport} } from 'nexprime/vue';`;
       return `import 'nexprime/styles/theme.css';\nimport 'nexprime/elements';\n// vite.config: vue({ template: { compilerOptions: { isCustomElement: (tag) => tag.startsWith('np-') } } })`;
     case 'html':
       return `<link rel="stylesheet" href="${CDN}/styles/theme.css" />\n<script type="module" src="${CDN}/elements/nexprime.js"></script>`;

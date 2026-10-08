@@ -2,9 +2,7 @@ import {
   Component,
   booleanAttribute,
   ElementRef,
-  afterNextRender,
   computed,
-  effect,
   input,
   linkedSignal,
   signal,
@@ -20,6 +18,18 @@ import { IconComponent } from '../../components/media/icon/icon.component';
 import { copyToClipboard } from '../../utils/clipboard';
 import { downloadBlob } from '../../utils/download';
 import { TextEditorComponent, type TextEditorTool } from '../text-editor.component';
+import { TextEditorEmailComponent } from './text-editor-email.component';
+import { TextEditorFocusComponent } from './text-editor-focus.component';
+import { TextEditorMarkdownComponent } from './text-editor-markdown.component';
+import { TextEditorNotesComponent } from './text-editor-notes.component';
+import {
+  escapeHtml,
+  markdownToHtml,
+  persist,
+  plainText,
+  toggleFullscreen,
+  wordCount,
+} from './text-editor-page-utils';
 import {
   SAMPLE_COMMENTS,
   SAMPLE_DOCUMENT,
@@ -27,13 +37,18 @@ import {
   SAMPLE_TITLE,
 } from './text-editor-samples';
 
-export type TextEditorDemoMode = 'document' | 'simple' | 'comment';
+export type TextEditorDemoMode =
+  'document' | 'simple' | 'comment' | 'markdown' | 'email' | 'notes' | 'focus';
 type Mode = TextEditorDemoMode;
 
 const MODES: ToggleOption<Mode>[] = [
   { value: 'document', label: 'Document', icon: 'file-text' },
   { value: 'simple', label: 'Simple', icon: 'pen-line' },
   { value: 'comment', label: 'Comments', icon: 'message-square' },
+  { value: 'markdown', label: 'Markdown', icon: 'file-code' },
+  { value: 'email', label: 'Email', icon: 'mail' },
+  { value: 'notes', label: 'Notes', icon: 'notebook-pen' },
+  { value: 'focus', label: 'Focus', icon: 'moon' },
 ];
 
 /** Where the document is kept between visits (this browser only) */
@@ -41,18 +56,6 @@ const MODES: ToggleOption<Mode>[] = [
 const STORAGE_KEY = 'np-text-editor-document-v2';
 /** Zoom levels in percent */
 const ZOOM_STEPS = [50, 75, 90, 100, 110, 125, 150, 200];
-
-/** Plain text of editor HTML, for the word and character counts */
-const plainText = (html: string) =>
-  html
-    .replace(/<\/(p|h\d|li|blockquote|pre)>/g, '\n')
-    .replace(/<[^>]+>/g, '')
-    .replace(/&nbsp;/g, ' ')
-    .replace(/&[a-z]+;|&#\d+;/g, 'x')
-    .trim();
-
-const escapeHtml = (text: string) =>
-  text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
 /** A standalone HTML file of the document, styled to print like the page. Word's namespaces make it a .doc */
 const htmlFile = (title: string, body: string, word = false) => `<!doctype html>
@@ -81,13 +84,23 @@ ${body}
 </html>`;
 
 /**
- * The Text Editor workspace: np-text-editor in three ready-to-use setups (a document with zoom, import/export and
- * autosave; a simple editor with its HTML; a comment box), with a switcher. Used by the site's Text Editor page and
+ * The Text Editor workspace: np-text-editor in ready-to-use setups (a document with zoom, import/export and autosave;
+ * a simple editor with its HTML; a comment box; Markdown with a preview; an email; notes; a focus page), with a
+ * switcher. Used by the site's Text Editor page and
  * by Welcome. Not part of the library.
  */
 @Component({
   selector: 'np-text-editor-demo',
-  imports: [AvatarComponent, ButtonToggleComponent, IconComponent, TextEditorComponent],
+  imports: [
+    AvatarComponent,
+    ButtonToggleComponent,
+    IconComponent,
+    TextEditorComponent,
+    TextEditorEmailComponent,
+    TextEditorFocusComponent,
+    TextEditorMarkdownComponent,
+    TextEditorNotesComponent,
+  ],
   templateUrl: './text-editor-demo.html',
   styleUrl: './text-editor-demo.css',
   host: {
@@ -110,13 +123,20 @@ export class TextEditorDemoComponent {
   protected readonly title = signal(SAMPLE_TITLE);
   protected readonly doc = signal(SAMPLE_DOCUMENT);
   protected readonly zoom = signal(100);
-  protected readonly saved = signal(false);
+  /** The document saved in this browser comes back; every change is saved shortly after typing stops */
+  protected readonly saved = persist(
+    STORAGE_KEY,
+    () => ({ html: this.doc(), title: this.title() }),
+    (saved: { html?: string; title?: string }) =>
+      saved.html && this.load(saved.title ?? SAMPLE_TITLE, saved.html),
+    400,
+  );
   protected readonly copied = signal(false);
   protected readonly fullscreen = signal(false);
   protected readonly importError = signal('');
   protected readonly stats = computed(() => {
     const text = plainText(this.doc());
-    const words = text.match(/\S+/g)?.length ?? 0;
+    const words = wordCount(text);
     return {
       words,
       characters: text.replace(/\n/g, '').length,
@@ -142,10 +162,7 @@ export class TextEditorDemoComponent {
     {
       icon: this.fullscreen() ? 'minimize' : 'maximize',
       label: this.fullscreen() ? 'Exit full screen' : 'Full screen',
-      run: () =>
-        this.isFullscreen()
-          ? document.exitFullscreen()
-          : this.docEl().nativeElement.requestFullscreen(),
+      run: () => toggleFullscreen(this.docEl().nativeElement),
     },
   ]);
 
@@ -168,34 +185,6 @@ export class TextEditorDemoComponent {
 
   private readonly fileInput = viewChild.required<ElementRef<HTMLInputElement>>('fileInput');
   private readonly docEl = viewChild.required<ElementRef<HTMLElement>>('docEl');
-  private readonly restored = signal(false);
-
-  constructor() {
-    // Bring back the document saved in this browser, then save every change (shortly after typing stops)
-    afterNextRender(() => {
-      try {
-        const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) ?? 'null');
-        if (saved?.html) this.load(saved.title ?? SAMPLE_TITLE, saved.html);
-      } catch {
-        // Storage blocked or bad data: keep the sample
-      }
-      this.restored.set(true);
-    });
-    effect((onCleanup) => {
-      const data = JSON.stringify({ html: this.doc(), title: this.title() });
-      if (!this.restored()) return;
-      this.saved.set(false);
-      const timer = setTimeout(() => {
-        try {
-          localStorage.setItem(STORAGE_KEY, data);
-          this.saved.set(true);
-        } catch {
-          // Storage full or blocked: the document just isn't kept
-        }
-      }, 400);
-      onCleanup(() => clearTimeout(timer));
-    });
-  }
 
   protected isFullscreen() {
     return !!document.fullscreenElement;
@@ -209,6 +198,12 @@ export class TextEditorDemoComponent {
   protected load(title: string, html: string) {
     this.title.set(title);
     this.doc.set(html);
+  }
+
+  /** The Markdown mode's "Open as document" */
+  protected openInDocument(html: string) {
+    this.load('Markdown document', html);
+    this.current.set('document');
   }
 
   /** HTML, or a .doc (HTML with Word's namespaces) that Word, Google Docs and LibreOffice open */
@@ -244,7 +239,7 @@ export class TextEditorDemoComponent {
     setTimeout(() => this.copied.set(false), 1500);
   }
 
-  /** Open an .html, .txt or .md file: HTML keeps its formatting, text becomes paragraphs */
+  /** Open an .html, .txt or .md file: HTML keeps its formatting, Markdown is converted, text becomes paragraphs */
   protected async importFile(input: HTMLInputElement) {
     const file = input.files?.[0];
     input.value = '';
@@ -254,10 +249,12 @@ export class TextEditorDemoComponent {
     const text = await file.text();
     const html = /\.html?$/i.test(file.name)
       ? new DOMParser().parseFromString(text, 'text/html').body.innerHTML
-      : text
-          .split(/\r?\n\s*\r?\n/)
-          .map((block) => `<p>${escapeHtml(block.trim()).replace(/\r?\n/g, '<br>')}</p>`)
-          .join('');
+      : /\.(md|markdown)$/i.test(file.name)
+        ? markdownToHtml(text)
+        : text
+            .split(/\r?\n\s*\r?\n/)
+            .map((block) => `<p>${escapeHtml(block.trim()).replace(/\r?\n/g, '<br>')}</p>`)
+            .join('');
     this.load(file.name.replace(/\.[^.]+$/, ''), html);
   }
 

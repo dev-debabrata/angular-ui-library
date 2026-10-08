@@ -1,0 +1,131 @@
+/* Always dark, whatever the page's mode: the editor's own dark theme, on a deep night background */
+.focus {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: min(76vh, 820px);
+  overflow: hidden;
+  border-radius: var(--ui-radius-lg);
+  background: radial-gradient(circle at 50% 0%, #1e1b4b, #020617 70%);
+  box-shadow: var(--ui-shadow-lg);
+  color: #94a3b8;
+}
+
+.focus:fullscreen {
+  height: 100vh;
+  border-radius: 0;
+}
+
+/* Quiet until hovered or focused */
+.focus__bar {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 22px;
+  font-size: 12.5px;
+  opacity: 0.55;
+  transition: opacity var(--ui-ease);
+}
+
+.focus__bar:hover,
+.focus__bar:focus-within {
+  opacity: 1;
+}
+
+.focus__count {
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.focus__progress {
+  flex: 1;
+  height: 4px;
+  overflow: hidden;
+  border-radius: var(--ui-radius-full);
+  background: rgb(255 255 255 / 10%);
+}
+
+.focus__progress span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--ui-gradient);
+  transition: width 0.3s var(--ui-ease);
+}
+
+.focus__goal {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.focus__goal select,
+.focus__tool {
+  height: 28px;
+  border: 1px solid rgb(255 255 255 / 14%);
+  border-radius: var(--ui-radius-sm);
+  background: rgb(255 255 255 / 6%);
+  color: #e2e8f0;
+  font: inherit;
+  cursor: pointer;
+}
+
+.focus__tool {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  padding: 0;
+}
+
+.focus__tool:hover,
+.focus__goal select:hover {
+  border-color: var(--ui-primary);
+}
+
+:is(.focus__tool, .focus__goal select):focus-visible {
+  outline: none;
+  box-shadow: var(--ui-ring);
+}
+
+/* The editor (te-fill): a centered serif column on the night background */
+np-text-editor ::ng-deep .te {
+  background: none;
+}
+
+np-text-editor ::ng-deep .ql-editor {
+  width: 100%;
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 24px 24px 120px;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 19px;
+  line-height: 1.8;
+}
+
+.focus__done {
+  position: absolute;
+  bottom: 18px;
+  left: 50%;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  padding: 8px 16px;
+  border-radius: var(--ui-radius-full);
+  background: var(--ui-gradient);
+  box-shadow: var(--ui-shadow-lg);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  translate: -50% 0;
+}
+
+@media (max-width: 640px) {
+  .focus__goal {
+    display: none;
+  }
+
+  np-text-editor ::ng-deep .ql-editor {
+    font-size: 17px;
+  }
+}

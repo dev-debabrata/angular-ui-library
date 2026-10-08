@@ -79,6 +79,28 @@ video {
 
 /* ============================== Mobile (<= 640px) ============================== */
 @media (max-width: 640px) {
+  /* ---- Gallery filters (NexLottie categories, Icons' Style): the options wrap onto more rows as separate pills,
+     instead of scrolling out of sight ---- */
+  :root .gallery-page np-button-toggle .toggle-group.toggle-group {
+    flex-wrap: wrap;
+    gap: 6px;
+    overflow: visible;
+    border: 0;
+    background: none;
+    box-shadow: none;
+  }
+
+  :root .gallery-page np-button-toggle .toggle-button.toggle-button {
+    border: 1px solid var(--ui-border-strong);
+    border-radius: var(--ui-radius-full);
+    background: var(--ui-surface);
+  }
+
+  :root .gallery-page np-button-toggle .toggle-button.toggle-button--selected {
+    border-color: var(--ui-primary);
+    background: var(--ui-primary-soft);
+  }
+
   /* ---- Welcome ---- */
   :root np-welcome-page .hero,
   :root np-welcome-page .hero__particles {

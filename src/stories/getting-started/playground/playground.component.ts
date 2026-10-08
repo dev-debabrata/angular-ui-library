@@ -6,15 +6,15 @@ import { SelectComponent } from '../../components/form/select/select.component';
 import { TextInputComponent } from '../../components/form/text-input/text-input.component';
 import { ToggleComponent } from '../../components/form/toggle/toggle.component';
 import { FRAMEWORKS, elementCode, type Framework } from '../../utils/framework-code';
-import { APPEARANCE_COLORS, APPEARANCE_SHAPES } from '../../utils/types';
+import { APPEARANCE_COLORS, APPEARANCE_SHAPES, PALETTE_COLORS } from '../../utils/types';
 import { FrameworkCodeComponent } from '../framework-code/framework-code.component';
 import { PLAYGROUND, type Control, type PlaygroundItem } from './playground-data';
 
 type Values = Record<string, string | number | boolean>;
 
-/** Select options; the empty value (no choice) gets `empty` as its label */
-const toOptions = (values: readonly string[], empty: string) =>
-  values.map((value) => ({ value, label: value || empty }));
+/** Select options, under the `group` heading if given; the empty value (no choice) gets `empty` as its label */
+const toOptions = (values: readonly string[], empty: string, group?: string) =>
+  values.map((value) => ({ value, label: value || empty, group }));
 
 const startValues = (item: PlaygroundItem): Values =>
   Object.fromEntries(item.controls.map((c) => [c.name, c.value]));
@@ -42,11 +42,12 @@ export class PlaygroundComponent {
   protected readonly selected = signal(PLAYGROUND[0]);
   protected readonly values = signal<Values>(startValues(PLAYGROUND[0]));
 
-  /** Appearance classes (theme.css) that recolor and reshape any component; no class is the theme's own */
-  protected readonly colorOptions = toOptions(
-    ['', ...APPEARANCE_COLORS.filter((c) => c !== 'primary')],
-    '(theme)',
-  );
+  /** Appearance classes (theme.css) that recolor and reshape any component; no class is the theme's own. Colors in
+   * two groups: the semantic ones and the palette (the theme menu's colors) */
+  protected readonly colorOptions = [
+    ...toOptions(['', ...APPEARANCE_COLORS.filter((c) => c !== 'primary')], '(theme)', 'Semantic'),
+    ...toOptions(PALETTE_COLORS, '', 'Palette'),
+  ];
   protected readonly shapeOptions = toOptions(['', ...APPEARANCE_SHAPES], '(default)');
   protected readonly color = signal('');
   protected readonly shape = signal('');

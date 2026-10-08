@@ -38,7 +38,7 @@ export const LEGAL: Record<'privacy' | 'terms', LegalDoc> = {
       {
         title: 'What is stored in your browser',
         paragraphs: [
-          'Your light/dark mode and theme color are saved in your browser\'s local storage (the "np-theme" key), so the site looks the same on your next visit. Storybook, the tool the site runs on, also keeps layout preferences there. This data never leaves your device, and clearing your browser\'s site data removes it.',
+          'Your light/dark mode and theme color are saved in your browser\'s local storage (the "np-theme" key), so the site looks the same on your next visit. Storybook, the tool the site runs on, also keeps layout preferences there, and the cookie notice remembers that you accepted it ("np-cookie-notice"). This data never leaves your device, and clearing your browser\'s site data removes it.',
         ],
       },
       {

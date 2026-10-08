@@ -133,7 +133,7 @@
   place-items: center;
   width: 24px;
   height: 24px;
-  border-radius: 8px;
+  border-radius: var(--ui-radius-sm);
   background: var(--ui-primary-soft);
   color: var(--ui-primary);
 }
@@ -150,7 +150,7 @@
   margin: 0;
   padding: 10px 14px;
   border: 1px solid var(--bubble-border, var(--ui-border));
-  border-radius: 16px;
+  border-radius: var(--ui-radius-lg);
   background: var(--bubble-bg, var(--ui-surface));
   color: var(--ui-text);
   font-size: 15px;
@@ -160,7 +160,7 @@
 .voice__msg--me .voice__bubble {
   padding: 7px 12px;
   border-color: transparent;
-  border-radius: 14px;
+  border-radius: var(--ui-radius-lg);
   background: var(--ui-gradient);
   color: #fff;
   font-size: 13px;

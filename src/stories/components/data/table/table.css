@@ -1,3 +1,8 @@
+:host {
+  display: block;
+  min-width: 0;
+}
+
 .table-filter {
   max-width: 300px;
   margin-bottom: 14px;
@@ -135,13 +140,30 @@
   color: var(--ui-primary);
 }
 
+/* Sort arrow (like Material): hidden until hovered, solid on the sorted column */
 .sort-icon {
   margin-left: 4px;
+  opacity: 0;
+  vertical-align: -2px;
+  transition: opacity var(--ui-ease);
+}
+
+.sortable:hover .sort-icon {
   opacity: 0.45;
 }
 
-.sorted .sort-icon {
+.sorted .sort-icon,
+.sorted:hover .sort-icon {
   opacity: 1;
+}
+
+/* Reorderable columns: the header is the handle */
+.table th.cdk-drag:not(.cdk-drag-disabled) {
+  cursor: grab;
+}
+
+.table tr.expandable {
+  cursor: pointer;
 }
 
 .table .table__check {
@@ -237,4 +259,135 @@
   display: flex;
   justify-content: flex-end;
   margin-top: 14px;
+}
+
+.is-nowrap td {
+  white-space: nowrap;
+}
+
+/* Second header line (column description) */
+.table__desc {
+  display: block;
+  margin-top: 4px;
+  color: var(--ui-text-subtle);
+  font-size: 12px;
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+/* Narrow tool columns: drag handle and expand toggle */
+.table .table__tool {
+  width: 1%;
+  padding-inline: 8px;
+}
+
+.table__handle {
+  display: grid;
+  place-items: center;
+  padding: 4px;
+  border: none;
+  border-radius: var(--ui-radius-sm);
+  background: none;
+  color: var(--ui-text-subtle);
+  cursor: grab;
+
+  &:hover {
+    color: var(--ui-primary);
+  }
+  &:focus-visible {
+    outline: none;
+    box-shadow: var(--ui-ring);
+  }
+}
+
+.table__toggle np-icon {
+  transition: rotate var(--ui-ease);
+}
+
+tr.open .table__toggle np-icon {
+  rotate: 180deg;
+}
+
+.table tbody tr.table__detail {
+  --row-bg: var(--ui-surface-muted);
+}
+
+.table__actions {
+  display: inline-flex;
+  gap: 2px;
+}
+
+/* Sticky columns: they keep the row's color and a line on the side the other columns scroll under */
+.table .sticky {
+  position: sticky;
+  z-index: 1;
+  background: var(--row-bg, var(--tbl-row, var(--tbl-bg, var(--ui-surface))));
+}
+
+.table th.sticky {
+  z-index: 2;
+}
+
+.table .sticky--start {
+  box-shadow: inset -1px 0 var(--tbl-line, var(--ui-border));
+}
+
+.table .sticky--end {
+  box-shadow: inset 1px 0 var(--tbl-line, var(--ui-border));
+}
+
+/* Footer: totals, then a note */
+.table tfoot td {
+  --row-bg: var(--tbl-head, var(--ui-surface-muted));
+  border-top: 1px solid var(--tbl-line, var(--ui-border));
+  border-bottom: none;
+  color: var(--ui-text);
+  font-weight: 600;
+}
+
+.table .table__note {
+  color: var(--ui-text-muted);
+  font-size: 13px;
+  font-style: italic;
+  font-weight: 400;
+}
+
+.has-sticky-footer tfoot {
+  position: sticky;
+  bottom: 0;
+  z-index: 2;
+}
+
+/* Reordering rows (CDK drag and drop): the dragged row is a copy outside the table */
+.cdk-drag-preview {
+  display: table;
+  border-radius: var(--ui-radius);
+  background: var(--ui-surface);
+  box-shadow: var(--ui-shadow-lg);
+  font-size: 14px;
+
+  & td {
+    padding: 14px 18px;
+  }
+}
+
+th.cdk-drag-preview {
+  display: table-cell;
+  padding: 14px 18px;
+  color: var(--ui-primary);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.cdk-drag-placeholder {
+  opacity: 0.35;
+}
+
+.cdk-drop-list-dragging tr:not(.cdk-drag-placeholder),
+.cdk-drag-animating {
+  transition: transform 0.25s var(--ui-ease);
 }

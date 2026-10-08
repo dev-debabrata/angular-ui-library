@@ -1,0 +1,136 @@
+/* A mail window: header, address fields as plain rows, the editor, attachments and the send bar */
+.mail {
+  max-width: 820px;
+  margin: 0 auto;
+  overflow: hidden;
+  border: 1px solid var(--ui-border);
+  border-radius: var(--ui-radius-lg);
+  background: var(--ui-surface);
+  box-shadow: var(--ui-shadow-lg);
+}
+
+.mail__head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 18px;
+  background: var(--ui-gradient);
+  color: #fff;
+  font-size: 14px;
+}
+
+.mail__field {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 2px 12px 2px 18px;
+  border-bottom: 1px solid var(--ui-border);
+  color: var(--ui-text-muted);
+  font-size: 14px;
+}
+
+.mail__field:focus-within {
+  box-shadow: inset 3px 0 0 var(--ui-primary);
+}
+
+.mail__field span {
+  min-width: 56px;
+}
+
+.mail__field input {
+  flex: 1;
+  min-width: 0;
+  padding: 11px 0;
+  border: none;
+  outline: none;
+  background: none;
+  color: var(--ui-text);
+  font: inherit;
+}
+
+.mail__field input[aria-invalid='true'] {
+  color: var(--ui-danger);
+}
+
+.mail__files {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+  padding: 10px 18px 0;
+  list-style: none;
+}
+
+.mail__files li {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  max-width: 100%;
+  padding: 4px 4px 4px 10px;
+  border: 1px solid var(--ui-border);
+  border-radius: var(--ui-radius-full);
+  background: var(--ui-surface-muted);
+  color: var(--ui-text);
+  font-size: 13px;
+}
+
+.mail__file-name {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.mail__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 18px;
+  border-top: 1px solid var(--ui-border);
+}
+
+.mail__actions label:focus-within {
+  box-shadow: var(--ui-ring);
+}
+
+.mail__discard {
+  margin-left: auto;
+}
+
+/* After Send */
+.mail__sent {
+  display: grid;
+  justify-items: center;
+  gap: 6px;
+  padding: 56px 24px;
+  text-align: center;
+  color: var(--ui-text-muted);
+}
+
+.mail__sent h2 {
+  margin: 8px 0 0;
+  color: var(--ui-text);
+  font-size: 20px;
+}
+
+.mail__sent p {
+  margin: 0;
+}
+
+.mail__sent-icon {
+  display: grid;
+  place-items: center;
+  width: 60px;
+  height: 60px;
+  border-radius: var(--ui-radius-full);
+  background: var(--ui-gradient);
+  color: #fff;
+}
+
+.mail__sent-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 14px;
+}

@@ -70,7 +70,7 @@
   gap: 2px;
   padding: 8px 12px;
   border: 1px solid var(--bubble-border, var(--ui-border));
-  border-radius: 16px;
+  border-radius: var(--ui-radius-lg);
   background: var(--bubble-bg, var(--ui-surface));
   color: var(--ui-text);
   font-size: 14px;
@@ -90,7 +90,7 @@
 
 .chat__row--me .chat__bubble--last {
   border-bottom-right-radius: 4px;
-  border-bottom-left-radius: 16px;
+  border-bottom-left-radius: var(--ui-radius-lg);
 }
 
 .chat__author {
@@ -159,7 +159,7 @@
   max-height: 120px;
   padding: 9px 14px;
   border: 1px solid var(--ui-border-strong);
-  border-radius: 20px;
+  border-radius: var(--ui-radius-lg);
   background: var(--ui-surface);
   color: var(--ui-text);
   font: inherit;
@@ -279,7 +279,7 @@
   --bubble-border: transparent;
   .chat__bubble {
     position: relative;
-    border-radius: 18px;
+    border-radius: var(--ui-radius-lg);
   }
   .chat__row--me {
     --tail: var(--ui-accent);

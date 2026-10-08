@@ -26,6 +26,7 @@ import { anchorPosition } from '../utils/anchor-position';
 import { IconComponent } from '../components/media/icon/icon.component';
 import {
   addShortcuts,
+  changeCase,
   dataUrl,
   editorHtml,
   findAll,
@@ -34,16 +35,26 @@ import {
   insertDivider,
   loadQuill,
   normalizeUrl,
+  videoUrl,
 } from './text-editor-quill';
 import {
+  BARS,
+  MENUS,
   TEXT_EDITOR_ALIGNMENTS,
+  TEXT_EDITOR_CASES,
   TEXT_EDITOR_COLOR_SECTIONS,
   TEXT_EDITOR_COLORS,
+  TEXT_EDITOR_EMOJI,
+  TEXT_EDITOR_FONTS,
   TEXT_EDITOR_HEADINGS,
+  TEXT_EDITOR_LINE_HEIGHTS,
   TEXT_EDITOR_SIZES,
+  TEXT_EDITOR_SYMBOLS,
   TEXT_EDITOR_TABLE_ACTIONS,
   TEXT_EDITOR_TOOLS,
   type TableAction,
+  type TextCase,
+  type TextEditorBar,
   type TextEditorTheme,
   type TextEditorTool,
   type TextEditorVariant,
@@ -53,12 +64,18 @@ import {
 
 export {
   TEXT_EDITOR_ALIGNMENTS,
+  TEXT_EDITOR_CASES,
   TEXT_EDITOR_COLORS,
+  TEXT_EDITOR_EMOJI,
+  TEXT_EDITOR_FONTS,
   TEXT_EDITOR_HEADINGS,
+  TEXT_EDITOR_LINE_HEIGHTS,
   TEXT_EDITOR_SIZES,
+  TEXT_EDITOR_SYMBOLS,
   TEXT_EDITOR_THEMES,
   TEXT_EDITOR_TOOLS,
   TEXT_EDITOR_VARIANTS,
+  type TextCase,
   type TextEditorTheme,
   type TextEditorTool,
   type TextEditorVariant,
@@ -148,7 +165,7 @@ export class TextEditorComponent implements ControlValueAccessor {
   /** Markdown as you type: # ## ### headings, - * 1. [] lists, > quote, ``` code, --- divider, **bold**, *italic*, `code`, ~~strike~~ */
   readonly markdown = input(true, { transform: booleanAttribute });
 
-  /** Show the word and character count under the editor */
+  /** Show the word and character count (and the reading time) under the editor */
   readonly showCount = input(false, { transform: booleanAttribute });
 
   /** Most characters allowed (0: no limit); longer input is cut off. Shows the count */
@@ -160,10 +177,17 @@ export class TextEditorComponent implements ControlValueAccessor {
   /** Emits the Quill instance once the editor is ready, for advanced use (modules, the Delta API) */
   readonly ready = output<Quill>();
 
-  protected readonly options = { heading: TEXT_EDITOR_HEADINGS, size: TEXT_EDITOR_SIZES } as const;
+  protected readonly options: Record<string, readonly { label: string; value: string }[]> = {
+    heading: TEXT_EDITOR_HEADINGS,
+    font: TEXT_EDITOR_FONTS,
+    size: TEXT_EDITOR_SIZES,
+  };
   protected readonly colors = TEXT_EDITOR_COLORS;
   protected readonly colorSections = TEXT_EDITOR_COLOR_SECTIONS;
   protected readonly alignments = TEXT_EDITOR_ALIGNMENTS;
+  protected readonly lineHeights = TEXT_EDITOR_LINE_HEIGHTS;
+  protected readonly cases = TEXT_EDITOR_CASES;
+  protected readonly characters = { emoji: TEXT_EDITOR_EMOJI, symbol: TEXT_EDITOR_SYMBOLS };
   protected readonly tableActions = TEXT_EDITOR_TABLE_ACTIONS;
   protected readonly id = `np-text-editor-${nextId++}`;
   protected readonly items = computed(() => toolbarItems(this.tools()));
@@ -178,7 +202,7 @@ export class TextEditorComponent implements ControlValueAccessor {
   protected readonly formats = signal<Record<string, unknown>>({});
   /** Whether there's something to undo / redo */
   protected readonly history = signal({ undo: false, redo: false });
-  /** The open toolbar menu (colors, alignment, table) and its button */
+  /** The open toolbar menu (colors, alignment, spacing, table, emoji, symbols, case) and its button */
   protected readonly menu = signal<{
     tool: TextEditorTool;
     label: string;
@@ -190,8 +214,8 @@ export class TextEditorComponent implements ControlValueAccessor {
     Math.floor(i / 8) + 1,
     (i % 8) + 1,
   ]);
-  /** The bar under the toolbar: a link or image address, or find & replace */
-  protected readonly bar = signal<'link' | 'image' | 'find' | null>(null);
+  /** The bar under the toolbar: a link, image or video address, or find & replace */
+  protected readonly bar = signal<TextEditorBar | null>(null);
   protected readonly barUrl = signal('');
   protected readonly replaceWith = signal('');
   protected readonly findIndex = signal(0);
@@ -201,7 +225,9 @@ export class TextEditorComponent implements ControlValueAccessor {
   private readonly version = signal(0);
   protected readonly counts = computed(() => {
     const text = this.text().replace(/\n$/, '');
-    return { words: text.match(/\S+/g)?.length ?? 0, characters: text.length };
+    const words = text.match(/\S+/g)?.length ?? 0;
+    // Reading time at 200 words a minute
+    return { words, characters: text.length, minutes: Math.max(1, Math.round(words / 200)) };
   });
   protected readonly matches = computed(() => {
     this.version();
@@ -404,9 +430,8 @@ export class TextEditorComponent implements ControlValueAccessor {
 
   protected run(item: ToolItem, button: HTMLElement) {
     const { tool } = item;
-    if (tool === 'color' || tool === 'align' || tool === 'table')
-      return this.menu.set({ tool, label: item.label, button });
-    if (tool === 'link' || tool === 'image' || tool === 'find') return this.openBar(tool);
+    if (MENUS.has(tool)) return this.menu.set({ tool, label: item.label, button });
+    if (BARS.has(tool)) return this.openBar(tool as TextEditorBar);
     if (tool === 'undo' || tool === 'redo') return this.edit((quill) => quill.history[tool]());
     this.edit((quill, range) => {
       if (tool === 'divider') insertDivider(quill, range.index);
@@ -424,6 +449,20 @@ export class TextEditorComponent implements ControlValueAccessor {
     });
   }
 
+  /** Inserts an emoji or a special character in place of the selection */
+  protected insert(text: string) {
+    this.apply((quill, { index, length }) => {
+      quill.deleteText(index, length, 'user');
+      quill.insertText(index, text, 'user');
+      quill.setSelection(index + text.length, 0, 'user');
+    });
+  }
+
+  /** UPPERCASE, lowercase, Title Case or Sentence case for the selected text */
+  protected setCase(to: TextCase) {
+    this.apply((quill, range) => range.length && changeCase(quill, range, to));
+  }
+
   /** Closed without a choice (Escape, a click outside): back to the menu's button */
   protected closeMenu() {
     this.menu()?.button.focus();
@@ -436,7 +475,7 @@ export class TextEditorComponent implements ControlValueAccessor {
     this.edit(change);
   }
 
-  /** A drop-down or menu choice: text style ('2': H2), font size, alignment, color ('' or false: none) */
+  /** A drop-down or menu choice: text style ('2': H2), font, size, alignment, spacing, color ('' or false: none) */
   protected setFormat(format: string, value: string | false) {
     this.apply((quill) => quill.format(format, value || false, 'user'));
   }
@@ -449,7 +488,7 @@ export class TextEditorComponent implements ControlValueAccessor {
     });
   }
 
-  protected openBar(kind: 'link' | 'image' | 'find') {
+  protected openBar(kind: TextEditorBar) {
     const quill = this.editable();
     if (!quill) return;
     const range = quill.getSelection();
@@ -470,7 +509,21 @@ export class TextEditorComponent implements ControlValueAccessor {
   protected applyBar() {
     if (this.bar() === 'link') this.applyLink();
     else if (this.bar() === 'image') this.insertImages(null, [normalizeUrl(this.barUrl().trim())]);
+    else if (this.bar() === 'video') this.insertVideo();
     else this.step(1);
+  }
+
+  /** The video bar's address as a player (YouTube, Vimeo), on its own line at the cursor */
+  protected readonly videoSrc = computed(() => videoUrl(this.barUrl().trim()));
+
+  private insertVideo() {
+    const src = this.videoSrc();
+    if (!src) return;
+    this.bar.set(null);
+    this.edit((quill, { index }) => {
+      quill.insertEmbed(index, 'video', src, 'user');
+      quill.setSelection(index + 1, 0, 'user');
+    });
   }
 
   /** Find: the next (1) or previous (-1) match */

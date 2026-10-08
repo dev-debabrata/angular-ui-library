@@ -42,12 +42,19 @@
   gap: 6px;
 }
 
-/* Default and glass: the buttons sit in one pill track (frosted on glass) */
-.pagination--default .pagination__nav,
-.pagination--glass .pagination__nav {
-  padding: 6px;
+/* Default and glass: the rows select and number boxes match the track's height (frosted on glass) */
+.pagination--default,
+.pagination--glass {
+  /* The track's padding and border, so the rows select can match its height */
+  --pg-track: 8px;
+}
+
+/* Default, glass and segmented: the buttons sit in one track */
+.pagination:where(.pagination--default, .pagination--glass, .pagination--segmented)
+  .pagination__nav {
+  padding: 3px;
   border: 1px solid var(--ui-border);
-  border-radius: var(--ui-radius-full);
+  border-radius: var(--ui-radius);
   background: var(--ui-surface);
   box-shadow: var(--ui-shadow-sm);
 }
@@ -67,7 +74,7 @@
   height: var(--pg-h);
   padding: 0 calc(var(--pg-h) / 3);
   border: 1px solid var(--pg-border, transparent);
-  border-radius: var(--pg-radius, var(--ui-radius-full));
+  border-radius: var(--pg-radius, var(--ui-radius));
   background: var(--pg-bg);
   color: inherit;
   font: inherit;
@@ -102,9 +109,12 @@
   }
 }
 
-/* Minimal and dots: round arrow buttons without text; dots turn the pages into dots, the current one a bar */
+/* Minimal, dots, compact and input: round arrow buttons without text; dots turn the pages into dots, the current one
+   a bar */
 .pagination--minimal,
-.pagination--dots {
+.pagination--dots,
+.pagination--compact,
+.pagination--input {
   & .pagination__nav button {
     padding: 0;
   }
@@ -115,6 +125,7 @@
 
 .pagination--dots .pagination__nav .pagination__page {
   --pg-bg: var(--ui-border-strong);
+  border-radius: var(--ui-radius-full);
   width: 10px;
   min-width: 0;
   height: 10px;
@@ -125,6 +136,98 @@
   }
   &.active {
     width: 28px;
+  }
+}
+
+/* Compact (a data table footer): "Items per page" first, then "1 – 10 of 240", then the arrows */
+.pagination--compact {
+  gap: 8px 28px;
+
+  & .pagination__per-page {
+    order: -1;
+  }
+
+  & .pagination__nav {
+    gap: 2px;
+  }
+
+  & .pagination__nav button:not(:disabled) {
+    color: var(--ui-text);
+  }
+
+  & .pagination__select {
+    min-width: 76px;
+  }
+}
+
+/* Rows per page: np-select */
+.pagination__select {
+  min-width: 96px;
+}
+
+/* The rows select and the number boxes: as tall as the buttons (and the track around them) */
+.pagination__field,
+.pagination__select ::ng-deep .select-trigger {
+  height: calc(var(--pg-h) + var(--pg-track, 0px));
+  min-height: 0;
+  padding-block: 0;
+  font-size: inherit;
+}
+
+/* Segmented: one bordered bar of joined buttons with dividers */
+.pagination--segmented {
+  --pg-radius: 0;
+
+  & .pagination__nav {
+    gap: 0;
+    padding: 0;
+    overflow: hidden;
+    border-color: var(--ui-border-strong);
+  }
+
+  & .pagination__nav > * + * {
+    border-left: 1px solid var(--ui-border);
+  }
+
+  & .pagination__nav button.active {
+    box-shadow: none;
+  }
+
+  & .pagination__nav button:focus-visible {
+    box-shadow: inset var(--ui-ring);
+  }
+
+  & .pagination__ellipsis {
+    align-self: stretch;
+    display: inline-flex;
+    align-items: center;
+  }
+}
+
+/* Input: "Page [3] of 12" between the arrows */
+.pagination--input .pagination__field {
+  width: 64px;
+  text-align: center;
+}
+
+/* Load more: "Showing 20 of 240", a progress bar and the button (squared like the other paginator buttons) */
+.pagination--load-more .ui-btn {
+  border-radius: var(--ui-radius);
+}
+
+.pagination__progress {
+  width: 120px;
+  height: 4px;
+  overflow: hidden;
+  border-radius: var(--ui-radius-full);
+  background: var(--ui-surface-sunken);
+
+  & span {
+    display: block;
+    height: 100%;
+    border-radius: inherit;
+    background: var(--ui-gradient);
+    transition: width 0.3s var(--ui-ease);
   }
 }
 
@@ -150,8 +253,6 @@
 
 .pagination__field {
   width: auto;
-  height: var(--pg-h);
-  padding-block: 0;
 
   &[type='number'] {
     width: 72px;

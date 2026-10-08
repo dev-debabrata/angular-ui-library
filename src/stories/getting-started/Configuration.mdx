@@ -73,7 +73,9 @@ derived from them, so they follow automatically, in light and dark mode:
 
 The theme menu in this Storybook's toolbar tries the built-in palettes: Indigo (default, `#6366f1` → `#a855f7`),
 Violet, Purple, Fuchsia, Pink, Rose, Red, Orange, Amber, Green, Emerald, Teal, Cyan, Sky, Blue, Slate, Navy,
-Midnight, Plum, Wine, Brown, Forest, Ocean and Graphite.
+Midnight, Plum, Wine, Brown, Forest, Ocean and Graphite. Its **Custom** row adds your own: click **+**, pick any
+color, and the theme uses it (hover and accent shades are derived from it). Your colors are kept in this browser, and
+a hovered swatch's **×** removes one.
 
 ## Color and shape per component
 
@@ -83,6 +85,8 @@ inside it. It works the same in Angular, React (`className`), Vue and HTML:
 ```html
 <np-select class="np-color-success np-shape-rounded" label="Status" />
 <np-button class="np-color-danger" primary label="Delete" />
+<np-toggle class="np-color-teal" label="Teal, from the palette" />
+<np-button class="np-color-custom" style="--np-color: #ff6a00" primary label="Any color" />
 <div class="np-shape-square">… every component in here has square corners …</div>
 ```
 
@@ -104,6 +108,28 @@ inside it. It works the same in Angular, React (`className`), Vue and HTML:
         <code>danger</code>{' '}<code>help</code>{' '}<code>contrast</code>
       </td>
       <td>The brand color: selected states, focus ring, gradient, checked toggles and checkboxes, progress, links</td>
+    </tr>
+    <tr>
+      <td>
+        <code>np-color-*</code>
+      </td>
+      <td>
+        The 24 palette colors: <code>indigo</code>{' '}<code>violet</code>{' '}<code>purple</code>{' '}<code>fuchsia</code>{' '}
+        <code>pink</code>{' '}<code>rose</code>{' '}<code>red</code>{' '}<code>orange</code>{' '}<code>amber</code>{' '}
+        <code>green</code>{' '}<code>emerald</code>{' '}<code>teal</code>{' '}<code>cyan</code>{' '}<code>sky</code>{' '}
+        <code>blue</code>{' '}<code>slate</code>{' '}<code>navy</code>{' '}<code>midnight</code>{' '}<code>plum</code>{' '}
+        <code>wine</code>{' '}<code>brown</code>{' '}<code>forest</code>{' '}<code>ocean</code>{' '}<code>graphite</code>
+      </td>
+      <td>The same, with the theme menu's colors</td>
+    </tr>
+    <tr>
+      <td>
+        <code>np-color-custom</code>
+      </td>
+      <td>
+        <code>--np-color</code> (any CSS color), optional <code>--np-accent</code>
+      </td>
+      <td>Any color you like; without <code>--np-accent</code> the gradient's second color is a shifted shade of it</td>
     </tr>
     <tr>
       <td>
@@ -164,7 +190,7 @@ All of them can be overridden on `:root` (or on any element, to restyle one area
     <tr>
       <td>Shape</td>
       <td>
-        <code>--ui-radius-sm</code> (6px) <code>--ui-radius</code> (10px) <code>--ui-radius-lg</code> (16px)
+        <code>--ui-radius-sm</code> (4px) <code>--ui-radius</code> (6px) <code>--ui-radius-lg</code> (10px)
       </td>
     </tr>
     <tr>

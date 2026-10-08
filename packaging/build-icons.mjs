@@ -28,3 +28,13 @@ fs.writeFileSync(
   'packaging/react/icons.d.ts',
   `import type { NexPrimeIcon } from './index';\n\n${icons.map(([p]) => `export const ${p}: NexPrimeIcon;`).join('\n')}\n`,
 );
+
+fs.writeFileSync(
+  'packaging/vue/icons.js',
+  `import { createIcon } from './index.js';\n\n${icons.map(([p, n]) => `export const ${p} = createIcon('${n}');`).join('\n')}\n`,
+);
+
+fs.writeFileSync(
+  'packaging/vue/icons.d.ts',
+  `import type { NexPrimeIcon } from './index';\n\n${icons.map(([p]) => `export const ${p}: NexPrimeIcon;`).join('\n')}\n`,
+);

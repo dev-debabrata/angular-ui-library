@@ -2,6 +2,7 @@ import { Component, DestroyRef, effect, inject, input, viewChild } from '@angula
 import { Router, RouterOutlet } from '@angular/router';
 import { addons } from 'storybook/preview-api';
 
+import { CookieConsentComponent } from '../cookie-consent/cookie-consent.component';
 import { SITE_GO, SITE_PAGES, SITE_SEARCH, clickedPage } from '../landing';
 import { SiteSearchComponent } from '../site-search/site-search.component';
 
@@ -13,7 +14,7 @@ import { SiteSearchComponent } from '../site-search/site-search.component';
  */
 @Component({
   selector: 'np-site',
-  imports: [RouterOutlet, SiteSearchComponent],
+  imports: [RouterOutlet, SiteSearchComponent, CookieConsentComponent],
   templateUrl: './site.html',
   styleUrl: './site.css',
   host: { '(click)': 'follow($event)' },

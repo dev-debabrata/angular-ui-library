@@ -2,54 +2,135 @@
 import type Quill from 'quill';
 import type { Range as QuillRange } from 'quill';
 
-import { TEXT_EDITOR_SIZES } from './text-editor-tools';
+import {
+  TEXT_EDITOR_FONTS,
+  TEXT_EDITOR_LINE_HEIGHTS,
+  TEXT_EDITOR_SIZES,
+  type TextCase,
+} from './text-editor-tools';
 
 /**
  * The formats this editor uses, in their own Quill registry, so Quill instances elsewhere on the page keep their own
- * setup. Alignment and font size are styles (style="text-align: center"), so the HTML looks right without Quill's
- * CSS. Loaded once, on first use.
+ * setup. Alignment, font, font size and line spacing are styles (style="text-align: center"), so the HTML looks right
+ * without Quill's CSS. Loaded once, on first use.
  */
 let quillLoader: Promise<{ Quill: typeof Quill; registry: unknown }> | null = null;
 export function loadQuill() {
-  return (quillLoader ??= Promise.all([import('quill'), import('quill/formats/table')]).then(
-    ([{ default: Quill, Parchment }, tables]) => {
-      const registry = new Parchment.Registry();
-      const blots = 'block block/embed break container cursor embed inline scroll text';
-      const formats =
-        'header bold italic underline strike code script color background link image blockquote code-block list indent';
-      type Definition = { blotName?: string; requiredContainer?: Definition };
-      const definitions = [
-        ...blots.split(' ').map((b) => `blots/${b}`),
-        ...formats.split(' ').map((f) => `formats/${f}`),
-        'attributors/style/align',
-      ].map((name) => Quill.import(name) as Definition);
-      // A horizontal rule (<hr>), which Quill doesn't have
-      const BlockEmbed = Quill.import('blots/block/embed') as new (...args: never[]) => object;
-      class Divider extends BlockEmbed {
-        static blotName = 'divider';
-        static tagName = 'HR';
+  return (quillLoader ??= Promise.all([
+    import('quill'),
+    import('quill/formats/table'),
+    import('quill/formats/video'),
+  ]).then(([{ default: Quill, Parchment }, tables, { default: QuillVideo }]) => {
+    const registry = new Parchment.Registry();
+    const blots = 'block block/embed break container cursor embed inline scroll text';
+    const formats =
+      'header bold italic underline strike code script color background link image blockquote code-block list indent';
+    type Definition = { blotName?: string; requiredContainer?: Definition };
+    const definitions = [
+      ...blots.split(' ').map((b) => `blots/${b}`),
+      ...formats.split(' ').map((f) => `formats/${f}`),
+      'attributors/style/align',
+    ].map((name) => Quill.import(name) as Definition);
+    // A horizontal rule (<hr>), which Quill doesn't have
+    const BlockEmbed = Quill.import('blots/block/embed') as new (...args: never[]) => object;
+    class Divider extends BlockEmbed {
+      static blotName = 'divider';
+      static tagName = 'HR';
+    }
+    /** A YouTube or Vimeo player; its HTML is the <iframe> (Quill writes a link), sized to 16:9 */
+    class Video extends QuillVideo {
+      static override sanitize(url: string) {
+        return VIDEO_EMBED.test(url) ? url : 'about:blank';
       }
-      const size = new Parchment.StyleAttributor('size', 'font-size', {
-        scope: Parchment.Scope.INLINE,
-        whitelist: TEXT_EDITOR_SIZES.map((s) => s.value).filter(Boolean),
+      override html() {
+        const src = this.domNode.getAttribute('src') ?? '';
+        return `<iframe class="ql-video" src="${src.replace(/"/g, '&quot;')}" style="width: 100%; aspect-ratio: 16 / 9; border: 0;" allowfullscreen></iframe>`;
+      }
+    }
+    const style = (
+      name: string,
+      css: string,
+      scope: number,
+      values: readonly { value: string }[],
+    ) =>
+      new Parchment.StyleAttributor(name, css, {
+        scope,
+        whitelist: values.map((v) => v.value).filter(Boolean),
       });
-      // Lists and code blocks need their container blots too; abstract base blots can't be registered
-      for (const definition of [
-        ...definitions,
-        ...definitions.flatMap((d) => d.requiredContainer ?? []),
-        Divider as Definition,
-        size as Definition,
-        ...([
-          tables.TableCell,
-          tables.TableRow,
-          tables.TableBody,
-          tables.TableContainer,
-        ] as Definition[]),
-      ])
-        if (definition.blotName !== 'abstract') registry.register(definition as never);
-      return { Quill, registry };
-    },
-  ));
+    const { INLINE, BLOCK } = Parchment.Scope;
+    // Lists and code blocks need their container blots too; abstract base blots can't be registered
+    for (const definition of [
+      ...definitions,
+      ...definitions.flatMap((d) => d.requiredContainer ?? []),
+      Divider as Definition,
+      Video as Definition,
+      ...([
+        style('size', 'font-size', INLINE, TEXT_EDITOR_SIZES),
+        style('font', 'font-family', INLINE, TEXT_EDITOR_FONTS),
+        style('lineheight', 'line-height', BLOCK, TEXT_EDITOR_LINE_HEIGHTS),
+      ] as Definition[]),
+      ...([
+        tables.TableCell,
+        tables.TableRow,
+        tables.TableBody,
+        tables.TableContainer,
+      ] as Definition[]),
+    ])
+      if (definition.blotName !== 'abstract') registry.register(definition as never);
+    return { Quill, registry };
+  }));
+}
+
+/** Video players that can be embedded (other iframes are blanked) */
+const VIDEO_EMBED =
+  /^https:\/\/(www\.youtube(-nocookie)?\.com\/embed\/|player\.vimeo\.com\/video\/)[\w-]+/;
+
+/** A YouTube or Vimeo page address as its player's address ('' for anything else) */
+export function videoUrl(url: string): string {
+  const youtube = url.match(
+    /(?:youtube\.com\/(?:watch\?(?:.*&)?v=|embed\/|shorts\/)|youtu\.be\/)([\w-]{11})/,
+  );
+  const vimeo = url.match(/vimeo\.com\/(?:video\/)?(\d+)/);
+  if (youtube) return `https://www.youtube.com/embed/${youtube[1]}`;
+  return vimeo ? `https://player.vimeo.com/video/${vimeo[1]}` : '';
+}
+
+/** Changes the letter case of the selected text, keeping its formatting */
+export function changeCase(quill: Quill, { index, length }: QuillRange, to: TextCase) {
+  const ops = quill.getContents(index, length).ops;
+  // Embeds (images, dividers) count as one character, as in Quill
+  const text = ops.map((op) => (typeof op.insert === 'string' ? op.insert : '\ufffc')).join('');
+  const lower = text.toLocaleLowerCase();
+  const upperAfter = (pattern: RegExp) =>
+    lower.replace(pattern, (_, before: string, c: string) => before + c.toLocaleUpperCase());
+  const changed =
+    to === 'upper'
+      ? text.toLocaleUpperCase()
+      : to === 'lower'
+        ? lower
+        : upperAfter(to === 'title' ? /(^|\s)(\p{L})/gu : /(^|[.!?]\s+|\n)(\p{L})/gu);
+  // Same length only (ß → SS isn't). Each run of text is replaced with its formats; line ends stay
+  if (changed === text || changed.length !== text.length) return;
+  let at = 0;
+  for (const op of ops) {
+    if (typeof op.insert !== 'string') {
+      at++;
+      continue;
+    }
+    for (const { 0: run, index: i } of op.insert.matchAll(/[^\n]+/g)) {
+      const from = at + i!;
+      // Inserted first, into the run's own text (after deleting, the cursor would be in the next run)
+      quill.insertText(
+        index + from,
+        changed.slice(from, from + run.length),
+        op.attributes ?? {},
+        'user',
+      );
+      quill.deleteText(index + from + run.length, run.length, 'user');
+    }
+    at += op.insert.length;
+  }
+  quill.setSelection(index, length, 'user');
 }
 
 /** Typed shortcuts and the symbols that replace them as you type */

@@ -18,7 +18,7 @@
   width: min(640px, 100vw);
   margin-left: calc(min(640px, 100vw) / -2);
   padding: 0 0 max(16px, env(safe-area-inset-bottom));
-  border-radius: 20px 20px 0 0;
+  border-radius: var(--ui-radius-lg) var(--ui-radius-lg) 0 0;
   background: var(--ui-surface);
   box-shadow: 0 -8px 32px rgba(15, 23, 42, 0.18);
   animation: sheet-up 0.32s cubic-bezier(0.32, 0.72, 0, 1);

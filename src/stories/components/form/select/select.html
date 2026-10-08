@@ -33,6 +33,7 @@
       role="combobox"
       aria-haspopup="listbox"
       [id]="id"
+      [attr.aria-label]="label() ? null : ariaLabel() || null"
       [disabled]="disabled()"
       [attr.aria-expanded]="open()"
       [attr.aria-controls]="id + '-list'"

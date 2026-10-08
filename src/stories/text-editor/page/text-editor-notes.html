@@ -1,0 +1,69 @@
+<section class="notes" aria-label="Notes">
+  <aside class="notes__side">
+    <div class="notes__search">
+      <np-icon name="search" [size]="15" />
+      <input
+        type="search"
+        placeholder="Search notes"
+        aria-label="Search notes"
+        [value]="query()"
+        (input)="query.set($any($event.target).value)"
+      />
+      <button
+        type="button"
+        class="ui-btn ui-btn--primary ui-btn--sm ui-btn--icon"
+        aria-label="New note"
+        title="New note"
+        (click)="add()"
+      >
+        <np-icon name="plus" [size]="16" />
+      </button>
+    </div>
+    <ul class="notes__list">
+      @for (note of list(); track note.id) {
+        <li>
+          <button
+            type="button"
+            class="notes__item"
+            [class.notes__item--open]="note.id === openId()"
+            [attr.aria-current]="note.id === openId() || null"
+            (click)="openId.set(note.id)"
+          >
+            <b>{{ note.title }}</b>
+            <span class="notes__snippet">
+              <time>{{ note.when }}</time> {{ note.snippet || 'No more text' }}
+            </span>
+          </button>
+        </li>
+      } @empty {
+        <li class="notes__empty">No notes match "{{ query() }}".</li>
+      }
+    </ul>
+    <p class="notes__count">{{ notes().length }} notes · saved in this browser</p>
+  </aside>
+
+  @if (open(); as note) {
+    <div class="notes__main">
+      <div class="notes__bar">
+        <span class="ui-hint">Edited: {{ note.when }}</span>
+        <button
+          type="button"
+          class="ui-btn ui-btn--text ui-btn--danger ui-btn--sm"
+          (click)="remove()"
+        >
+          <np-icon name="trash-2" [size]="14" /> Delete
+        </button>
+      </div>
+      <np-text-editor
+        class="te-fill"
+        ariaLabel="Note"
+        placeholder="Start with a title, then write..."
+        minHeight="0"
+        maxHeight="none"
+        [tools]="tools"
+        [value]="note.html"
+        (valueChange)="edit($event)"
+      />
+    </div>
+  }
+</section>

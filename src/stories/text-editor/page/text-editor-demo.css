@@ -3,10 +3,15 @@
   display: block;
 }
 
+/* Seven modes: one row that scrolls sideways when it doesn't fit */
 .modes {
   display: flex;
-  justify-content: center;
-  margin-bottom: 24px;
+  justify-content: safe center;
+  margin-bottom: 20px;
+  /* Room for the focus ring, which the scroller would clip */
+  padding: 4px;
+  overflow-x: auto;
+  scrollbar-width: thin;
 }
 
 /* Document editor: a window with a title bar, the editor, and a status bar */
@@ -87,26 +92,34 @@
   white-space: nowrap;
 }
 
-/* The editor fills the window: no border of its own, and a tall page area that scrolls */
-.doc np-text-editor {
+/* Editors with class="te-fill" (every mode but Simple and Comments) are part of their window: no frame of their
+   own, stretched to the window's height, scrolling inside it */
+:host ::ng-deep np-text-editor.te-fill {
+  display: flex;
+  flex-direction: column;
+}
+
+:host
+  ::ng-deep
+  :is(np-text-editor.te-fill, .te-fill .ui-field, .te-fill .te, .te-fill .te__scroll) {
   flex: 1;
   min-height: 0;
 }
 
-.doc ::ng-deep .te,
-.doc ::ng-deep .te:has(.ql-editor:focus) {
+:host ::ng-deep .te-fill .te,
+:host ::ng-deep .te-fill .te:has(.ql-editor:focus) {
   border: none;
   border-radius: 0;
   box-shadow: none;
 }
 
-.doc ::ng-deep .te__toolbar {
+:host ::ng-deep .te-fill .te__toolbar {
   border-radius: 0;
 }
 
+/* The document: a tall page area */
 .doc ::ng-deep .te__scroll {
   height: min(72vh, 900px);
-  border-radius: 0;
 }
 
 .doc:fullscreen ::ng-deep .te__scroll {
@@ -269,20 +282,9 @@
   }
 }
 
-/* preview (Welcome): a shorter picture of the document editor that fades out, with a button over it */
-:host(.demo--preview) {
-  position: relative;
-}
-
+/* preview (Welcome): a shorter, read-only picture of the document editor that fades out */
 :host(.demo--preview) .doc {
   position: relative;
-  transition:
-    border-color var(--ui-ease),
-    box-shadow var(--ui-ease);
-}
-
-:host(.demo--preview:hover) .doc {
-  border-color: var(--ui-primary);
 }
 
 :host(.demo--preview) .doc::after {
@@ -306,21 +308,4 @@
 
 :host(.demo--preview) .doc__status {
   display: none;
-}
-
-.demo__open {
-  position: absolute;
-  bottom: 28px;
-  left: 50%;
-  translate: -50% 0;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 11px 20px;
-  border-radius: var(--ui-radius-full);
-  background: var(--ui-gradient);
-  box-shadow: var(--ui-shadow-lg);
-  color: #fff;
-  font-size: 14px;
-  font-weight: 700;
 }

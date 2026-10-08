@@ -28,9 +28,9 @@
   --ui-help: #8b5cf6;
 
   /* Shape & depth */
-  --ui-radius-sm: 6px;
-  --ui-radius: 10px;
-  --ui-radius-lg: 16px;
+  --ui-radius-sm: 4px;
+  --ui-radius: 6px;
+  --ui-radius-lg: 10px;
   /* Fully round (pills: buttons, badges, chips, toggle tracks, bars); the np-shape-* classes change it too */
   --ui-radius-full: 999px;
   --ui-shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.06);
@@ -205,6 +205,138 @@ body {
   --ui-primary: var(--ui-text);
   --ui-primary-hover: color-mix(in srgb, var(--ui-text) 85%, var(--ui-surface));
   --ui-accent: var(--ui-text);
+}
+
+/* Palette colors: the same 24 colors as the theme menu (np-color-teal, np-color-navy, …), for any component */
+/* prettier-ignore */
+.np-color-indigo { --ui-primary: #6366f1; --ui-primary-hover: #4f46e5; --ui-accent: #a855f7; }
+.np-color-violet {
+  --ui-primary: #8b5cf6;
+  --ui-primary-hover: #7c3aed;
+  --ui-accent: #ec4899;
+}
+.np-color-purple {
+  --ui-primary: #a855f7;
+  --ui-primary-hover: #9333ea;
+  --ui-accent: #6366f1;
+}
+.np-color-fuchsia {
+  --ui-primary: #d946ef;
+  --ui-primary-hover: #c026d3;
+  --ui-accent: #8b5cf6;
+}
+.np-color-pink {
+  --ui-primary: #ec4899;
+  --ui-primary-hover: #db2777;
+  --ui-accent: #f43f5e;
+}
+.np-color-rose {
+  --ui-primary: #f43f5e;
+  --ui-primary-hover: #e11d48;
+  --ui-accent: #f97316;
+}
+.np-color-red {
+  --ui-primary: #ef4444;
+  --ui-primary-hover: #dc2626;
+  --ui-accent: #f59e0b;
+}
+.np-color-orange {
+  --ui-primary: #f97316;
+  --ui-primary-hover: #ea580c;
+  --ui-accent: #eab308;
+}
+.np-color-amber {
+  --ui-primary: #f59e0b;
+  --ui-primary-hover: #d97706;
+  --ui-accent: #ef4444;
+}
+.np-color-green {
+  --ui-primary: #22c55e;
+  --ui-primary-hover: #16a34a;
+  --ui-accent: #14b8a6;
+}
+.np-color-emerald {
+  --ui-primary: #10b981;
+  --ui-primary-hover: #059669;
+  --ui-accent: #84cc16;
+}
+.np-color-teal {
+  --ui-primary: #14b8a6;
+  --ui-primary-hover: #0d9488;
+  --ui-accent: #0ea5e9;
+}
+.np-color-cyan {
+  --ui-primary: #06b6d4;
+  --ui-primary-hover: #0891b2;
+  --ui-accent: #3b82f6;
+}
+.np-color-sky {
+  --ui-primary: #0ea5e9;
+  --ui-primary-hover: #0284c7;
+  --ui-accent: #6366f1;
+}
+.np-color-blue {
+  --ui-primary: #3b82f6;
+  --ui-primary-hover: #2563eb;
+  --ui-accent: #06b6d4;
+}
+.np-color-slate {
+  --ui-primary: #475569;
+  --ui-primary-hover: #334155;
+  --ui-accent: #64748b;
+}
+.np-color-navy {
+  --ui-primary: #1e3a8a;
+  --ui-primary-hover: #172554;
+  --ui-accent: #3b82f6;
+}
+.np-color-midnight {
+  --ui-primary: #312e81;
+  --ui-primary-hover: #1e1b4b;
+  --ui-accent: #7c3aed;
+}
+.np-color-plum {
+  --ui-primary: #6b21a8;
+  --ui-primary-hover: #581c87;
+  --ui-accent: #c026d3;
+}
+.np-color-wine {
+  --ui-primary: #9f1239;
+  --ui-primary-hover: #881337;
+  --ui-accent: #e11d48;
+}
+.np-color-brown {
+  --ui-primary: #92400e;
+  --ui-primary-hover: #78350f;
+  --ui-accent: #d97706;
+}
+.np-color-forest {
+  --ui-primary: #166534;
+  --ui-primary-hover: #14532d;
+  --ui-accent: #65a30d;
+}
+.np-color-ocean {
+  --ui-primary: #115e59;
+  --ui-primary-hover: #134e4a;
+  --ui-accent: #0891b2;
+}
+.np-color-graphite {
+  --ui-primary: #27272a;
+  --ui-primary-hover: #18181b;
+  --ui-accent: #52525b;
+}
+
+/* Any color: <np-button class="np-color-custom" style="--np-color: #ff6a00">. --np-accent sets the gradient's second
+   color; without it, the accent is the same color turned 40° round the color wheel */
+.np-color-custom {
+  --ui-primary: var(--np-color, #6366f1);
+  --ui-accent: var(--np-accent, var(--ui-primary));
+}
+
+@supports (color: oklch(from red l c h)) {
+  .np-color-custom {
+    --ui-accent: var(--np-accent, oklch(from var(--ui-primary) l c calc(h + 40)));
+  }
 }
 
 /* Shapes scale the three radius tokens; pill keeps big containers (cards, dialogs) at a large but sane radius */

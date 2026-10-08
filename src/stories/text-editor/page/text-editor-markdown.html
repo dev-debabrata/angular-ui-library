@@ -1,0 +1,47 @@
+<section class="md" aria-label="Markdown editor">
+  <div class="md__pane">
+    <div class="md__head">
+      <np-icon name="file-code" [size]="16" />
+      <label for="te-markdown">Markdown</label>
+      <span class="md__meta">{{ words() }} words</span>
+    </div>
+    <textarea
+      id="te-markdown"
+      class="md__source"
+      spellcheck="false"
+      [value]="source()"
+      (input)="source.set($any($event.target).value)"
+    ></textarea>
+  </div>
+
+  <div class="md__pane">
+    <div class="md__head">
+      <np-icon name="eye" [size]="16" />
+      <span id="te-markdown-preview">Preview</span>
+      <span class="md__actions">
+        <button type="button" class="ui-btn ui-btn--text ui-btn--sm" (click)="copyHtml()">
+          <np-icon [name]="copied() ? 'check' : 'copy'" [size]="14" />
+          {{ copied() ? 'Copied' : 'Copy HTML' }}
+        </button>
+        <button type="button" class="ui-btn ui-btn--text ui-btn--sm" (click)="download()">
+          <np-icon name="download" [size]="14" /> .md
+        </button>
+        <button
+          type="button"
+          class="ui-btn ui-btn--primary ui-btn--sm"
+          (click)="openDocument.emit(html())"
+        >
+          <np-icon name="file-text" [size]="14" /> Open as document
+        </button>
+      </span>
+    </div>
+    <np-text-editor
+      class="te-fill"
+      readonly
+      ariaLabel="Markdown preview"
+      minHeight="0"
+      maxHeight="none"
+      [value]="html()"
+    />
+  </div>
+</section>

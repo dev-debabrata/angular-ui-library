@@ -1,7 +1,6 @@
-@let total = sortedData().length;
-@let perPage = rows();
-@let shown = perPage ? sortedData().slice((page() - 1) * perPage, page() * perPage) : sortedData();
+@let rowsShown = shown();
 @let noMatch = filterText() && data().length;
+@let cell = cells();
 @if (filterable()) {
   <div class="table-filter">
     <np-search-input [placeholder]="filterPlaceholder()" (search)="filterText.set($event)" />
@@ -12,57 +11,102 @@
   [class]="'np-table--' + variant() + ' np-table--' + size()"
   [class.is-striped]="striped()"
   [class.is-bordered]="bordered()"
+  [class.is-nowrap]="noWrap()"
+  [class.has-sticky-footer]="stickyFooter()"
   [style.max-height]="scrollHeight() || null"
 >
-  <table class="table" [attr.aria-busy]="loading() || null">
+  <table #table class="table" [attr.aria-busy]="loading() || null">
     <thead>
-      <tr>
+      <tr
+        cdkDropList
+        cdkDropListOrientation="horizontal"
+        [cdkDropListDisabled]="!reorderableColumns()"
+        (cdkDropListDropped)="dropColumn($event)"
+      >
+        @if (reorderable()) {
+          <th class="table__tool"><span class="ui-visually-hidden">Reorder</span></th>
+        }
         @if (selectable()) {
           <th class="table__check">
             <input
               type="checkbox"
               aria-label="Select all rows"
-              [checked]="total > 0 && selectedCount() === total"
-              [indeterminate]="selectedCount() > 0 && selectedCount() < total"
-              [disabled]="!total"
-              (change)="select(sortedData(), selectedCount() < total)"
+              [checked]="total() > 0 && selectedCount() === total()"
+              [indeterminate]="selectedCount() > 0 && selectedCount() < total()"
+              [disabled]="!total()"
+              (change)="select(sortedData(), selectedCount() < total())"
             />
           </th>
         }
         @for (column of columns(); track column.key) {
           <th
+            cdkDrag
+            cdkDragLockAxis="x"
+            [cdkDragDisabled]="!reorderableColumns()"
+            [attr.data-key]="column.key"
             [class.sortable]="column.sortable"
             [class.sorted]="sortKey() === column.key"
-            [style.text-align]="column.align"
+            [class]="cell[column.key].class"
+            [style]="cell[column.key].style"
+            [style.width]="column.width"
             [attr.aria-sort]="ariaSort(column.key)"
             (click)="column.sortable && sortBy(column.key)"
           >
             {{ column.label }}
             @if (column.sortable) {
-              <span class="sort-icon">
-                {{ sortKey() !== column.key ? '↕' : sortDirection() === 'asc' ? '↑' : '↓' }}
-              </span>
+              <!-- Sorted: a solid arrow in the sort's direction; other sortable headers: a faint ↑ on hover -->
+              <np-icon
+                class="sort-icon"
+                [name]="
+                  sortKey() === column.key && sortDirection() === 'desc' ? 'arrow-down' : 'arrow-up'
+                "
+                [size]="14"
+              />
+            }
+            @if (column.description) {
+              <small class="table__desc">{{ column.description }}</small>
             }
           </th>
         }
+        @if (expandable()) {
+          <th class="table__tool"><span class="ui-visually-hidden">Details</span></th>
+        }
       </tr>
     </thead>
-    <tbody>
+    <tbody cdkDropList [cdkDropListDisabled]="!reorderable()" (cdkDropListDropped)="drop($event)">
       @if (loading()) {
         @for (i of [1, 2, 3, 4, 5]; track i) {
           <tr class="table__skeleton" aria-hidden="true">
-            @if (selectable()) {
-              <td></td>
-            }
-            @for (column of columns(); track column.key) {
+            @for (cell of skeletonCells(); track $index) {
               <td><span></span></td>
             }
           </tr>
         }
       } @else {
-        @for (row of shown; track $index) {
+        @for (row of rowsShown; track row) {
           @let selected = selection().includes(row);
-          <tr [class.selected]="selected" (click)="rowClick.emit(row)">
+          @let open = expanded().has(row);
+          <tr
+            cdkDrag
+            [cdkDragDisabled]="!reorderable()"
+            [class.selected]="selected"
+            [class.open]="open"
+            [class.expandable]="expandable()"
+            (click)="clickRow(row)"
+          >
+            @if (reorderable()) {
+              <td class="table__tool">
+                <button
+                  type="button"
+                  class="table__handle"
+                  cdkDragHandle
+                  aria-label="Drag to reorder"
+                  (click)="$event.stopPropagation()"
+                >
+                  <np-icon name="grip" [size]="16" />
+                </button>
+              </td>
+            }
             @if (selectable()) {
               <td class="table__check" (click)="$event.stopPropagation()">
                 <input
@@ -75,26 +119,70 @@
             }
             @for (column of columns(); track column.key) {
               @let value = row[column.key];
-              <td [style.text-align]="column.align">
-                @if (column.image) {
-                  <img class="table__avatar" [src]="'' + row[column.image]" alt="" />
-                }
-                @if (column.tones) {
-                  <span
-                    class="table__status"
-                    [class]="'tone-' + (column.tones['' + value] ?? 'neutral')"
-                  >
-                    {{ value }}
+              <td [class]="cell[column.key].class" [style]="cell[column.key].style">
+                @if (column.actions) {
+                  <span class="table__actions">
+                    @for (action of column.actions; track action.label) {
+                      <button
+                        type="button"
+                        class="ui-btn ui-btn--text ui-btn--icon ui-btn--sm"
+                        [class.ui-btn--danger]="action.danger"
+                        [attr.aria-label]="action.label"
+                        [title]="action.label"
+                        (click)="act($event, action, row)"
+                      >
+                        <np-icon [name]="action.icon" [size]="16" />
+                      </button>
+                    }
                   </span>
                 } @else {
-                  {{ value }}
+                  @if (column.image) {
+                    <img class="table__avatar" [src]="'' + row[column.image]" alt="" />
+                  }
+                  @if (column.tones) {
+                    <span
+                      class="table__status"
+                      [class]="'tone-' + (column.tones['' + value] ?? 'neutral')"
+                    >
+                      {{ text(column, value, row) }}
+                    </span>
+                  } @else {
+                    {{ text(column, value, row) }}
+                  }
                 }
               </td>
             }
+            @if (expandable()) {
+              <td class="table__tool">
+                <button
+                  type="button"
+                  class="ui-btn ui-btn--text ui-btn--icon ui-btn--sm table__toggle"
+                  [attr.aria-label]="open ? 'Hide details' : 'Show details'"
+                  [attr.aria-expanded]="open"
+                  (click)="$event.stopPropagation(); toggle(row)"
+                >
+                  <np-icon name="chevron-down" [size]="16" />
+                </button>
+              </td>
+            }
           </tr>
+          @if (open) {
+            <tr class="table__detail">
+              <td [attr.colspan]="span()">
+                @if (detail(); as template) {
+                  <ng-container
+                    [ngTemplateOutlet]="template"
+                    [ngTemplateOutletContext]="{ $implicit: row }"
+                  />
+                } @else {
+                  {{ row[detailKey()] }}
+                }
+              </td>
+            </tr>
+          }
         } @empty {
           <tr>
-            <td class="empty" [attr.colspan]="columns().length + (selectable() ? 1 : 0)">
+            <td class="empty" [attr.colspan]="span()">
               <np-icon [name]="noMatch ? 'search-x' : 'inbox'" [size]="32" />
               {{ noMatch ? noResultsMessage() : emptyMessage() }}
             </td>
@@ -102,15 +190,46 @@
         }
       }
     </tbody>
+    @if ((hasFooter() || footerNote()) && !loading()) {
+      <tfoot>
+        @if (hasFooter()) {
+          <tr>
+            @if (reorderable()) {
+              <td></td>
+            }
+            @if (selectable()) {
+              <td></td>
+            }
+            @for (column of columns(); track column.key) {
+              <td [class]="cell[column.key].class" [style]="cell[column.key].style">
+                {{ footerValue(column) }}
+              </td>
+            }
+            @if (expandable()) {
+              <td></td>
+            }
+          </tr>
+        }
+        @if (footerNote()) {
+          <tr>
+            <td class="table__note" [attr.colspan]="span()">{{ footerNote() }}</td>
+          </tr>
+        }
+      </tfoot>
+    }
   </table>
 </div>
-@if (perPage && !loading()) {
+<!-- Lazy tables keep the bar while the next page loads -->
+@if (pageSize() && (!loading() || lazy())) {
   <np-pagination
     class="table-pager"
     size="small"
+    [variant]="paginator()"
     [(page)]="page"
-    [totalRecords]="total"
-    [rows]="perPage"
+    [(rows)]="pageSize"
+    [rowsOptions]="sizeOptions()"
+    [totalRecords]="total()"
+    [showFirstLast]="showFirstLast()"
     showSummary
   />
 }

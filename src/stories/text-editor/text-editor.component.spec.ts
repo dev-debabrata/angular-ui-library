@@ -190,6 +190,76 @@ describe('TextEditorComponent', () => {
       expect(editor.value()).toBe('<p><span style="font-size: 24px;">Big</span> text</p>');
     });
 
+    it('sets the font as an inline style and line spacing on the line', async () => {
+      fixture.componentRef.setInput('value', '<p>Serif text</p>');
+      const quill = await ready(fixture, () => editor);
+      quill.setSelection(0, 5);
+      const select = fixture.nativeElement.querySelector(
+        'select[aria-label="Font"]',
+      ) as HTMLSelectElement;
+      select.value = 'Georgia, serif';
+      select.dispatchEvent(new Event('change'));
+      expect(editor.value()).toBe(
+        '<p><span style="font-family: Georgia, serif;">Serif</span> text</p>',
+      );
+      quill.setSelection(0, 0);
+      pick('Line spacing', '1.5');
+      expect(editor.value()).toContain('<p style="line-height: 1.5;">');
+    });
+
+    it('changes the letter case of the selection, keeping its formatting', async () => {
+      fixture.componentRef.setInput('value', '<p>hello <strong>big</strong> world. next one</p>');
+      const quill = await ready(fixture, () => editor);
+      quill.setSelection(0, 15);
+      pick('Change case', 'UPPERCASE');
+      expect(editor.value()).toBe('<p>HELLO <strong>BIG</strong> WORLD. next one</p>');
+      quill.setSelection(0, 24);
+      pick('Change case', 'Title Case');
+      expect(editor.value()).toBe('<p>Hello <strong>Big</strong> World. Next One</p>');
+      quill.setSelection(0, 24);
+      pick('Change case', 'Sentence case');
+      expect(editor.value()).toBe('<p>Hello <strong>big</strong> world. Next one</p>');
+    });
+
+    it('inserts emoji and special characters at the cursor', async () => {
+      fixture.componentRef.setInput('value', '<p>AB</p>');
+      const quill = await ready(fixture, () => editor);
+      quill.setSelection(1, 0);
+      pick('Emoji', '🎉');
+      pick('Special characters', '©');
+      expect(editor.value()).toBe('<p>A🎉©B</p>');
+    });
+
+    it('embeds YouTube and Vimeo videos as players, and nothing else', async () => {
+      fixture.componentRef.setInput('value', '<p>A</p>');
+      const quill = await ready(fixture, () => editor);
+      quill.setSelection(1, 0);
+      click('Video (YouTube, Vimeo)');
+      fixture.detectChanges();
+      const form = fixture.nativeElement.querySelector('.te__bar') as HTMLFormElement;
+      const url = form.querySelector('.te__bar-input') as HTMLInputElement;
+      const submit = form.querySelector('[type=submit]') as HTMLButtonElement;
+      url.value = 'example.com/clip';
+      url.dispatchEvent(new Event('input'));
+      fixture.detectChanges();
+      expect(submit.disabled).toBe(true);
+      url.value = 'https://youtu.be/dQw4w9WgXcQ';
+      url.dispatchEvent(new Event('input'));
+      fixture.detectChanges();
+      form.requestSubmit();
+      expect(editor.value()).toContain(
+        '<iframe class="ql-video" src="https://www.youtube.com/embed/dQw4w9WgXcQ"',
+      );
+      // Other iframes (pasted HTML) are blanked
+      fixture.componentRef.setInput(
+        'value',
+        '<iframe class="ql-video" src="https://evil.example"></iframe>',
+      );
+      fixture.detectChanges();
+      await fixture.whenStable();
+      expect(root(fixture).querySelector('iframe')?.getAttribute('src')).toBe('about:blank');
+    });
+
     it('indents up to 3 levels, nesting list items in the HTML', async () => {
       fixture.componentRef.setInput('value', '<ol><li>One</li><li>Two</li></ol><p>Para</p>');
       const quill = await ready(fixture, () => editor);
@@ -210,7 +280,7 @@ describe('TextEditorComponent', () => {
       pick('Align', 'Center');
       expect(editor.value()).toBe('<p style="text-align: center;">Hello</p>');
       quill.setSelection(0, 5);
-      pick('Text and highlight color', 'Highlight: Light yellow');
+      pick('Highlight', 'Highlight: Light yellow');
       expect(editor.value()).toContain('background-color: rgb(254, 240, 138)');
     });
 

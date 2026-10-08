@@ -29,6 +29,15 @@ export const APPEARANCE_COLORS = [
 ] as const;
 export type AppearanceColor = (typeof APPEARANCE_COLORS)[number];
 
+/** The palette colors: np-color-<name> classes in theme.css, the same colors as the theme menu (np-color-custom takes
+ * any color from --np-color) */
+// prettier-ignore
+export const PALETTE_COLORS = [
+  'indigo', 'violet', 'purple', 'fuchsia', 'pink', 'rose', 'red', 'orange', 'amber', 'green', 'emerald', 'teal',
+  'cyan', 'sky', 'blue', 'slate', 'navy', 'midnight', 'plum', 'wine', 'brown', 'forest', 'ocean', 'graphite',
+] as const;
+export type PaletteColor = (typeof PALETTE_COLORS)[number];
+
 /** Field styles for inputs (the ui-field--* classes in theme.css); outlined is the default look */
 export const FIELD_VARIANTS = ['outlined', 'filled', 'underline', 'floating'] as const;
 export type FieldVariant = (typeof FIELD_VARIANTS)[number];

@@ -11,15 +11,17 @@ import { APPEARANCE_COLORS, APPEARANCE_SHAPES } from './types';
 /** The colors besides the theme's own (primary) and the neutral secondary */
 const COLORS = APPEARANCE_COLORS.filter((c) => c !== 'primary' && c !== 'secondary');
 
-/** One labeled cell per class, in a responsive grid */
-function grid(prefix: string, values: readonly string[], inner: string) {
+/** One labeled cell per class, in a responsive grid of cells at least `cell` px wide */
+function grid(prefix: string, values: readonly string[], inner: string, cell: number) {
   const cells = values.map(
-    (value) => `<div class="${prefix}${value}" style="display: grid; align-content: start; gap: 10px; min-width: 0">
+    (
+      value,
+    ) => `<div class="${prefix}${value}" style="display: grid; align-content: start; gap: 10px; min-width: 0">
   <code style="justify-self: start; padding: 2px 8px; border-radius: 6px; background: var(--ui-surface-sunken); color: var(--ui-text-muted); font-size: 12px">${prefix}${value}</code>
   ${inner}
 </div>`,
   );
-  return `<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 24px">
+  return `<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, ${cell}px), 1fr)); gap: 24px">
 ${cells.join('\n')}
 </div>`;
 }
@@ -30,9 +32,17 @@ function componentTemplate(component: unknown, args: unknown) {
   return `<${selector} ${argsToTemplate(args as Record<string, unknown>)}></${selector}>`;
 }
 
-/** Colors and Shapes stories built from the component's main story (its render, or the meta's) */
-export function appearanceStories<T>(meta: Meta<T>, base: StoryObj<T>) {
-  const make = (name: string, prefix: string, values: readonly string[], description: string): StoryObj<T> => ({
+/**
+ * Colors and Shapes stories built from the component's main story (its render, or the meta's). `cell` is the smallest
+ * width of one copy: raise it for wide components (a table) so they get a row each instead of being squeezed
+ */
+export function appearanceStories<T>(meta: Meta<T>, base: StoryObj<T>, cell = 260) {
+  const make = (
+    name: string,
+    prefix: string,
+    values: readonly string[],
+    description: string,
+  ): StoryObj<T> => ({
     name,
     args: base.args,
     decorators: base.decorators,
@@ -46,7 +56,12 @@ export function appearanceStories<T>(meta: Meta<T>, base: StoryObj<T>) {
       return {
         ...rendered,
         props: rendered?.props ?? args,
-        template: grid(prefix, values, rendered?.template ?? componentTemplate(context.component, args)),
+        template: grid(
+          prefix,
+          values,
+          rendered?.template ?? componentTemplate(context.component, args),
+          cell,
+        ),
       };
     },
   });

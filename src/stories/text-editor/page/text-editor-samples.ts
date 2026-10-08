@@ -60,6 +60,8 @@ Authorization: Bearer &lt;token&gt;</pre>
 <li><strong>Find &amp; replace:</strong> press Ctrl/⌘ F, or the search button in the toolbar.</li>
 <li><strong>Tables:</strong> pick a size with the table button; inside a table, it adds and removes rows and
 columns.</li>
+<li><strong>More tools:</strong> fonts, highlight, line spacing, letter case, emoji, special characters and
+YouTube or Vimeo videos.</li>
 </ul>
 <p style="text-align: right;"><em>Images by upload, address, paste or drag and drop:</em></p>
 <p><img src="nexprime-hero.svg" alt="NexPrime"></p>
@@ -91,3 +93,63 @@ export const SAMPLE_COMMENTS: SampleComment[] = [
     html: '<p>Agreed. Two notes:</p><ul><li>Keep the filters sticky</li><li>Show totals per month</li></ul>',
   },
 ];
+
+export const SAMPLE_MARKDOWN = `# Release notes 2.4
+
+Write **Markdown** on the left and see it formatted on the right. It's *safe*: the text is escaped first.
+
+## What's new
+
+- A Markdown mode with a live preview
+- Emoji 🎉 and special characters ©
+- [ ] Translate the docs
+- [x] Ship the new toolbar
+
+1. Open the Text Editor page
+2. Pick a mode
+3. Start writing
+
+> Tip: "Open as document" moves this into the Document mode, where you can export it to Word or PDF.
+
+| Plan | Price | Seats |
+| --- | --- | --- |
+| Free | $0 | 3 |
+| Team | $12 | 25 |
+
+\`\`\`
+npm install nexprime
+\`\`\`
+
+---
+
+Read more on [nexprime.dev](https://example.com) or use \`inline code\` and ~~strike~~.`;
+
+export interface Note {
+  id: number;
+  html: string;
+  /** Last change, in ms since 1970 */
+  updated: number;
+}
+
+const hour = 3_600_000;
+export const sampleNotes = (now = Date.now()): Note[] => [
+  {
+    id: 3,
+    updated: now - hour,
+    html: '<h2>Ideas for the launch</h2><ul><li>Short demo video</li><li>Blog post with the <strong>new modes</strong></li><li>Ask beta users for quotes</li></ul>',
+  },
+  {
+    id: 2,
+    updated: now - 26 * hour,
+    html: '<h2>Groceries</h2><ul><li data-list="checked">Coffee</li><li data-list="unchecked">Oat milk</li><li data-list="unchecked">Bread</li></ul>',
+  },
+  {
+    id: 1,
+    updated: now - 80 * hour,
+    html: '<h2>Meeting with design</h2><p>Agreed on the <span style="background-color: #fef08a;">new color tokens</span>. Next review on Friday.</p>',
+  },
+];
+
+export const SAMPLE_EMAIL = `<p>Hi team,</p>
+<p>The <strong>customer portal redesign</strong> is ready for review. Please leave your notes by <strong>Friday</strong>.</p>
+<p>Thanks! 🙌</p>`;

@@ -1,0 +1,12 @@
+@if (visible()) {
+  <div class="cc-backdrop"></div>
+  <section class="cc" aria-label="Cookie notice">
+    <p>
+      We use your browser's storage only to remember your theme and layout. NexPrime has no analytics or advertising
+      cookies. By clicking Accept Cookies, you agree to our privacy policy. For more information see our
+      <a [href]="privacyHref" target="_top">Privacy Policy</a>.
+    </p>
+    <button type="button" class="ui-btn ui-btn--primary" (click)="accept()">Accept Cookies</button>
+    <button type="button" class="ui-close" aria-label="Close" (click)="visible.set(false)">×</button>
+  </section>
+}

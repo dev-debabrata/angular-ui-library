@@ -135,6 +135,6 @@ export const FilterAndExpandAll: Story = {
 };
 
 /** The appearance classes from theme.css (np-color-*, np-shape-*) on the Default example */
-const appearance = appearanceStories(meta, Default);
+const appearance = appearanceStories(meta, Default, 560);
 export const AppearanceColors = appearance.colors;
 export const AppearanceShapes = appearance.shapes;

@@ -6,17 +6,31 @@ import {
 } from 'storybook/internal/core-events';
 import { type API, addons } from 'storybook/manager-api';
 
-import { PALETTES, applyTheme, saveTheme, savedTheme, themeOf } from './np-theme';
+import {
+  PALETTES,
+  applyTheme,
+  customColors,
+  customPalette,
+  editCustomColors,
+  saveTheme,
+  savedTheme,
+  themeOf,
+} from './np-theme';
 import {
   OPEN_PAGE,
   PAGES,
   SECTIONS,
   SITE_GO,
   SITE_PAGES,
+  SITE_COOKIE_OVERLAY,
   SITE_ROUTE,
   SITE_SEARCH,
 } from '../src/stories/getting-started/landing';
 import { ICONS, managerTheme } from './theme-tools';
+
+/** A theme menu swatch that picks the palette `key` (ringed in `color` when it's the current one) */
+const swatchButton = (key: string, label: string, color: string, background = color) =>
+  `<button type="button" role="menuitemradio" class="np-topbar__swatch" data-palette="${key}" aria-label="${label}" title="${label}" style="background: ${background}; --swatch: ${color}"></button>`;
 
 /** The last light/dark mode and theme color the user picked (preview.ts starts the stories with it too) */
 const saved = savedTheme();
@@ -80,7 +94,9 @@ function storybookUrl() {
  */
 function openPage(api: API, page: string) {
   const entry = page ? (api.resolveStory(page) ?? api.resolveStory(`${page}--docs`)) : undefined;
-  api.selectStory(entry?.type === 'component' ? entry.children[0] : (entry?.id ?? (page || WELCOME)));
+  api.selectStory(
+    entry?.type === 'component' ? entry.children[0] : (entry?.id ?? (page || WELCOME)),
+  );
 }
 const pageUrl = location.href;
 const opened = !!storybookUrl();
@@ -233,7 +249,10 @@ addons.register('np/sidebar-components', (api) => {
         return;
       event.preventDefault();
       event.stopPropagation();
-      if (row.dataset['nodetype'] === 'component') api.selectStory(row.dataset['itemId']);
+      if (row.dataset['nodetype'] !== 'component') return;
+      api.selectStory(row.dataset['itemId']);
+      // Storybook closes its phone menu drawer only for its own selections
+      api.setMobileNavigation(false);
     },
     true,
   );
@@ -292,12 +311,15 @@ const icon = (name: string) =>
 addons.register('np/topbar', (api) => {
   const bar = document.createElement('header');
   bar.id = 'np-topbar';
+  // The site's cookie notice dims its page; the bar is outside the preview frame, so it gets its own overlay
+  api.on(SITE_COOKIE_OVERLAY, (open: boolean) => bar.toggleAttribute('data-np-cookie', open));
+  api.on(CURRENT_STORY_WAS_SET, () => bar.removeAttribute('data-np-cookie'));
   bar.innerHTML = `
     <nav class="np-topbar__inner" aria-label="NexPrime">
       <a class="np-topbar__brand" href="./" data-page="" aria-label="NexPrime home">
         <img src="favicon.svg" alt="" width="28" height="28" /><span>Nex<b>Prime</b></span>
       </a>
-      <div class="np-topbar__links">
+      <div class="np-topbar__links" id="np-topbar-links">
         ${TOP_LINKS.map(
           ({ label, path, prefix }) =>
             `<a href="./${path}" data-page="${path}" data-prefix="${prefix}">${label}</a>`,
@@ -310,15 +332,21 @@ addons.register('np/topbar', (api) => {
           <button type="button" class="np-topbar__tool" data-tool="palette" aria-label="Theme color" title="Theme color" aria-expanded="false">${icon('palette')}</button>
           <div class="np-topbar__menu" role="menu" aria-label="Theme color" hidden>
             ${Object.entries(PALETTES)
-              .map(
-                ([key, p]) =>
-                  `<button type="button" role="menuitemradio" class="np-topbar__swatch" data-palette="${key}" aria-label="${p.label}" title="${p.label}" style="background: linear-gradient(135deg, ${p.primary}, ${p.accent}); --swatch: ${p.primary}"></button>`,
+              .map(([key, p]) =>
+                swatchButton(
+                  key,
+                  p.label,
+                  p.primary,
+                  `linear-gradient(135deg, ${p.primary}, ${p.accent})`,
+                ),
               )
               .join('')}
+            <div class="np-topbar__custom" role="group" aria-label="Custom colors"></div>
           </div>
         </div>
       </div>
       <a class="np-topbar__start" href="./${PAGES.getStarted}" data-page="${PAGES.getStarted}">Get Started</a>
+      <button type="button" class="np-topbar__tool np-topbar__burger" data-tool="menu" aria-label="Menu" aria-expanded="false" aria-controls="np-topbar-links">${icon('menu')}</button>
     </nav>`;
   document.body.prepend(bar);
   const menu = bar.querySelector<HTMLElement>('.np-topbar__menu')!;
@@ -327,6 +355,39 @@ addons.register('np/topbar', (api) => {
     menu.hidden = !open;
     paletteButton.setAttribute('aria-expanded', String(open));
   };
+  // Phones on the site's pages: the section links drop down under the bar from the menu button (CSS shows it at
+  // <= 760px); on docs pages the button opens the sidebar instead
+  const burger = bar.querySelector<HTMLElement>('[data-tool="menu"]')!;
+  const links = bar.querySelector<HTMLElement>('.np-topbar__links')!;
+  const showLinks = (open: boolean) => {
+    bar.toggleAttribute('data-np-links', open);
+    burger.setAttribute('aria-expanded', String(open));
+    burger.innerHTML = icon(open ? 'x' : 'menu');
+  };
+
+  // Custom colors: the user's own (saved in this browser), each removable, and a color picker that adds one
+  const custom = menu.querySelector<HTMLElement>('.np-topbar__custom')!;
+  const renderCustom = () => {
+    custom.innerHTML = `<span class="np-topbar__custom-title">Custom</span>
+      ${customColors()
+        .map(
+          (c) => `<span class="np-topbar__custom-item">
+            ${swatchButton(customPalette(c), `Custom color ${c}`, c)}
+            <button type="button" class="np-topbar__remove" data-remove="${c}" aria-label="Remove ${c}" title="Remove">${icon('x')}</button>
+          </span>`,
+        )
+        .join('')}
+      <label class="np-topbar__add" title="Add your own color">${icon('plus')}
+        <input type="color" value="#6366f1" aria-label="Add a custom theme color" />
+      </label>`;
+    sync();
+  };
+  custom.addEventListener('change', (event) => {
+    const color = (event.target as HTMLInputElement).value;
+    editCustomColors(color);
+    renderCustom();
+    api.updateGlobals({ palette: customPalette(color) });
+  });
 
   // Mode icon and the checked swatch follow the page's data-np-theme ("dark|teal", set by applyTheme)
   const modeButton = bar.querySelector<HTMLElement>('[data-tool="mode"]')!;
@@ -337,33 +398,55 @@ addons.register('np/topbar', (api) => {
     modeButton.title = dark ? 'Light mode' : 'Dark mode';
     modeButton.setAttribute('aria-label', dark ? 'Switch to light mode' : 'Switch to dark mode');
     for (const swatch of menu.querySelectorAll<HTMLElement>('[data-palette]')) {
-      const on = swatch.dataset['palette'] === (palette in PALETTES ? palette : 'indigo');
+      const current = palette in PALETTES || palette.startsWith('custom-') ? palette : 'indigo';
+      const on = swatch.dataset['palette'] === current;
       swatch.classList.toggle('np-topbar__swatch--on', on);
       swatch.setAttribute('aria-checked', String(on));
       swatch.innerHTML = on ? icon('check') : '';
     }
   };
-  sync();
+  renderCustom();
   new MutationObserver(sync).observe(document.documentElement, {
     attributes: true,
     attributeFilter: ['data-np-theme'],
   });
 
+  // Docs pages' sidebar, with every section and the search. Storybook's phone layout (< 600px) has a menu drawer
+  // instead; returns whether it opened that
+  const openSidebar = () => {
+    const phone = matchMedia('(max-width: 599px)').matches;
+    if (phone) api.setMobileNavigation(true);
+    else api.toggleNav(true);
+    return phone;
+  };
+
   bar.addEventListener('click', (event) => {
     const target = event.target as Element;
     const tool = target.closest<HTMLElement>('[data-tool]')?.dataset['tool'];
     const swatch = target.closest<HTMLElement>('[data-palette]')?.dataset['palette'];
+    const remove = target.closest<HTMLElement>('[data-remove]')?.dataset['remove'];
     const onSite = document.documentElement.dataset['npLayout'] === 'landing';
     if (tool === 'search' && onSite) {
       api.emit(SITE_SEARCH);
     } else if (tool === 'search') {
-      if (!api.getIsNavShown()) api.toggleNav(true);
-      setTimeout(() => api.focusOnUIElement('storybook-explorer-searchfield'));
+      // The drawer slides in before its search can take focus
+      const delay = openSidebar() ? 350 : 0;
+      setTimeout(() => api.focusOnUIElement('storybook-explorer-searchfield'), delay);
     } else if (tool === 'mode') {
       const dark = document.documentElement.dataset['theme'] === 'dark';
       api.updateGlobals({ theme: dark ? 'light' : 'dark' });
+    } else if (tool === 'menu' && !onSite) {
+      openSidebar();
+    } else if (tool === 'menu') {
+      showLinks(!bar.hasAttribute('data-np-links'));
     } else if (tool === 'palette') {
       showMenu(menu.hidden !== false);
+    } else if (remove) {
+      // Removing the color in use goes back to the default
+      editCustomColors(remove, true);
+      if (document.documentElement.dataset['npTheme']?.endsWith(customPalette(remove)))
+        api.updateGlobals({ palette: 'indigo' });
+      renderCustom();
     } else if (swatch) {
       api.updateGlobals({ palette: swatch });
       showMenu(false);
@@ -372,19 +455,28 @@ addons.register('np/topbar', (api) => {
     if (!link || event.button || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey)
       return;
     event.preventDefault();
+    showLinks(false);
     const page = link.dataset['page']!;
     if (onSite && SITE_PAGES.includes(page)) api.emit(SITE_GO, page);
     else openPage(api, page);
   });
-  // The color menu closes on an outside click or Escape
+  // The color menu and the links menu close on an outside click or Escape
   document.addEventListener('click', (event) => {
-    if (!menu.hidden && !(event.target as Element).closest?.('.np-topbar__palette'))
-      showMenu(false);
+    // composedPath: the menu button's icon is replaced on click, so the clicked <svg> is no longer in the bar
+    const path = event.composedPath();
+    if (!menu.hidden && !path.includes(menu.parentElement!)) showMenu(false);
+    if (!path.includes(burger) && !path.includes(links)) showLinks(false);
   });
+  // Taps on the page land in the preview frame, outside this document: the manager window loses focus
+  window.addEventListener('blur', () => showLinks(false));
   bar.addEventListener('keydown', (event) => {
-    if (event.key === 'Escape' && !menu.hidden) {
+    if (event.key !== 'Escape') return;
+    if (!menu.hidden) {
       showMenu(false);
       paletteButton.focus();
+    } else if (bar.hasAttribute('data-np-links')) {
+      showLinks(false);
+      burger.focus();
     }
   });
 

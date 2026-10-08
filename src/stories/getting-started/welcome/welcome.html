@@ -178,13 +178,13 @@
       </np-animate-on-scroll>
     </div>
 
-    <!-- Text Editor demo (Quill loads when it scrolls into view) -->
+    <!-- A read-only picture of the Text Editor (it and Quill load when it scrolls into view) -->
     @defer (on viewport) {
-      <div style="max-width: 1120px; margin: 40px auto 0">
-        <np-text-editor-demo />
+      <div style="max-width: 1120px; margin: 20px auto 0">
+        <np-text-editor-demo preview />
       </div>
     } @placeholder {
-      <div style="max-width: 1120px; height: 470px; margin: 40px auto 0"></div>
+      <div style="max-width: 1120px; height: 470px; margin: 20px auto 0"></div>
     }
   </section>
 

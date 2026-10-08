@@ -68,8 +68,12 @@ src/stories/         One folder per top-level sidebar section, plus shared utils
                      text-editor-tools.ts, Quill setup and shortcuts in text-editor-quill.ts) and page/: the site's
                      "Text Editor" page (sidebar entry after Effects, /text-editor): Document (variant="document",
                      zoom, import .html/.txt/.md, export Word/HTML/PDF, autosave in localStorage) | Simple (live
-                     HTML) | Comments modes, in text-editor-demo (also on Welcome as `preview`: shorter, inert, inside a link to
-                     the page, loaded with @defer on viewport); text-editor-preview is the Welcome card's picture (no Quill)
+                     HTML) | Comments | Markdown (text-editor-markdown: source + read-only editor preview, "Open as
+                     document") | Email (text-editor-email: To/Cc/Subject, attachments, nothing is sent) | Notes
+                     (text-editor-notes, localStorage) | Focus (text-editor-focus: dark, no toolbar, word goal) modes, in
+                     text-editor-demo; markdownToHtml() and shared helpers in page/text-editor-page-utils.ts (+ spec)
+                     (also on Welcome as `preview`: shorter, inert, a picture only (the Explore card links to
+                     the page), loaded with @defer on viewport); text-editor-preview is the Welcome card's picture (no Quill)
   utils/             Shared TypeScript helpers (no components):
     types.ts           Shared types: Tone, TONES, TONE_ICONS, Size, SIZES, User, MenuItem, TreeNode
     anchor-position.ts Shared fixed-position helper for popovers and popup menus
@@ -133,14 +137,15 @@ public/favicon.svg   NexPrime icon: the "prism" NP mark (blue stem, blue→viole
                      line, groups with a small chevron, page-colored background (restart Storybook after editing)
                      One top bar for every page, the site's included (`#np-topbar`, built in manager.ts, styled in
                      manager-head.html: logo, SECTIONS links, search, light/dark mode, theme color, Get Started, content
-                     centered in 1200px; links in a second row on phones). It sits above Storybook's layout box
+                     centered in 1200px; on phones (<= 760px) the links drop down from a menu button, `data-np-links`). It sits above Storybook's layout box
                      (`#root > div`, shortened by --np-topbar-h; a `[style*=…]` selector didn't match). On docs pages
                      (data-np-layout="default") that box is centered in the same 1200px column and the sidebar's logo row
                      is hidden. On the site's pages its links go to the site's router (SITE_GO) and search opens the site
                      search (SITE_SEARCH); elsewhere links select the story and search focuses the sidebar search
                      Toolbar: Storybook's own tools are off (`features` in main.ts, `toolbar` in manager.ts); search, light/dark
                      mode and theme color are in the top bar (icons in theme-tools.ts, which also has managerTheme()). np-theme.ts holds the palettes and
-                     applyTheme(); the choice is the `theme`/`palette` globals, applied by preview.ts (data-theme +
+                     applyTheme(); the menu's Custom row adds the user's colors (palette key `custom-rrggbb`, hover and
+                     accent derived in JS, list kept under 'np-theme-custom', × removes one); the choice is the `theme`/`palette` globals, applied by preview.ts (data-theme +
                      --ui-primary/--ui-primary-hover/--ui-accent) and saved by manager.ts in localStorage ('np-theme').
                      docs-theme.css styles Storybook's docs pages in dark mode; manager-head.html's sidebar CSS uses
                      --nav-* variables that follow the mode; the sidebar logo is public/nexprime-brand-{light,dark}.svg. Toolbar tools are hidden by id in
@@ -178,7 +183,9 @@ The look is an indigo → violet gradient accent (`--ui-gradient`) on slate neut
 - Selected/active states use `background: var(--ui-gradient)` with white text. Hover changes color, background, border or shadow only (e.g. `--ui-primary-soft`). Never move elements on hover (no `translateY` lift). `:focus-visible` uses `box-shadow: var(--ui-ring)`.
 - Alert and Toast show a round tone icon: `<span class="ui-tone-icon">{{ icons[type()] }}</span>` with `TONE_ICONS`.
 - Color variants: add the class `tone-<tone>` and read `--tone-bg`, `--tone-fg`, `--tone-border`, `--tone-solid`. Type the input as `Tone` from `utils/types.ts` (`info | success | warning | danger | neutral`).
-- Appearance classes (theme.css) work on every component: `np-color-<primary|secondary|success|info|warning|danger|help|contrast>`
+- Appearance classes (theme.css) work on every component: `np-color-<primary|secondary|success|info|warning|danger|help|contrast>`,
+  the 24 palette colors `np-color-<indigo|…|graphite>` (PALETTE_COLORS in utils/types.ts, same values as the theme
+  menu's PALETTES) and `np-color-custom` (`--np-color`, optional `--np-accent`; else a 40° hue shift via oklch)
   overrides `--ui-primary`/`--ui-accent` (and re-declares `--ui-gradient`, `--ui-primary-soft`, the ring, which are
   computed where declared) and `np-shape-<pill|rounded|square>` overrides `--ui-radius-sm/-/-lg/-full`. So components
   must take colors and radii from the tokens: fully round parts use `var(--ui-radius-full)`, never `999px`.
@@ -229,6 +236,10 @@ The look is an indigo → violet gradient accent (`--ui-gradient`) on slate neut
   with `heading`/`intro`/`note`, projected content, footer; `.site-card` and `.site-icon` in gallery-page.css). They and Welcome end with `np-site-footer`
   (`getting-started/site-footer/`); contact details and the creators (LinkedIn URLs) are CONTACT and AUTHORS in landing.ts.
 
+- Cookie notice: `np-cookie-consent` (`getting-started/cookie-consent/`, site-only, not in the npm package or
+  nexprime.ts) is a full-width bar at the bottom of np-site: message, Privacy link, Accept (remembered under
+  'np-cookie-notice' in localStorage) and × (hides it until the next visit), over a grey backdrop that blocks the page until one is clicked; SITE_COOKIE_OVERLAY tells manager.ts to dim the top bar too (`data-np-cookie`).
+
 - The site's pages are one Angular app, `np-site` (`getting-started/site/`): the site search plus `<router-outlet>` (the top bar is Storybook's, see manager.ts), with
   Angular Router routes in `site.routes.ts` whose paths are the pages' short URLs. Links between them switch instantly,
   without Storybook loading a story.
@@ -263,9 +274,20 @@ The look is an indigo → violet gradient accent (`--ui-gradient`) on slate neut
   `scrollHeight` (sticky header), columns with `align` and `width`.
 - Table (`np-table`): `variant` (TABLE_VARIANTS: default | striped | bordered | minimal | cards | glass), `size`,
   `scrollHeight` (sticky header), `selectable` + `[(selection)]` (rows matched by reference), `loading` (skeleton
-  rows), `rows` (pages with an internal np-pagination; the page resets when the filtered rows change); columns take
-  `align`, `tones` (value → Tone status pill) and `image` (avatar). Variants only set `--tbl-*` variables.
-- Pagination (`np-pagination`): `variant` (PAGINATION_VARIANTS: default | outlined | soft | glass | minimal | dots),
+  rows), `rows` (pages with an internal np-pagination, look `paginator` = compact by default, "Items per page" from
+  `rowsOptions`, `showFirstLast`; the page resets when the filtered rows or the page size change), `sortField` /
+  `sortOrder` (first sort), `[(data)]` + `reorderable` (CDK drag handle, `rowReorder`, clears the sort), `[(columns)]` +
+  `reorderableColumns` (drag headers, `columnReorder`), `expandable` (a row click or its toggle opens a detail row from a projected `<ng-template #rowDetail let-row>`, or `detailKey` text for Web Components),
+  `stickyFooter`, `footerNote`, `noWrap`, `lazy` + `totalRecords` + `(lazyLoad)` (server data: `data` is one page;
+  page / sort / filter changes emit TableLazyLoad). Columns take `align`, `width`, `tones` (value → Tone status pill),
+  `image` (avatar), `format`, `description` (second header line), `footer` (value or function of the rows),
+  `sticky` start | end (offsets measured in afterRenderEffect + ResizeObserver) and `actions` (centered icon buttons,
+  `rowAction`). Sort arrows are icons like Material's: hidden until hover, solid on the sorted column. Variants only set `--tbl-*` variables. The Material-style examples use table-demo-data.ts and the
+  story-only wrapper np-elements-table (table-wrapper-demo.component.ts).
+- Pagination (`np-pagination`): `variant` (PAGINATION_VARIANTS: default | outlined | soft | glass | minimal | dots |
+  compact = a data table footer like Material's paginator: "Items per page" select, "1 – 5 of 100", arrows only |
+  segmented = joined buttons | input = "Page [3] of 12" | load-more = "Showing 20 of 240" + "Load 20 more"; the
+  consumer shows page × rows items, as np-table does with `paginator="load-more"`); the rows-per-page picker is np-select,
   `size`, `totalRecords` + `[(rows)]`, `rowsOptions`, `showSummary`, `showFirstLast`, `showJump`, arrow keys.
 - Pick List: `variant` (PICK_LIST_VARIANTS: default | cards | compact | glass | minimal), `optionIcon`,
   `optionDescription`, `targetLimit`. Timeline: `variant` (TIMELINE_VARIANTS: default | cards | outlined | gradient |
@@ -364,8 +386,11 @@ The look is an indigo → violet gradient accent (`--ui-gradient`) on slate neut
   Tab leaves the editor (Quill's Tab bindings are cleared). `variant` default | document (a wide surface with a centered text column, `zoom`);
   `[editorToolbarStart]` / `[editorToolbarEnd]` project extra toolbar controls (class `te__tool`, `data-tool` joins
   the toolbar's arrow keys; the roving tabindex is set on the DOM, so projected controls take part). `theme` light | dark re-declares the neutral tokens.
-  Also: font size (px, a style), indent (3 levels, class ql-indent-N; lists nest in the HTML), alignment and color
-  menus, tables (Quill's table module; size picker, row/column menu; cells get inline borders in the HTML), find &
+  Also: font size (px, a style), font family (`font`, a style, TEXT_EDITOR_FONTS), indent (3 levels, class
+  ql-indent-N; lists nest in the HTML), alignment, line spacing (`lineheight`, a block style), text color and
+  highlight menus, letter case (changeCase() keeps formats), emoji and special character grids, YouTube/Vimeo video
+  (an iframe; other iframe addresses become about:blank) and reading time with `showCount`. Menus are the MENUS set
+  and bars the BARS set in text-editor-tools.ts; tables (Quill's table module; size picker, row/column menu; cells get inline borders in the HTML), find &
   replace (Ctrl/⌘ F, CSS Custom Highlight API), markdown and typography shortcuts (text-editor-quill.ts; Enter
   shortcuts go before Quill's own Enter handler), `showCount` / `maxLength`. Two stylesheets, each under the 10 kB
   budget: text-editor.css (frame, toolbar, menus) and text-editor-content.css (the content's look).

@@ -1,0 +1,105 @@
+/* Grey overlay over the page; it takes the clicks, so the page waits for an answer */
+.cc-backdrop {
+  position: fixed;
+  z-index: 1089;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.5);
+}
+
+/* Flat see-through bar, lifted 48px off the bottom, its content in the site's 1200px column */
+.cc {
+  position: fixed;
+  z-index: 1090;
+  inset: auto 0 48px;
+  display: flex;
+  align-items: center;
+  gap: 16px 24px;
+  padding: 14px max(24px, calc((100vw - 1200px) / 2));
+  background: rgba(0, 0, 0, 0.4);
+  color: #fff;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.cc-backdrop {
+  animation: cc-fade 0.3s ease both;
+}
+
+/* np-fade-up is the global keyframes of .np-anim-fade-up (animations.css) */
+.cc {
+  animation: np-fade-up 0.35s var(--ui-ease) both;
+}
+
+@keyframes cc-fade {
+  from {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cc-backdrop,
+  .cc {
+    animation: none;
+  }
+}
+
+p {
+  flex: 1;
+  margin: 0;
+}
+
+a {
+  color: color-mix(in srgb, var(--ui-primary) 55%, #fff);
+}
+
+/* Solid, square-cornered button in the theme color */
+.cc .ui-btn {
+  padding: 10px 16px;
+  border-radius: var(--ui-radius-sm);
+  background: var(--ui-primary);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.cc .ui-btn:not(:focus-visible) {
+  box-shadow: none;
+}
+
+.cc .ui-btn:hover {
+  background: var(--ui-primary-hover);
+}
+
+/* White, so it shows over the dark pages (the Welcome hero) as well as light ones */
+.cc .ui-close {
+  color: #fff;
+  font-size: 22px;
+  font-weight: 700;
+}
+
+@media (max-width: 640px) {
+  /* Text on its own rows (room on the right for the close button, now in the corner), a full-width button below */
+  .cc {
+    bottom: 16px;
+    flex-wrap: wrap;
+    padding: 16px;
+    /* More solid: on a narrow screen the text sits over the page's own text */
+    background: rgba(0, 0, 0, 0.8);
+    font-size: 13px;
+    line-height: 1.5;
+  }
+
+  p {
+    flex-basis: 100%;
+    padding-right: 28px;
+  }
+
+  .cc .ui-btn {
+    flex: 1;
+  }
+
+  .cc .ui-close {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+  }
+}

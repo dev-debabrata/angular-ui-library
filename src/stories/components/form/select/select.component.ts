@@ -63,6 +63,9 @@ export class SelectComponent {
   /** Text shown when nothing is selected */
   readonly placeholder = input('Select an option');
 
+  /** Accessible name when there's no visible label (or the label is outside, like "Items per page:") */
+  readonly ariaLabel = input('');
+
   /** Is the dropdown disabled? */
   readonly disabled = input(false, { transform: booleanAttribute });
 
